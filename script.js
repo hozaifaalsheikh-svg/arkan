@@ -154,7 +154,7 @@ function changeQty(sku, delta) {
     updateCartUI();
 }
 
-// فلاتر الأقسام معدلة برمجياً لمنع الأخطاء
+// فلاتر الأقسام
 function filterCategory(catName, btnElement) {
     const buttons = document.querySelectorAll('.cat-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
@@ -178,7 +178,7 @@ document.getElementById('search-input').addEventListener('input', function(e) {
     renderProducts(filtered);
 });
 
-// تجهيز وإرسال الطلب عبر الواتساب المبيعات في سوريا
+// تجهيز وإرسال الطلب عبر الواتساب
 function sendOrderToWhatsApp() {
     const name = document.getElementById('cust-name').value;
     const address = document.getElementById('cust-address').value;
@@ -209,7 +209,6 @@ function sendOrderToWhatsApp() {
     message += `*الإجمالي الحسابي:* ${total} ل.س\n\n`;
     message += `يرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
 
-    // رقم الواتساب الخاص بك معدل وجاهز
     const whatsappNumber = "963956017232"; 
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
