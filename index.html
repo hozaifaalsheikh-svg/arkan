@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkan Online Pharmacy | صيدلية أركان</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>  
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">Arkan<span>PHARMACY</span></div>
+            
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="ابحث عن فيتامين، كريم تفتيح، واقي شمس...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="header-actions">
+                <div class="cart-icon-wrapper" onclick="toggleCart()">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="cart-count">0</span>
+                    <span class="cart-text">سلتـي</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="categories-nav">
+        <button class="cat-btn active" onclick="filterCategory('الكل', this)">الكل</button>
+        <button class="cat-btn" onclick="filterCategory('واقيات شمس', this)">واقيات شمس</button>
+        <button class="cat-btn" onclick="filterCategory('عناية بالبشرة', this)">عناية بالبشرة</button>
+        <button class="cat-btn" onclick="filterCategory('عناية بالشعر', this)">عناية بالشعر</button>
+        <button class="cat-btn" onclick="filterCategory('مكملات غذائية', this)">متممات غذائية</button>
+        <button class="cat-btn" onclick="filterCategory('مكملات غذائية', this)">فيتامينات </button>
+    </nav>
+
+    <main class="shop-container">
+        <div class="products-grid" id="products-grid">
+            </div>
+    </main>
+
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>سلة التسوق</h3>
+            <i class="fas fa-times close-cart" onclick="toggleCart()"></i>
+        </div>
+        
+        <div class="cart-items" id="cart-items">
+            <div class="empty-cart-msg">سلتك فارغة حالياً، ابدأ بالتسوق!</div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="total-price-row">
+                <span>الإجمالي:</span>
+                <span id="cart-total-price">0 ل.س</span>
+            </div>
+            <div class="customer-info">
+                <input type="text" id="cust-name" placeholder="اسمك الكريم / اسم الصيدلية" required>
+                <input type="text" id="cust-address" placeholder="المدينة / عنوان الشحن بالتفصيل" required>
+            </div>
+            <button class="btn-checkout" onclick="sendOrderToWhatsApp()">
+                <i class="fab fa-whatsapp"></i> تأكيد الطلب عبر الواتساب
+            </button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
