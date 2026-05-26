@@ -2,8 +2,8 @@
 const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
 
-// تشغيل محرك الاتصال بالقاعدة
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// الحل السحري: تغيير اسم المتغير إلى supabaseClient لمنع التعارض
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let localProducts = [];
 let cart = [];
@@ -11,7 +11,8 @@ let cart = [];
 // دالة جلب المنتجات مباشرة من قاعدة بيانات سوبابيز
 async function loadProductsFromSupabase() {
     try {
-        const { data, error } = await supabase
+        // نستخدم المتغير بالاسم الجديد هنا
+        const { data, error } = await supabaseClient
             .from('inventory')
             .select('*');
 
@@ -20,17 +21,15 @@ async function loadProductsFromSupabase() {
             return;
         }
 
-        // تحويل البيانات القادمة من السيرفر ومواءمتها مع أسماء المتغيرات في الكود
         localProducts = data.map(product => ({
             sku: product.sku,
             name: product.name,
             description: product.description || "منتج مميز وعالي الجودة من شركة أركان فارما.",
             price: product.price || "متوفر",
             category: product.category || "واقيات شمس",
-            imageUrl: product.image_url // ربط اسم الحقل بقاعدة البيانات مع الكود
+            imageUrl: product.image_url 
         }));
         
-        // تشغيل دالة رسم المنتجات على الشاشة
         renderProducts(localProducts); 
         
     } catch (err) {
@@ -38,12 +37,10 @@ async function loadProductsFromSupabase() {
     }
 }
 
-// تشغيل جلب البيانات فور فتح الصفحة تلقائياً
 document.addEventListener('DOMContentLoaded', () => {
     loadProductsFromSupabase();
 });
 
-// دالة بناء كروت العرض الاحترافية (اسم، سعر، شرح، وصورة)
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
     grid.innerHTML = '';
@@ -82,13 +79,11 @@ function renderProducts(productsList) {
     });
 }
 
-// فتح وإغلاق السلة الجانبية
 function toggleCart() {
     const sidebar = document.getElementById('cart-sidebar');
     sidebar.classList.toggle('open');
 }
 
-// إضافة المنتجات إلى سلة المشتريات
 function addToCart(sku) {
     const product = localProducts.find(p => p.sku === sku);
     if (!product) return;
@@ -104,7 +99,6 @@ function addToCart(sku) {
     document.getElementById('cart-sidebar').classList.add('open');
 }
 
-// تحديث واجهة السلة وحساب المجموع النهائي
 function updateCartUI() {
     const cartItemsContainer = document.getElementById('cart-items');
     const cartCount = document.getElementById('cart-count');
@@ -154,7 +148,6 @@ function changeQty(sku, delta) {
     updateCartUI();
 }
 
-// فلاتر الأقسام
 function filterCategory(catName, btnElement) {
     const buttons = document.querySelectorAll('.cat-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
@@ -171,20 +164,18 @@ function filterCategory(catName, btnElement) {
     }
 }
 
-// محرك البحث اللحظي في الهيدر العلوي
 document.getElementById('search-input').addEventListener('input', function(e) {
     const query = e.target.value.toLowerCase();
     const filtered = localProducts.filter(p => p.name.toLowerCase().includes(query) || p.sku.toLowerCase().includes(query));
     renderProducts(filtered);
 });
 
-// تجهيز وإرسال الطلب عبر الواتساب
 function sendOrderToWhatsApp() {
     const name = document.getElementById('cust-name').value;
     const address = document.getElementById('cust-address').value;
 
     if(!name || !address) {
-        alert("لطفاً، املأ اسمك وعنوانك بالكامل لتجهيز الشحن عبر سكاي.");
+        alert("لطفاً، املأ اسمك وعنوانك بالكامل لتجهيز الشحن.");
         return;
     }
 
