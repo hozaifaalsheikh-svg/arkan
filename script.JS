@@ -3,7 +3,7 @@ const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
 
 // تشغيل محرك الاتصال بالقاعدة
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let localProducts = [];
 let cart = [];
