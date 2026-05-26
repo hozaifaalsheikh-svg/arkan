@@ -1,35 +1,46 @@
-// إعدادات الربط الخاصة بـ Firebase (تأكد من وضع بيانات مشروعك الحقيقية هنا قبل الرفع)
-const firebaseConfig = {
-    apiKey: "ضع_هنا_apiKey_الخاص_بك",
-    authDomain: "zaroza-syria.firebaseapp.com",
-    projectId: "zaroza-syria",
-    storageBucket: "zaroza-syria.appspot.com",
-    messagingSenderId: "...",
-    appId: "..."
-};
+// روابط الاتصال بقاعدة بيانات Supabase 
+const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
+const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
 
-// تشغيل السحابة داخل المتجر
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// تشغيل محرك الاتصال بالقاعدة
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let localProducts = [];
 let cart = [];
 
-// جلب المنتجات من مستودع Firebase (مجموعة inventory) وعرضها تلقائياً
-db.collection("inventory").onSnapshot((snapshot) => {
-    localProducts = [];
-    snapshot.forEach((doc) => {
-        let data = doc.data();
+// دالة جلب المنتجات مباشرة من قاعدة بيانات سوبابيز
+async function loadProductsFromSupabase() {
+    try {
+        const { data, error } = await supabase
+            .from('inventory')
+            .select('*');
+
+        if (error) {
+            console.error("خطأ في جلب البيانات:", error);
+            return;
+        }
+
+        // تحويل البيانات القادمة من السيرفر ومواءمتها مع أسماء المتغيرات في الكود
+        localProducts = data.map(product => ({
+            sku: product.sku,
+            name: product.name,
+            description: product.description || "منتج مميز وعالي الجودة من شركة أركان فارما.",
+            price: product.price || "متوفر",
+            category: product.category || "واقيات شمس",
+            imageUrl: product.image_url // ربط اسم الحقل بقاعدة البيانات مع الكود
+        }));
         
-        // نضمن وجود قيم افتراضية حتى لا يظهر الكرت فارغاً إذا نقصت معلومة بالقاعدة
-        if(!data.price) data.price = "متوفر"; 
-        if(!data.category) data.category = "واقيات شمس"; 
-        // تم تغيير النص الافتراضي ليتناسب مع أركان
-        if(!data.description) data.description = "منتج مميز وعالي الجودة من شركة أركان فارما."; 
+        // تشغيل دالة رسم المنتجات على الشاشة
+        renderProducts(localProducts); 
         
-        localProducts.push(data);
-    });
-    renderProducts(localProducts);
+    } catch (err) {
+        console.error("فشل الاتصال بالسيرفر:", err);
+    }
+}
+
+// تشغيل جلب البيانات فور فتح الصفحة تلقائياً
+document.addEventListener('DOMContentLoaded', () => {
+    loadProductsFromSupabase();
 });
 
 // دالة بناء كروت العرض الاحترافية (اسم، سعر، شرح، وصورة)
@@ -198,7 +209,7 @@ function sendOrderToWhatsApp() {
     message += `*الإجمالي الحسابي:* ${total} ل.س\n\n`;
     message += `يرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
 
-    // لا تنسَ وضع رقمك الحقيقي هنا
+    // رقم الواتساب الخاص بك معدل وجاهز
     const whatsappNumber = "963956017232"; 
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
