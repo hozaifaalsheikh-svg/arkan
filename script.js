@@ -63,9 +63,8 @@ function renderProducts(productsList) {
                 <span class="brand-tag">arkan</span>
                 <h4 class="product-title" style="margin-bottom: 5px;">${product.name}</h4>
                 
-                <p class="product-desc" style="font-size: 11px; color: #777; height: 35px; overflow: hidden; margin-bottom: 10px; line-height: 1.3;">
-                    ${product.description}
-                </p>
+                <p class="product-description">${product.description}</p>
+                <a href="product-details.html?id=${product.sku}" class="read-more-link">اقرأ المزيد</a>
 
                 <div class="price-row" style="margin-top: auto; margin-bottom: 12px;">
                     <span class="product-price" style="font-size: 16px; font-weight: 700; color: #f27a1a;">
@@ -197,7 +196,7 @@ function sendOrderToWhatsApp() {
     });
 
     message += `-----------------------------\n`;
-    message += `*الإجمالي الحسابي:* ${total} ل.س\n\n`;
+    message += `*الإجمالي الحسسابي:* ${total} ل.س\n\n`;
     message += `يرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
 
     const whatsappNumber = "963956017232"; 
