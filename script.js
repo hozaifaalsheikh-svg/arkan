@@ -82,7 +82,28 @@ function filterCategory(catName, btnElement) {
     const filtered = (catName === 'الكل') ? localProducts : localProducts.filter(p => p.category === catName);
     renderProducts(filtered);
 }
+function addToCartDirectly(sku, name, price) {
+    // 1. تحديث بيانات النافذة
+    document.getElementById('modal-product-name').textContent = name;
+    document.getElementById('modal-product-price').textContent = price + " ل.س";
+    document.getElementById('confirm-modal').style.display = 'flex';
 
+    // 2. تفعيل زر التأكيد
+    document.getElementById('confirm-btn').onclick = function() {
+        let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+        const existingItem = cart.find(item => String(item.sku) === String(sku));
+        
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            cart.push({ sku: sku, name: name, price: price, qty: 1 });
+        }
+        
+        localStorage.setItem('arkan_cart', JSON.stringify(cart));
+        document.getElementById('confirm-modal').style.display = 'none';
+        alert("تمت الإضافة للسلة!");
+    };
+}
 document.getElementById('search-input')?.addEventListener('input', function(e) {
     const query = e.target.value.toLowerCase();
     renderProducts(localProducts.filter(p => p.name.toLowerCase().includes(query)));
