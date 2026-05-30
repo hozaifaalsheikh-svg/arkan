@@ -4,89 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تفاصيل المنتج | صيدلية أركان</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* تنسيقات إضافية لصفحة التفاصيل */
-        .details-wrapper { max-width: 1000px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        .img-box img { width: 100%; border-radius: 8px; object-fit: contain; }
-        .info-box h1 { color: #1a365d; margin-bottom: 10px; }
-        .info-box .price { font-size: 28px; font-weight: bold; color: #f27a1a; margin: 20px 0; }
-        .btn-group { display: flex; gap: 10px; }
-        .btn-add { background: #f27a1a; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-back { background: #1a365d; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; text-decoration: none; }
+        /* تحسينات التصميم للأزرار والصفحة */
+        .details-main { max-width: 900px; margin: 40px auto; padding: 20px; }
+        .product-card-view { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .img-container img { width: 100%; border-radius: 12px; }
+        .info-container h1 { color: #1a365d; font-size: 28px; margin-bottom: 15px; }
+        .info-container .price { font-size: 32px; color: #f27a1a; font-weight: 700; margin: 20px 0; }
+        
+        /* تصميم الأزرار الاحترافي */
+        .btn-modern { padding: 15px 30px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 10px; font-size: 16px; }
+        .btn-add { background: #f27a1a; color: white; box-shadow: 0 4px 10px rgba(242,122,26,0.3); }
+        .btn-add:hover { background: #d66a15; transform: translateY(-2px); }
+        .btn-back { background: #edf2f7; color: #1a365d; }
+        .btn-back:hover { background: #e2e8f0; }
+
+        /* رسالة التنبيه الأنيقة (Toast) */
+        #toast { visibility: hidden; min-width: 250px; background-color: #25D366; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 9999; bottom: 30px; right: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        @media (max-width: 768px) { .product-card-view { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-container">
-            <a href="index.html" style="text-decoration: none;">
-                <div class="logo">Arkan<span>PHARMACY</span></div>
-            </a>
-        </div>
-    </header>
+    <header class="main-header"><div class="header-container"><div class="logo">Arkan<span>PHARMACY</span></div></div></header>
 
-    <main class="details-wrapper">
-        <div id="product-content" class="product-grid">
-            <p>جاري تحميل التفاصيل...</p>
+    <main class="details-main">
+        <div id="product-content" class="product-card-view">
+            <p>جاري تحميل البيانات...</p>
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <script>
-        const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
-        const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <div id="toast"></div>
 
-        async function loadProduct() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sku = urlParams.get('id');
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabase = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
+        
+        async function initPage() {
+            const sku = new URLSearchParams(window.location.search).get('id');
             if (!sku) return;
 
-            const { data, error } = await supabaseClient.from('inventory').select('*').eq('sku', sku).single();
-            if (error || !data) {
-                document.getElementById('product-content').innerHTML = "المنتج غير موجود.";
-                return;
-            }
+            const { data } = await supabase.from('inventory').select('*').eq('sku', sku).single();
+            if (!data) return;
 
-            // عرض المنتج
             document.getElementById('product-content').innerHTML = `
-                <div class="img-box">
-                    <img src="${data.image_url || 'https://via.placeholder.com/400'}" alt="${data.name}">
-                </div>
-                <div class="info-box">
+                <div class="img-container"><img src="${data.image_url}" alt="${data.name}"></div>
+                <div class="info-container">
                     <h1>${data.name}</h1>
-                    <p>${data.description || 'لا يوجد وصف حالياً.'}</p>
+                    <p style="color: #666; line-height: 1.6;">${data.description || 'لا يوجد وصف متاح لهذا المنتج.'}</p>
                     <div class="price">${data.price} ل.س</div>
-                    <div class="btn-group">
-                        <button class="btn-add" onclick="addToCart('${data.sku}', '${data.name}', ${data.price})">إضافة للسلة</button>
-                        <a href="index.html" class="btn-back">العودة</a>
+                    <div style="display: flex; gap: 15px;">
+                        <button class="btn-modern btn-add" onclick="handleAddToCart('${data.sku}', '${data.name.replace(/'/g, "\\'")}', ${data.price})">
+                            <i class="fas fa-cart-plus"></i> إضافة للسلة
+                        </button>
+                        <a href="index.html" class="btn-modern btn-back">العودة للمتجر</a>
                     </div>
                 </div>
             `;
         }
 
-        // دالة إضافة للسلة (تطابق منطق الـ index.html)
-        function addToCart(sku, name, price) {
+        function handleAddToCart(sku, name, price) {
             let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-            const existing = cart.find(item => String(item.sku) === String(sku));
+            const existing = cart.find(i => String(i.sku) === String(sku));
             
-            if (existing) {
-                existing.qty += 1;
-            } else {
-                cart.push({ sku: sku, name: name, price: price, qty: 1 });
-            }
+            if (existing) existing.qty += 1;
+            else cart.push({ sku, name, price, qty: 1 });
             
             localStorage.setItem('arkan_cart', JSON.stringify(cart));
-            alert("تمت الإضافة للسلة!");
-            // إذا كنت تريد تحديث شيء معين في الصفحة، يمكن إضافته هنا
+            
+            // إظهار التنبيه الأنيق
+            const toast = document.getElementById("toast");
+            toast.textContent = "تمت إضافة " + name + " للسلة!";
+            toast.className = "show";
+            setTimeout(() => { toast.className = ""; }, 3000);
         }
 
-        document.addEventListener('DOMContentLoaded', loadProduct);
+        document.addEventListener('DOMContentLoaded', initPage);
     </script>
 </body>
 </html>
