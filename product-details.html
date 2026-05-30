@@ -1,84 +1,92 @@
-<script>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل المنتج | صيدلية أركان</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* تنسيقات إضافية لصفحة التفاصيل */
+        .details-wrapper { max-width: 1000px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .img-box img { width: 100%; border-radius: 8px; object-fit: contain; }
+        .info-box h1 { color: #1a365d; margin-bottom: 10px; }
+        .info-box .price { font-size: 28px; font-weight: bold; color: #f27a1a; margin: 20px 0; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-add { background: #f27a1a; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-back { background: #1a365d; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" style="text-decoration: none;">
+                <div class="logo">Arkan<span>PHARMACY</span></div>
+            </a>
+        </div>
+    </header>
+
+    <main class="details-wrapper">
+        <div id="product-content" class="product-grid">
+            <p>جاري تحميل التفاصيل...</p>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
         const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function loadProductDetails() {
+        async function loadProduct() {
             const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
+            const sku = urlParams.get('id');
+            if (!sku) return;
 
-            if (!productId) {
-                document.getElementById('loading').innerHTML = "عذراً، لم يتم تحديد أي منتج.";
+            const { data, error } = await supabaseClient.from('inventory').select('*').eq('sku', sku).single();
+            if (error || !data) {
+                document.getElementById('product-content').innerHTML = "المنتج غير موجود.";
                 return;
             }
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('inventory')
-                    .select('*')
-                    .eq('sku', productId)
-                    .single();
-
-                if (error || !data) {
-                    document.getElementById('loading').innerHTML = "المنتج غير موجود.";
-                    return;
-                }
-
-                document.getElementById('loading').style.display = 'none';
-                const contentDiv = document.getElementById('product-details-content');
-                contentDiv.style.display = 'grid';
-
-                // حل مشكلة الفواصل العلوية في الأسماء
-                const safeName = data.name.replace(/'/g, "\\'");
-
-                contentDiv.innerHTML = `
-                    <div class="product-image-box"><img src="${data.image_url}" alt="${data.name}"></div>
-                    <div class="product-info-box">
-                        <span class="brand">قسم: ${data.category || 'متفرقات'}</span>
-                        <h1>${data.name}</h1>
-                        <div class="price">${data.price} ل.س</div>
-                        <div class="full-description">${data.description || 'لا يوجد تفاصيل.'}</div>
-                        <div style="display: flex; gap: 10px; margin-top: 20px; max-width: 350px;">
-                            <button class="btn-add-to-cart" onclick="addToCartDirectly('${data.sku}', '${safeName}', ${data.price})" style="padding:15px; background:#f27a1a; color:white; border:none; cursor:pointer; font-weight:bold;">
-                               <i class="fas fa-cart-plus"></i> إضافة للسلة
-                            </button>
-                            <button class="btn-add-to-cart" onclick="window.location.href='index.html'" style="padding:12px; background:#1a365d; color:white; border:none; cursor:pointer; font-weight:bold;">
-                                العودة
-                            </button>
-                        </div>
+            // عرض المنتج
+            document.getElementById('product-content').innerHTML = `
+                <div class="img-box">
+                    <img src="${data.image_url || 'https://via.placeholder.com/400'}" alt="${data.name}">
+                </div>
+                <div class="info-box">
+                    <h1>${data.name}</h1>
+                    <p>${data.description || 'لا يوجد وصف حالياً.'}</p>
+                    <div class="price">${data.price} ل.س</div>
+                    <div class="btn-group">
+                        <button class="btn-add" onclick="addToCart('${data.sku}', '${data.name}', ${data.price})">إضافة للسلة</button>
+                        <a href="index.html" class="btn-back">العودة</a>
                     </div>
-                `;
-            } catch (err) {
-                console.error(err);
-                document.getElementById('loading').innerHTML = "حدث خطأ.";
+                </div>
+            `;
+        }
+
+        // دالة إضافة للسلة (تطابق منطق الـ index.html)
+        function addToCart(sku, name, price) {
+            let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+            const existing = cart.find(item => String(item.sku) === String(sku));
+            
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ sku: sku, name: name, price: price, qty: 1 });
             }
+            
+            localStorage.setItem('arkan_cart', JSON.stringify(cart));
+            alert("تمت الإضافة للسلة!");
+            // إذا كنت تريد تحديث شيء معين في الصفحة، يمكن إضافته هنا
         }
 
-        function addToCartDirectly(sku, name, price) {
-            document.getElementById('modal-product-name').textContent = name;
-            document.getElementById('modal-product-price').textContent = price + " ل.س";
-            document.getElementById('confirm-modal').style.display = 'flex';
-
-            // ربط زر التأكيد
-            document.getElementById('confirm-btn').onclick = function() {
-                let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-                const existingItem = cart.find(item => String(item.sku) === String(sku));
-                
-                if (existingItem) {
-                    existingItem.qty += 1;
-                } else {
-                    cart.push({ sku: sku, name: name, price: price, qty: 1 });
-                }
-                
-                localStorage.setItem('arkan_cart', JSON.stringify(cart));
-                document.getElementById('confirm-modal').style.display = 'none';
-                alert("تمت الإضافة للسلة!");
-            };
-        }
-
-        function closeModal() {
-            document.getElementById('confirm-modal').style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', loadProductDetails);
+        document.addEventListener('DOMContentLoaded', loadProduct);
     </script>
+</body>
+</html>
