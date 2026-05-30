@@ -2,20 +2,15 @@
 const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
 
-// الحل السحري: تغيير اسم المتغير إلى supabaseClient لمنع التعارض
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let localProducts = [];
-let cart = [];
+// استرجاع السلة من الذاكرة لضمان عدم ضياع المنتجات عند تحديث الصفحة
+let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
 
-// دالة جلب المنتجات مباشرة من قاعدة بيانات سوبابيز
 async function loadProductsFromSupabase() {
     try {
-        // نستخدم المتغير بالاسم الجديد هنا
-        const { data, error } = await supabaseClient
-            .from('inventory')
-            .select('*');
-
+        const { data, error } = await supabaseClient.from('inventory').select('*');
         if (error) {
             console.error("خطأ في جلب البيانات:", error);
             return;
@@ -31,7 +26,6 @@ async function loadProductsFromSupabase() {
         }));
         
         renderProducts(localProducts); 
-        
     } catch (err) {
         console.error("فشل الاتصال بالسيرفر:", err);
     }
@@ -39,22 +33,21 @@ async function loadProductsFromSupabase() {
 
 document.addEventListener('DOMContentLoaded', () => {
     loadProductsFromSupabase().then(() => {
-        // فحص إذا كان الزبون قادماً من صفحة التفاصيل ويريد إضافة منتج
         const urlParams = new URLSearchParams(window.location.search);
         const addSku = urlParams.get('add');
         
         if (addSku) {
-            // مسح أمر الإضافة من الرابط ليبقى شكل الموقع نظيفاً
             window.history.replaceState({}, document.title, window.location.pathname);
-            // إضافة المنتج وفتح السلة الجانبية تلقائياً
             addToCart(addSku);
         }
+        // تحديث واجهة السلة فور فتح الموقع لإظهار الأرقام المحفوظة
+        updateCartUI();
     });
 });
 
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
-    if(!grid) return; // حماية إضافية
+    if(!grid) return; 
     grid.innerHTML = '';
     
     if(productsList.length === 0) {
@@ -64,15 +57,10 @@ function renderProducts(productsList) {
 
     productsList.forEach(product => {
         const placeholderImg = "https://images.unsplash.com/photo-1608248597481-496100c8c836?w=400&q=80"; 
-        
         const card = document.createElement('div');
         card.className = 'product-card';
-        
-        // جعل البطاقة بأكملها قابلة للضغط وتغيير شكل الماوس
         card.style.cursor = 'pointer';
-        card.onclick = () => {
-            window.location.href = `product-details.html?id=${product.sku}`;
-        };
+        card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
 
         card.innerHTML = `
             <div class="image-container">
@@ -81,16 +69,14 @@ function renderProducts(productsList) {
             <div class="product-info">
                 <span class="brand-tag">arkan</span>
                 <h4 class="product-title" style="margin-bottom: 5px;">${product.name}</h4>
-                
                 <p class="product-description">${product.description}</p>
                 <a href="product-details.html?id=${product.sku}" class="read-more-link" onclick="event.stopPropagation();">اقرأ المزيد</a>
-
                 <div class="price-row" style="margin-top: auto; margin-bottom: 12px;">
                     <span class="product-price" style="font-size: 16px; font-weight: 700; color: #f27a1a;">
                         ${product.price} ${typeof product.price === 'number' ? 'ل.س' : ''}
                     </span>
                 </div>
-                <button class="btn-add-to-cart" onclick="event.stopPropagation(); addToCart('${product.sku}')">إضافة إلى السلة</button>
+                <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); addToCart('${product.sku}')">إضافة إلى السلة</button>
             </div>
         `;
         grid.appendChild(card);
@@ -103,17 +89,24 @@ function toggleCart() {
 }
 
 function addToCart(sku) {
-    const product = localProducts.find(p => p.sku === sku);
-    if (!product) return;
+    // استخدام String لتوحيد نوع البيانات وتجنب مشكلة (رقم أم نص)
+    const product = localProducts.find(p => String(p.sku) === String(sku));
+    if (!product) {
+        console.error("لم يتم العثور على المنتج برقم:", sku);
+        return;
+    }
 
-    const existingItem = cart.find(item => item.sku === sku);
+    const existingItem = cart.find(item => String(item.sku) === String(sku));
     if (existingItem) {
         existingItem.qty += 1;
     } else {
         cart.push({ ...product, qty: 1 });
     }
     
+    // حفظ السلة في الذاكرة
+    localStorage.setItem('arkan_cart', JSON.stringify(cart));
     updateCartUI();
+    
     const sidebar = document.getElementById('cart-sidebar');
     if(sidebar) sidebar.classList.add('open');
 }
@@ -123,13 +116,15 @@ function updateCartUI() {
     const cartCount = document.getElementById('cart-count');
     const cartTotalPrice = document.getElementById('cart-total-price');
     
+    // تحديث العداد دائماً إن وجد
+    if(cartCount) cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
+    
+    // الحماية من انهيار الكود إذا لم يجد السلة
     if(!cartItemsContainer) return;
 
-    cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
-    
     if(cart.length === 0) {
         cartItemsContainer.innerHTML = '<div class="empty-cart-msg">سلتك فارغة حالياً، ابدأ بالتسوق!</div>';
-        cartTotalPrice.textContent = "0 ل.س";
+        if(cartTotalPrice) cartTotalPrice.textContent = "0 ل.س";
         return;
     }
 
@@ -149,11 +144,8 @@ function updateCartUI() {
                 
                 <div class="qty-controls" style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
                     <button type="button" onclick="changeQty('${item.sku}', 1)" style="background: #eee; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">+</button>
-                    
                     <span style="font-size: 15px; font-weight: bold; min-width: 20px; text-align: center;">${item.qty}</span>
-                    
                     <button type="button" onclick="changeQty('${item.sku}', -1)" style="background: #eee; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">-</button>
-                    
                     <button type="button" onclick="removeFromCart('${item.sku}')" style="background: #fff0f0; color: #dc3545; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; margin-right: auto;" title="حذف المنتج">
                         <i class="fas fa-trash-alt"></i>
                     </button>
@@ -163,33 +155,30 @@ function updateCartUI() {
         cartItemsContainer.appendChild(itemRow);
     });
 
-    cartTotalPrice.textContent = total > 0 ? `${total} ل.س` : "متوفر";
+    if(cartTotalPrice) cartTotalPrice.textContent = total > 0 ? `${total} ل.س` : "متوفر";
 }
 
-// الدالة المفقودة التي تمت إضافتها للتحكم بالكميات
 function changeQty(sku, delta) {
-    const item = cart.find(i => i.sku === sku);
+    const item = cart.find(i => String(i.sku) === String(sku));
     if (!item) return;
     item.qty += delta;
     if(item.qty <= 0) {
-        cart = cart.filter(i => i.sku !== sku);
+        cart = cart.filter(i => String(i.sku) !== String(sku));
     }
+    localStorage.setItem('arkan_cart', JSON.stringify(cart));
     updateCartUI();
 }
 
 function removeFromCart(sku) {
-    cart = cart.filter(i => i.sku !== sku);
+    cart = cart.filter(i => String(i.sku) !== String(sku));
+    localStorage.setItem('arkan_cart', JSON.stringify(cart));
     updateCartUI();
 }
 
-// دالة الأقسام التي تمت إعادتها
 function filterCategory(catName, btnElement) {
     const buttons = document.querySelectorAll('.cat-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
-    
-    if(btnElement) {
-        btnElement.classList.add('active');
-    }
+    if(btnElement) btnElement.classList.add('active');
 
     if(catName === 'الكل') {
         renderProducts(localProducts);
@@ -219,11 +208,7 @@ function sendOrderToWhatsApp() {
         return;
     }
 
-    let message = `*طلب جديد من صيدلية أركان أونلاين 🛍️*\n\n`;
-    message += `*الاسم:* ${name}\n`;
-    message += `*العنوان:* ${address}\n`;
-    message += `-----------------------------\n`;
-    
+    let message = `*طلب جديد من صيدلية أركان أونلاين 🛍️*\n\n*الاسم:* ${name}\n*العنوان:* ${address}\n-----------------------------\n`;
     let total = 0;
     cart.forEach((item, index) => {
         const priceNum = parseInt(item.price) || 0;
@@ -231,16 +216,13 @@ function sendOrderToWhatsApp() {
         total += priceNum * item.qty;
     });
 
-    message += `-----------------------------\n`;
-    message += `*الإجمالي الحسابي:* ${total} ل.س\n\n`;
-    message += `يرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
+    message += `-----------------------------\n*الإجمالي الحسابي:* ${total} ل.س\n\nيرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
 
-    const whatsappNumber = "963956017232"; 
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
-
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
+    
     cart = [];
+    localStorage.removeItem('arkan_cart');
     updateCartUI();
     toggleCart();
 }
