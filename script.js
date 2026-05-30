@@ -215,6 +215,36 @@ function sendOrderToWhatsApp() {
         message += `${index + 1}) *${item.name}*\n    الكمية: ${item.qty} | السعر: ${item.price}\n`;
         total += priceNum * item.qty;
     });
+    let pendingProduct = null;
+
+function addToCart(sku) {
+    const product = localProducts.find(p => String(p.sku) === String(sku));
+    if (!product) return;
+
+    pendingProduct = product;
+    
+    // وضع اسم المنتج والسعر فقط
+    document.getElementById('modal-product-name').textContent = product.name;
+    document.getElementById('modal-product-price').textContent = product.price + " ل.س";
+    
+    document.getElementById('confirm-modal').style.display = 'flex';
+}
+
+document.getElementById('confirm-btn').onclick = () => {
+    const existingItem = cart.find(item => String(item.sku) === String(pendingProduct.sku));
+    if (existingItem) {
+        existingItem.qty += 1;
+    } else {
+        cart.push({ ...pendingProduct, qty: 1 });
+    }
+    localStorage.setItem('arkan_cart', JSON.stringify(cart));
+    updateCartUI();
+    closeModal();
+};
+
+function closeModal() {
+    document.getElementById('confirm-modal').style.display = 'none';
+}
 
     message += `-----------------------------\n*الإجمالي الحسابي:* ${total} ل.س\n\nيرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
 
