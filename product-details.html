@@ -7,198 +7,61 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    
     <style>
-        /* تنسيقات إضافية خاصة بصفحة التفاصيل فقط */
-        .product-details-container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 40px;
-            border: 1px solid var(--border-color);
-        }
-        .product-image-box {
-            background: #fdfdfd;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .product-image-box img {
-            max-width: 100%;
-            max-height: 450px;
-            object-fit: contain;
-        }
-        .product-info-box h1 {
-            color: var(--secondary-color);
-            margin-bottom: 15px;
-            font-size: 26px;
-            line-height: 1.4;
-        }
-        .product-info-box .brand {
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 14px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            display: inline-block;
-            background: #fff1e6;
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-        .product-info-box .price {
-            font-size: 32px;
-            font-weight: 700;
-            color: #111;
-            margin: 25px 0;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-        }
-        .product-info-box .full-description {
-            font-size: 16px;
-            color: #555;
-            line-height: 1.8;
-            margin-bottom: 30px;
-            white-space: pre-wrap; /* مهم جداً للحفاظ على الفراغات والأسطر */
-        }
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin: 20px 0;
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-            transition: color 0.2s;
-        }
-        .back-btn:hover { color: var(--primary-color); }
-        .loading-text { text-align: center; padding: 100px 20px; font-size: 18px; color: #888; }
-        
-        /* توافق مع شاشات الجوال */
-        @media (max-width: 768px) {
-            .product-details-container { grid-template-columns: 1fr; padding: 20px; }
-            .product-image-box img { max-height: 300px; }
-            .product-info-box h1 { font-size: 22px; }
-        }
+        .product-details-container { max-width: 1000px; margin: 40px auto; padding: 30px; background: white; border-radius: 12px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; }
+        .product-image-box { display: flex; align-items: center; justify-content: center; }
+        .product-image-box img { max-width: 100%; max-height: 450px; object-fit: contain; }
+        .loading-text { text-align: center; padding: 100px 20px; }
     </style>
 </head>
 <body>
 
     <header class="main-header">
-        <div class="header-container">
-            <a href="index.html" style="text-decoration: none;">
-                <div class="logo">Arkan<span>PHARMACY</span></div>
-            </a>
-        </div>
+        <div class="header-container"><div class="logo">Arkan<span>PHARMACY</span></div></div>
     </header>
 
-    <main class="shop-container" id="details-main">
-        <a href="index.html" class="back-btn">
-            <i class="fas fa-arrow-right"></i> العودة لمتجر أركان
-        </a>
-        <div id="loading" class="loading-text">
-            <i class="fas fa-spinner fa-spin"></i> جاري جلب تفاصيل المنتج...
-        </div>
-        
-        <div class="product-details-container" id="product-details-content" style="display: none;">
-            </div>
+    <main class="shop-container">
+        <div id="loading" class="loading-text"><i class="fas fa-spinner fa-spin"></i> جاري جلب تفاصيل المنتج...</div>
+        <div class="product-details-container" id="product-details-content" style="display: none;"></div>
     </main>
 
+    <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 25px; border-radius: 15px; width: 320px; text-align: center;">
+            <h3 style="color: #1a365d;">إضافة للمنتجات</h3>
+            <p id="modal-product-name" style="font-weight: bold;"></p>
+            <p id="modal-product-price" style="color: #f27a1a;"></p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="confirm-btn" style="flex:1; padding:10px; background:#25D366; color:white; border:none; border-radius:5px; cursor:pointer;">تأكيد</button>
+                <button onclick="closeModal()" style="flex:1; padding:10px; background:#eee; border:none; border-radius:5px; cursor:pointer;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+    <script src="script.js"></script> 
     <script>
-        // إعدادات الاتصال بقاعدة البيانات (نفسها الموجودة بملف script.js)
-        const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
-        const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
 
         async function loadProductDetails() {
-            // 1. استخراج رقم المنتج (ID/SKU) من رابط الصفحة
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-
-            // إذا دخل الزبون الصفحة بدون رقم منتج
-            if (!productId) {
-                document.getElementById('loading').innerHTML = "عذراً، لم يتم تحديد أي منتج لعرضه.";
-                return;
-            }
-
-            try {
-                // 2. البحث عن المنتج في قاعدة البيانات بناءً على الـ sku
-                const { data, error } = await supabaseClient
-                    .from('inventory')
-                    .select('*')
-                    .eq('sku', productId)
-                    .single();
-
-                if (error || !data) {
-                    document.getElementById('loading').innerHTML = "المنتج غير موجود أو ربما تم حذفه.";
-                    console.error("Error fetching product:", error);
-                    return;
-                }
-
-                // 3. إخفاء التحميل وإظهار بطاقة التفاصيل
+            const productId = new URLSearchParams(window.location.search).get('id');
+            const { data } = await supabaseClient.from('inventory').select('*').eq('sku', productId).single();
+            
+            if (data) {
                 document.getElementById('loading').style.display = 'none';
                 const contentDiv = document.getElementById('product-details-content');
                 contentDiv.style.display = 'grid';
-
-                // تجهيز الصورة (مع وضع صورة بديلة في حال عدم وجودها)
-                const placeholderImg = "https://images.unsplash.com/photo-1608248597481-496100c8c836?w=400&q=80"; 
-                const imgUrl = data.image_url ? data.image_url : placeholderImg;
-                
-                // تجهيز السعر
-                const priceText = data.price ? data.price + (typeof data.price === 'number' ? ' ل.س' : '') : 'السعر غير محدد';
-                
-                // 4. حقن البيانات داخل الـ HTML
                 contentDiv.innerHTML = `
-                    <div class="product-image-box">
-                        <img src="${imgUrl}" alt="${data.name}">
-                    </div>
+                    <div class="product-image-box"><img src="${data.image_url}" alt="${data.name}"></div>
                     <div class="product-info-box">
-                        <span class="brand">قسم: ${data.category || 'متفرقات'}</span>
                         <h1>${data.name}</h1>
-                        <div class="price">${priceText}</div>
-                        
-                        <div class="full-description">${data.description || 'لا يوجد تفاصيل إضافية لهذا المنتج في الوقت الحالي.'}</div>
-                        
-                        <div style="display: flex; gap: 10px; margin-top: 20px; max-width: 350px;">
-                            <button class="btn-add-to-cart" onclick="window.location.href='index.html?add=${data.sku}'" style="font-size: 16px; padding: 12px; flex: 2; background-color: #f27a1a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                                <i class="fas fa-cart-plus"></i> إضافة للسلة
-                            </button>
-                            <button class="btn-add-to-cart" onclick="window.location.href='index.html'" style="font-size: 16px; padding: 12px; flex: 1; background-color: #1a365d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                                العودة
-                            </button>
-                        </div>
+                        <div class="price">${data.price} ل.س</div>
+                        <button class="btn-add-to-cart" onclick="prepareAddToCart('${data.sku}')" style="padding:15px; background:#f27a1a; color:white; border:none; cursor:pointer;">إضافة للسلة</button>
                     </div>
                 `;
-
-            } catch (err) {
-                console.error("فشل الاتصال بالسيرفر:", err);
-                document.getElementById('loading').innerHTML = "حدث خطأ في الاتصال، يرجى تحديث الصفحة.";
             }
         }
-
-        // تشغيل الدالة فور تحميل الصفحة
         document.addEventListener('DOMContentLoaded', loadProductDetails);
+        function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
     </script>
-    <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: white; padding: 25px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-        <h3 style="color: #1a365d; margin-bottom: 10px;">إضافة للمنتجات</h3>
-        <p id="modal-product-name" style="font-weight: bold; margin: 10px 0;"></p>
-        <p id="modal-product-price" style="color: #f27a1a; font-weight: bold;"></p>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button id="confirm-btn" style="flex:1; padding: 10px; border:none; background:#25D366; color:white; border-radius:5px; cursor:pointer;">تأكيد</button>
-            <button onclick="closeModal()" style="flex:1; padding:10px; border:none; background:#eee; cursor:pointer; border-radius:5px;">إلغاء</button>
-        </div>
-    </div>
-</div>
 </body>
 </html>
