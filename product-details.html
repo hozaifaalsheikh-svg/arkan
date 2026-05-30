@@ -8,20 +8,15 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* تنسيق خاص بصفحة التفاصيل لضمان الاحترافية */
-        .details-wrapper { max-width: 1100px; margin: 40px auto; padding: 20px; }
-        .product-display { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .img-viewer img { width: 100%; border-radius: 8px; object-fit: contain; background: #fafafa; padding: 10px; }
-        .info-panel h1 { color: var(--secondary-color); font-size: 28px; margin-bottom: 20px; }
-        .info-panel .price { font-size: 32px; font-weight: 700; color: var(--primary-color); margin: 20px 0; }
-        .action-box { display: flex; gap: 15px; margin-top: 30px; }
-        
-        /* التنبيه الأنيق (Toast) */
-        #toast { visibility: hidden; min-width: 250px; background-color: #25D366; color: #fff; text-align: center; border-radius: 6px; padding: 16px; position: fixed; z-index: 9999; bottom: 30px; right: 30px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        #toast.show { visibility: visible; animation: fadein 0.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-
-        @media (max-width: 768px) { .product-display { grid-template-columns: 1fr; } }
+        /* تنسيقات إضافية لصفحة التفاصيل */
+        .details-wrapper { max-width: 1000px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .img-box img { width: 100%; border-radius: 8px; object-fit: contain; }
+        .info-box h1 { color: #1a365d; margin-bottom: 10px; }
+        .info-box .price { font-size: 28px; font-weight: bold; color: #f27a1a; margin: 20px 0; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn-add { background: #f27a1a; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-back { background: #1a365d; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -35,67 +30,60 @@
     </header>
 
     <main class="details-wrapper">
-        <div id="product-content" class="product-display">
-            <div style="text-align: center; grid-column: span 2; padding: 50px;">
-                <i class="fas fa-spinner fa-spin" style="font-size: 30px; color: var(--primary-color);"></i>
-                <p>جاري تحميل البيانات يا وحش...</p>
-            </div>
+        <div id="product-content" class="product-grid">
+            <p>جاري تحميل التفاصيل...</p>
         </div>
     </main>
 
-    <div id="toast"></div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
         const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function loadProduct() {
-            const sku = new URLSearchParams(window.location.search).get('id');
-            if (!sku) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sku = urlParams.get('id');
+            if (!sku) return;
+
+            const { data, error } = await supabaseClient.from('inventory').select('*').eq('sku', sku).single();
+            if (error || !data) {
                 document.getElementById('product-content').innerHTML = "المنتج غير موجود.";
                 return;
             }
 
-            try {
-                const { data, error } = await supabase.from('inventory').select('*').eq('sku', sku).single();
-                if (error || !data) throw new Error("لا يوجد بيانات");
-
-                document.getElementById('product-content').innerHTML = `
-                    <div class="img-viewer"><img src="${data.image_url || 'https://via.placeholder.com/400'}" alt="${data.name}"></div>
-                    <div class="info-panel">
-                        <h1>${data.name}</h1>
-                        <p style="color: #666; line-height: 1.8;">${data.description || 'لا يوجد تفاصيل إضافية لهذا المنتج.'}</p>
-                        <div class="price">${data.price} ل.س</div>
-                        <div class="action-box">
-                            <button class="btn-add-to-cart" style="max-width: 200px;" onclick="addToCart('${data.sku}', '${data.name.replace(/'/g, "\\'")}', ${data.price})">
-                                <i class="fas fa-cart-plus"></i> إضافة للسلة
-                            </button>
-                            <a href="index.html" class="btn-add-to-cart" style="background:#1a365d; max-width: 150px; text-decoration:none; text-align:center;">
-                                <i class="fas fa-arrow-right"></i> عودة
-                            </a>
-                        </div>
+            // عرض المنتج
+            document.getElementById('product-content').innerHTML = `
+                <div class="img-box">
+                    <img src="${data.image_url || 'https://via.placeholder.com/400'}" alt="${data.name}">
+                </div>
+                <div class="info-box">
+                    <h1>${data.name}</h1>
+                    <p>${data.description || 'لا يوجد وصف حالياً.'}</p>
+                    <div class="price">${data.price} ل.س</div>
+                    <div class="btn-group">
+                        <button class="btn-add" onclick="addToCart('${data.sku}', '${data.name}', ${data.price})">إضافة للسلة</button>
+                        <a href="index.html" class="btn-back">العودة</a>
                     </div>
-                `;
-            } catch (err) {
-                document.getElementById('product-content').innerHTML = "عذراً، حدث خطأ في تحميل المنتج.";
-            }
+                </div>
+            `;
         }
 
+        // دالة إضافة للسلة (تطابق منطق الـ index.html)
         function addToCart(sku, name, price) {
             let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-            const existing = cart.find(i => String(i.sku) === String(sku));
-            if (existing) existing.qty += 1;
-            else cart.push({ sku, name, price, qty: 1 });
+            const existing = cart.find(item => String(item.sku) === String(sku));
+            
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ sku: sku, name: name, price: price, qty: 1 });
+            }
             
             localStorage.setItem('arkan_cart', JSON.stringify(cart));
-            
-            // التنبيه الأنيق
-            const toast = document.getElementById("toast");
-            toast.textContent = "تمت إضافة " + name + " للسلة!";
-            toast.className = "show";
-            setTimeout(() => { toast.className = ""; }, 3000);
+            alert("تمت الإضافة للسلة!");
+            // إذا كنت تريد تحديث شيء معين في الصفحة، يمكن إضافته هنا
         }
 
         document.addEventListener('DOMContentLoaded', loadProduct);
