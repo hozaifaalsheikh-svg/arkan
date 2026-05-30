@@ -189,25 +189,37 @@
 
         // تشغيل الدالة فور تحميل الصفحة
         document.addEventListener('DOMContentLoaded', loadProductDetails);
-        function addToCartDirectly(sku, name, price) {
-    let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-    
-    // البحث إذا كان المنتج موجوداً سابقاً
-    const existingItem = cart.find(item => String(item.sku) === String(sku));
-    
-    if (existingItem) {
-        existingItem.qty += 1;
-    } else {
-        cart.push({ sku: sku, name: name, price: price, qty: 1 });
-    }
-    
-    localStorage.setItem('arkan_cart', JSON.stringify(cart));
-    
-    // إظهار نافذة التأكيد (الموجودة في الصفحة)
-    document.getElementById('modal-product-name').textContent = name;
-    document.getElementById('modal-product-price').textContent = price + " ل.س";
-    document.getElementById('confirm-modal').style.display = 'flex';
-}
+ function addToCartDirectly(sku, name, price) {
+            // 1. تحديث نصوص النافذة
+            document.getElementById('modal-product-name').textContent = name;
+            document.getElementById('modal-product-price').textContent = price + " ل.س";
+            document.getElementById('confirm-modal').style.display = 'flex';
+
+            // 2. ربط زر "تأكيد" برمجياً في اللحظة التي تظهر فيها النافذة
+            document.getElementById('confirm-btn').onclick = function() {
+                let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+                
+                // البحث عن المنتج
+                const existingItem = cart.find(item => String(item.sku) === String(sku));
+                
+                if (existingItem) {
+                    existingItem.qty += 1;
+                } else {
+                    cart.push({ sku: sku, name: name, price: price, qty: 1 });
+                }
+                
+                localStorage.setItem('arkan_cart', JSON.stringify(cart));
+                
+                // إغلاق النافذة
+                document.getElementById('confirm-modal').style.display = 'none';
+                alert("تمت الإضافة للسلة!");
+            };
+        }
+
+        // دالة الإغلاق لزر "إلغاء"
+        function closeModal() {
+            document.getElementById('confirm-modal').style.display = 'none';
+        }
     </script>
     <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
     <div style="background: white; padding: 25px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
