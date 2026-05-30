@@ -61,6 +61,11 @@
                 <input type="text" id="cust-name" placeholder="اسمك الكريم / اسم الصيدلية" required>
                 <input type="text" id="cust-address" placeholder="المدينة / عنوان الشحن بالتفصيل" required>
             </div>
+            
+            <button onclick="toggleCart()" style="width: 100%; background: #f4f5f7; color: #1a365d; border: 1px solid #ccc; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <i class="fas fa-shopping-basket"></i> إخفاء السلة ومتابعة التسوق
+            </button>
+
             <button class="btn-checkout" onclick="sendOrderToWhatsApp()">
                 <i class="fab fa-whatsapp"></i> تأكيد الطلب عبر الواتساب
             </button>
