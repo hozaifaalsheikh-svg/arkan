@@ -1,52 +1,89 @@
-<script>
-    const supabaseClient = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
+const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
+const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
 
-    async function loadProductDetails() {
-        const productId = new URLSearchParams(window.location.search).get('id');
-        if (!productId) return;
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const { data } = await supabaseClient.from('inventory').select('*').eq('sku', productId).single();
-        
-        if (data) {
-            document.getElementById('loading').style.display = 'none';
-            const contentDiv = document.getElementById('product-details-content');
-            contentDiv.style.display = 'grid';
-            
-            // نضع بيانات المنتج داخل الـ HTML الخاص بالزر مباشرة
-            contentDiv.innerHTML = `
-                <div class="product-image-box"><img src="${data.image_url}" alt="${data.name}"></div>
-                <div class="product-info-box">
-                    <h1>${data.name}</h1>
-                    <div class="price">${data.price} ل.س</div>
-                    <button class="btn-add-to-cart" onclick="addToCart('${data.sku}', '${data.name.replace(/'/g, "\\'")}', ${data.price})" style="padding:15px; background:#f27a1a; color:white; border:none; cursor:pointer;">
-                       إضافة للسلة
-                    </button>
-                </div>
-            `;
-        }
-    }
+let localProducts = [];
+let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+let pendingProduct = null;
 
-    // هذه الدالة تفتح النافذة وتخزن المنتج في "ذاكرة الجلسة"
-    function addToCart(sku, name, price) {
-        sessionStorage.setItem('pendingProduct', JSON.stringify({sku, name, price}));
-        document.getElementById('modal-product-name').textContent = name;
-        document.getElementById('modal-product-price').textContent = price + " ل.س";
-        document.getElementById('confirm-modal').style.display = 'flex';
-    }
+async function loadProductsFromSupabase() {
+    try {
+        const { data, error } = await supabaseClient.from('inventory').select('*');
+        if (error) { console.error("خطأ:", error); return; }
 
-    // زر التأكيد (مربوط مباشرة في الـ HTML أو هنا)
-    document.getElementById('confirm-btn').onclick = function() {
-        const product = JSON.parse(sessionStorage.getItem('pendingProduct'));
-        if (!product) return;
-        
-        let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-        cart.push({ ...product, qty: 1 });
-        localStorage.setItem('arkan_cart', JSON.stringify(cart));
-        
-        document.getElementById('confirm-modal').style.display = 'none';
-        alert("تمت الإضافة للسلة!");
-    };
+        localProducts = data.map(product => ({
+            sku: product.sku,
+            name: product.name,
+            description: product.description || "منتج أركان فارما المميز.",
+            price: product.price || 0,
+            category: product.category || "عام",
+            imageUrl: product.image_url 
+        }));
+        renderProducts(localProducts); 
+    } catch (err) { console.error("فشل الاتصال:", err); }
+}
 
-    function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
-    document.addEventListener('DOMContentLoaded', loadProductDetails);
-</script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadProductsFromSupabase();
+    updateCartCount();
+});
+
+function renderProducts(productsList) {
+    const grid = document.getElementById('products-grid');
+    if(!grid) return; 
+    grid.innerHTML = '';
+    productsList.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
+        card.innerHTML = `
+            <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
+            <div class="product-info">
+                <h4 class="product-title">${product.name}</h4>
+                <p class="product-description">${product.description}</p>
+                <div class="price-row">${product.price} ل.س</div>
+                <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); prepareAddToCart('${product.sku}')">إضافة إلى السلة</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function prepareAddToCart(sku) {
+    const product = localProducts.find(p => String(p.sku) === String(sku));
+    if (!product) return;
+    pendingProduct = product;
+    document.getElementById('modal-product-name').textContent = product.name;
+    document.getElementById('modal-product-price').textContent = product.price + " ل.س";
+    document.getElementById('confirm-modal').style.display = 'flex';
+}
+
+document.getElementById('confirm-btn').onclick = () => {
+    if (!pendingProduct) return;
+    const existingItem = cart.find(item => String(item.sku) === String(pendingProduct.sku));
+    if (existingItem) { existingItem.qty += 1; } 
+    else { cart.push({ ...pendingProduct, qty: 1 }); }
+    localStorage.setItem('arkan_cart', JSON.stringify(cart));
+    updateCartCount();
+    closeModal();
+};
+
+function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
+
+function updateCartCount() {
+    const cartCount = document.getElementById('cart-count');
+    if(cartCount) cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
+}
+
+function filterCategory(catName, btnElement) {
+    document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+    btnElement.classList.add('active');
+    const filtered = (catName === 'الكل') ? localProducts : localProducts.filter(p => p.category === catName);
+    renderProducts(filtered);
+}
+
+document.getElementById('search-input')?.addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    renderProducts(localProducts.filter(p => p.name.toLowerCase().includes(query)));
+});
