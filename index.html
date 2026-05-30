@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body> 
-
     <header class="main-header">
         <div class="header-container">
             <div class="logo">Arkan<span>PHARMACY</span></div>
@@ -36,33 +35,23 @@
         <button class="cat-btn" onclick="filterCategory('فيتامينات', this)">فيتامينات</button>
     </nav>
 
-    <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
-        <div style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
-            <h3 style="color: #1a365d; margin-bottom: 15px;">هل تود إضافة المنتج؟</h3>
-            <p id="modal-product-name" style="font-size: 18px; font-weight: bold; color: #333; margin: 10px 0;"></p>
-            <p id="modal-product-price" style="color: #f27a1a; font-size: 16px; margin-bottom: 20px;"></p>
-            <div style="display: flex; gap: 10px;">
-                <button id="confirm-btn" style="flex: 1; padding: 12px; background: #25D366; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">تأكيد الإضافة</button>
-                <button onclick="closeModal()" style="flex: 1; padding: 12px; background: #eee; border: none; border-radius: 6px; cursor: pointer;">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
     <main class="shop-container">
         <div class="products-grid" id="products-grid"></div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
     <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
-    <div style="background: white; padding: 25px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-        <h3 style="color: #1a365d; margin-bottom: 10px;">إضافة للمنتجات</h3>
-        <p id="modal-product-name" style="font-weight: bold; margin: 10px 0;"></p>
-        <p id="modal-product-price" style="color: #f27a1a; font-weight: bold;"></p>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button id="confirm-btn" style="flex:1; padding: 10px; border:none; background:#25D366; color:white; border-radius:5px; cursor:pointer;">تأكيد</button>
-            <button onclick="closeModal()" style="flex:1; padding:10px; border:none; background:#eee; cursor:pointer; border-radius:5px;">إلغاء</button>
+        <div style="background: white; padding: 25px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+            <h3 style="color: #1a365d; margin-bottom: 10px;">إضافة للمنتجات</h3>
+            <p id="modal-product-name" style="font-weight: bold; margin: 10px 0;"></p>
+            <p id="modal-product-price" style="color: #f27a1a; font-weight: bold;"></p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="confirm-btn" style="flex:1; padding: 10px; border:none; background:#25D366; color:white; border-radius:5px; cursor:pointer;">تأكيد</button>
+                <button onclick="closeModal()" style="flex:1; padding:10px; border:none; background:#eee; cursor:pointer; border-radius:5px;">إلغاء</button>
+            </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
 </body>
 </html>
