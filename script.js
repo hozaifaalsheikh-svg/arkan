@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
+    if(!grid) return; // حماية إضافية
     grid.innerHTML = '';
     
     if(productsList.length === 0) {
@@ -67,7 +68,7 @@ function renderProducts(productsList) {
         const card = document.createElement('div');
         card.className = 'product-card';
         
-        // التعديل 1: جعل البطاقة بأكملها قابلة للضغط وتغيير شكل الماوس
+        // جعل البطاقة بأكملها قابلة للضغط وتغيير شكل الماوس
         card.style.cursor = 'pointer';
         card.onclick = () => {
             window.location.href = `product-details.html?id=${product.sku}`;
@@ -98,7 +99,7 @@ function renderProducts(productsList) {
 
 function toggleCart() {
     const sidebar = document.getElementById('cart-sidebar');
-    sidebar.classList.toggle('open');
+    if(sidebar) sidebar.classList.toggle('open');
 }
 
 function addToCart(sku) {
@@ -113,7 +114,8 @@ function addToCart(sku) {
     }
     
     updateCartUI();
-    document.getElementById('cart-sidebar').classList.add('open');
+    const sidebar = document.getElementById('cart-sidebar');
+    if(sidebar) sidebar.classList.add('open');
 }
 
 function updateCartUI() {
@@ -121,6 +123,8 @@ function updateCartUI() {
     const cartCount = document.getElementById('cart-count');
     const cartTotalPrice = document.getElementById('cart-total-price');
     
+    if(!cartItemsContainer) return;
+
     cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
     
     if(cart.length === 0) {
@@ -144,13 +148,13 @@ function updateCartUI() {
                 <div class="cart-item-price" style="color: #f27a1a; font-weight: bold;">${item.price} ${itemPriceNum ? 'ل.س' : ''}</div>
                 
                 <div class="qty-controls" style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
-                    <button onclick="changeQty('${item.sku}', 1)" style="background: #eee; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">+</button>
+                    <button type="button" onclick="changeQty('${item.sku}', 1)" style="background: #eee; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">+</button>
                     
                     <span style="font-size: 15px; font-weight: bold; min-width: 20px; text-align: center;">${item.qty}</span>
                     
-                    <button onclick="changeQty('${item.sku}', -1)" style="background: #eee; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">-</button>
+                    <button type="button" onclick="changeQty('${item.sku}', -1)" style="background: #eee; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">-</button>
                     
-                    <button onclick="removeFromCart('${item.sku}')" style="background: #fff0f0; color: #dc3545; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; margin-right: auto;" title="حذف المنتج">
+                    <button type="button" onclick="removeFromCart('${item.sku}')" style="background: #fff0f0; color: #dc3545; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; margin-right: auto;" title="حذف المنتج">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -162,13 +166,40 @@ function updateCartUI() {
     cartTotalPrice.textContent = total > 0 ? `${total} ل.س` : "متوفر";
 }
 
-// دالة جديدة للحذف المباشر للمنتج من السلة
+// الدالة المفقودة التي تمت إضافتها للتحكم بالكميات
+function changeQty(sku, delta) {
+    const item = cart.find(i => i.sku === sku);
+    if (!item) return;
+    item.qty += delta;
+    if(item.qty <= 0) {
+        cart = cart.filter(i => i.sku !== sku);
+    }
+    updateCartUI();
+}
+
 function removeFromCart(sku) {
     cart = cart.filter(i => i.sku !== sku);
     updateCartUI();
 }
 
-document.getElementById('search-input').addEventListener('input', function(e) {
+// دالة الأقسام التي تمت إعادتها
+function filterCategory(catName, btnElement) {
+    const buttons = document.querySelectorAll('.cat-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    if(btnElement) {
+        btnElement.classList.add('active');
+    }
+
+    if(catName === 'الكل') {
+        renderProducts(localProducts);
+    } else {
+        const filtered = localProducts.filter(p => p.category === catName);
+        renderProducts(filtered);
+    }
+}
+
+document.getElementById('search-input')?.addEventListener('input', function(e) {
     const query = e.target.value.toLowerCase();
     const filtered = localProducts.filter(p => p.name.toLowerCase().includes(query) || p.sku.toLowerCase().includes(query));
     renderProducts(filtered);
@@ -201,7 +232,7 @@ function sendOrderToWhatsApp() {
     });
 
     message += `-----------------------------\n`;
-    message += `*الإجمالي الحسسابي:* ${total} ل.س\n\n`;
+    message += `*الإجمالي الحسابي:* ${total} ل.س\n\n`;
     message += `يرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
 
     const whatsappNumber = "963956017232"; 
