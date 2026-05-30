@@ -38,7 +38,18 @@ async function loadProductsFromSupabase() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadProductsFromSupabase();
+    loadProductsFromSupabase().then(() => {
+        // فحص إذا كان الزبون قادماً من صفحة التفاصيل ويريد إضافة منتج
+        const urlParams = new URLSearchParams(window.location.search);
+        const addSku = urlParams.get('add');
+        
+        if (addSku) {
+            // مسح أمر الإضافة من الرابط ليبقى شكل الموقع نظيفاً
+            window.history.replaceState({}, document.title, window.location.pathname);
+            // إضافة المنتج وفتح السلة الجانبية تلقائياً
+            addToCart(addSku);
+        }
+    });
 });
 
 function renderProducts(productsList) {

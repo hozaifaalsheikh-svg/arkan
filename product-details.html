@@ -104,7 +104,6 @@
         <a href="index.html" class="back-btn">
             <i class="fas fa-arrow-right"></i> العودة لمتجر أركان
         </a>
-        
         <div id="loading" class="loading-text">
             <i class="fas fa-spinner fa-spin"></i> جاري جلب تفاصيل المنتج...
         </div>
@@ -170,9 +169,14 @@
                         
                         <div class="full-description">${data.description || 'لا يوجد تفاصيل إضافية لهذا المنتج في الوقت الحالي.'}</div>
                         
-                        <button class="btn-add-to-cart" onclick="window.location.href='index.html'" style="font-size: 16px; padding: 12px; width: 100%; max-width: 300px;">
-                            العودة للمتجر للشراء
-                        </button>
+                        <div style="display: flex; gap: 10px; margin-top: 20px; max-width: 350px;">
+                            <button class="btn-add-to-cart" onclick="window.location.href='index.html?add=${data.sku}'" style="font-size: 16px; padding: 12px; flex: 2; background-color: #f27a1a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                                <i class="fas fa-cart-plus"></i> إضافة للسلة
+                            </button>
+                            <button class="btn-add-to-cart" onclick="window.location.href='index.html'" style="font-size: 16px; padding: 12px; flex: 1; background-color: #1a365d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                                العودة
+                            </button>
+                        </div>
                     </div>
                 `;
 
