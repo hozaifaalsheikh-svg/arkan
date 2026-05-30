@@ -170,8 +170,9 @@
                         <div class="full-description">${data.description || 'لا يوجد تفاصيل إضافية لهذا المنتج في الوقت الحالي.'}</div>
                         
                         <div style="display: flex; gap: 10px; margin-top: 20px; max-width: 350px;">
-                            <button class="btn-add-to-cart" onclick="window.location.href='index.html?add=${data.sku}'" style="font-size: 16px; padding: 12px; flex: 2; background-color: #f27a1a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                                <i class="fas fa-cart-plus"></i> إضافة للسلة
+                        
+                            <button class="btn-add-to-cart" onclick="addToCartDirectly('${data.sku}', '${data.name}', ${data.price})" style="padding:15px; background:#f27a1a; color:white; border:none; cursor:pointer; font-weight:bold;">
+                               <i class="fas fa-cart-plus"></i> إضافة للسلة
                             </button>
                             <button class="btn-add-to-cart" onclick="window.location.href='index.html'" style="font-size: 16px; padding: 12px; flex: 1; background-color: #1a365d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
                                 العودة
@@ -188,6 +189,25 @@
 
         // تشغيل الدالة فور تحميل الصفحة
         document.addEventListener('DOMContentLoaded', loadProductDetails);
+        function addToCartDirectly(sku, name, price) {
+    let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+    
+    // البحث إذا كان المنتج موجوداً سابقاً
+    const existingItem = cart.find(item => String(item.sku) === String(sku));
+    
+    if (existingItem) {
+        existingItem.qty += 1;
+    } else {
+        cart.push({ sku: sku, name: name, price: price, qty: 1 });
+    }
+    
+    localStorage.setItem('arkan_cart', JSON.stringify(cart));
+    
+    // إظهار نافذة التأكيد (الموجودة في الصفحة)
+    document.getElementById('modal-product-name').textContent = name;
+    document.getElementById('modal-product-price').textContent = price + " ل.س";
+    document.getElementById('confirm-modal').style.display = 'flex';
+}
     </script>
     <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
     <div style="background: white; padding: 25px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
