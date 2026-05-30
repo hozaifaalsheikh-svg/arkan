@@ -1,89 +1,87 @@
+// إعدادات الاتصال
 const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
-
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let localProducts = [];
-let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-let pendingProduct = null;
+// متغير لتخزين بيانات المنتج الحالي ليتمكن زر التأكيد من الوصول إليها
+window.selectedProduct = null;
 
-async function loadProductsFromSupabase() {
+async function loadProductDetails() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    if (!productId) {
+        document.getElementById('loading').innerHTML = "عذراً، لم يتم تحديد أي منتج.";
+        return;
+    }
+
     try {
-        const { data, error } = await supabaseClient.from('inventory').select('*');
-        if (error) { console.error("خطأ:", error); return; }
+        const { data, error } = await supabaseClient
+            .from('inventory')
+            .select('*')
+            .eq('sku', productId)
+            .single();
 
-        localProducts = data.map(product => ({
-            sku: product.sku,
-            name: product.name,
-            description: product.description || "منتج أركان فارما المميز.",
-            price: product.price || 0,
-            category: product.category || "عام",
-            imageUrl: product.image_url 
-        }));
-        renderProducts(localProducts); 
-    } catch (err) { console.error("فشل الاتصال:", err); }
-}
+        if (error || !data) {
+            document.getElementById('loading').innerHTML = "المنتج غير موجود.";
+            return;
+        }
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadProductsFromSupabase();
-    updateCartCount();
-});
+        document.getElementById('loading').style.display = 'none';
+        const contentDiv = document.getElementById('product-details-content');
+        contentDiv.style.display = 'grid';
 
-function renderProducts(productsList) {
-    const grid = document.getElementById('products-grid');
-    if(!grid) return; 
-    grid.innerHTML = '';
-    productsList.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
-        card.innerHTML = `
-            <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
-            <div class="product-info">
-                <h4 class="product-title">${product.name}</h4>
-                <p class="product-description">${product.description}</p>
-                <div class="price-row">${product.price} ل.س</div>
-                <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); prepareAddToCart('${product.sku}')">إضافة إلى السلة</button>
+        // تخزين المنتج في المتغير العام
+        window.selectedProduct = data;
+
+        contentDiv.innerHTML = `
+            <div class="product-image-box"><img src="${data.image_url || 'https://via.placeholder.com/200'}" alt="${data.name}"></div>
+            <div class="product-info-box">
+                <span class="brand">قسم: ${data.category || 'متفرقات'}</span>
+                <h1>${data.name}</h1>
+                <div class="price">${data.price} ل.س</div>
+                <div class="full-description">${data.description || 'لا يوجد تفاصيل.'}</div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn-add-to-cart" onclick="openModal()" style="padding:15px; background:#f27a1a; color:white; border:none; cursor:pointer; font-weight:bold;">
+                       <i class="fas fa-cart-plus"></i> إضافة للسلة
+                    </button>
+                    <button class="btn-add-to-cart" onclick="window.location.href='index.html'" style="padding:12px; background:#1a365d; color:white; border:none; cursor:pointer;">العودة</button>
+                </div>
             </div>
         `;
-        grid.appendChild(card);
-    });
+    } catch (err) {
+        document.getElementById('loading').innerHTML = "حدث خطأ في الاتصال.";
+    }
 }
 
-function prepareAddToCart(sku) {
-    const product = localProducts.find(p => String(p.sku) === String(sku));
-    if (!product) return;
-    pendingProduct = product;
-    document.getElementById('modal-product-name').textContent = product.name;
-    document.getElementById('modal-product-price').textContent = product.price + " ل.س";
+// فتح النافذة
+function openModal() {
+    document.getElementById('modal-product-name').textContent = window.selectedProduct.name;
+    document.getElementById('modal-product-price').textContent = window.selectedProduct.price + " ل.س";
     document.getElementById('confirm-modal').style.display = 'flex';
 }
 
-document.getElementById('confirm-btn').onclick = () => {
-    if (!pendingProduct) return;
-    const existingItem = cart.find(item => String(item.sku) === String(pendingProduct.sku));
-    if (existingItem) { existingItem.qty += 1; } 
-    else { cart.push({ ...pendingProduct, qty: 1 }); }
+// إغلاق النافذة
+function closeModal() {
+    document.getElementById('confirm-modal').style.display = 'none';
+}
+
+// --- هذا هو السطر المهم: ربط زر التأكيد بوظيفة الإضافة ---
+document.getElementById('confirm-btn').onclick = function() {
+    if (!window.selectedProduct) return;
+    
+    let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+    const existing = cart.find(item => String(item.sku) === String(window.selectedProduct.sku));
+    
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        cart.push({ ...window.selectedProduct, qty: 1 });
+    }
+    
     localStorage.setItem('arkan_cart', JSON.stringify(cart));
-    updateCartCount();
     closeModal();
+    alert("تمت الإضافة للسلة بنجاح!");
 };
 
-function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
-
-function updateCartCount() {
-    const cartCount = document.getElementById('cart-count');
-    if(cartCount) cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
-}
-
-function filterCategory(catName, btnElement) {
-    document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-    btnElement.classList.add('active');
-    const filtered = (catName === 'الكل') ? localProducts : localProducts.filter(p => p.category === catName);
-    renderProducts(filtered);
-}
-
-document.getElementById('search-input')?.addEventListener('input', function(e) {
-    const query = e.target.value.toLowerCase();
-    renderProducts(localProducts.filter(p => p.name.toLowerCase().includes(query)));
-});
+document.addEventListener('DOMContentLoaded', loadProductDetails);
