@@ -135,10 +135,17 @@ function updateCartUI() {
             <div class="cart-item-info">
                 <div class="cart-item-title">${item.name}</div>
                 <div class="cart-item-price" style="color: #f27a1a; font-weight: bold;">${item.price} ${itemPriceNum ? 'ل.س' : ''}</div>
-                <div class="qty-controls">
-                    <button onclick="changeQty('${item.sku}', -1)">-</button>
-                    <span>${item.qty}</span>
-                    <button onclick="changeQty('${item.sku}', 1)">+</button>
+                
+                <div class="qty-controls" style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
+                    <button onclick="changeQty('${item.sku}', 1)" style="background: #eee; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">+</button>
+                    
+                    <span style="font-size: 15px; font-weight: bold; min-width: 20px; text-align: center;">${item.qty}</span>
+                    
+                    <button onclick="changeQty('${item.sku}', -1)" style="background: #eee; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">-</button>
+                    
+                    <button onclick="removeFromCart('${item.sku}')" style="background: #fff0f0; color: #dc3545; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; margin-right: auto;" title="حذف المنتج">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             </div>
         `;
@@ -148,30 +155,10 @@ function updateCartUI() {
     cartTotalPrice.textContent = total > 0 ? `${total} ل.س` : "متوفر";
 }
 
-function changeQty(sku, delta) {
-    const item = cart.find(i => i.sku === sku);
-    if (!item) return;
-    item.qty += delta;
-    if(item.qty <= 0) {
-        cart = cart.filter(i => i.sku !== sku);
-    }
+// دالة جديدة للحذف المباشر للمنتج من السلة
+function removeFromCart(sku) {
+    cart = cart.filter(i => i.sku !== sku);
     updateCartUI();
-}
-
-function filterCategory(catName, btnElement) {
-    const buttons = document.querySelectorAll('.cat-btn');
-    buttons.forEach(btn => btn.classList.remove('active'));
-    
-    if(btnElement) {
-        btnElement.classList.add('active');
-    }
-
-    if(catName === 'الكل') {
-        renderProducts(localProducts);
-    } else {
-        const filtered = localProducts.filter(p => p.category === catName);
-        renderProducts(filtered);
-    }
 }
 
 document.getElementById('search-input').addEventListener('input', function(e) {
