@@ -45,20 +45,36 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabase = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
-        
-        async function initPage() {
-            const sku = new URLSearchParams(window.location.search).get('id');
-            if (!sku) return;
+    // إعدادات الاتصال (موجودة مرة واحدة فقط)
+    const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
+    const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
 
-            const { data } = await supabase.from('inventory').select('*').eq('sku', sku).single();
-            if (!data) return;
+    // حماية: لا تقم بإنشاء العميل إلا إذا لم يكن موجوداً مسبقاً
+    if (!window.supabaseClient) {
+        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+    const supabase = window.supabaseClient;
+
+    async function loadProduct() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sku = urlParams.get('id');
+        
+        if (!sku) {
+            document.getElementById('product-content').innerHTML = "خطأ: لم يتم تحديد منتج.";
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase.from('inventory').select('*').eq('sku', sku).single();
+            
+            if (error) throw error;
+            if (!data) throw new Error("المنتج غير موجود");
 
             document.getElementById('product-content').innerHTML = `
-                <div class="img-container"><img src="${data.image_url}" alt="${data.name}"></div>
+                <div class="img-container"><img src="${data.image_url || 'https://via.placeholder.com/400'}" alt="${data.name}"></div>
                 <div class="info-container">
                     <h1>${data.name}</h1>
-                    <p style="color: #666; line-height: 1.6;">${data.description || 'لا يوجد وصف متاح لهذا المنتج.'}</p>
+                    <p style="color: #666; line-height: 1.6;">${data.description || 'لا يوجد وصف متاح.'}</p>
                     <div class="price">${data.price} ل.س</div>
                     <div style="display: flex; gap: 15px;">
                         <button class="btn-modern btn-add" onclick="handleAddToCart('${data.sku}', '${data.name.replace(/'/g, "\\'")}', ${data.price})">
@@ -68,25 +84,26 @@
                     </div>
                 </div>
             `;
+        } catch (err) {
+            console.error("خطأ:", err);
+            document.getElementById('product-content').innerHTML = "حدث خطأ في تحميل البيانات.";
         }
+    }
 
-        function handleAddToCart(sku, name, price) {
-            let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-            const existing = cart.find(i => String(i.sku) === String(sku));
-            
-            if (existing) existing.qty += 1;
-            else cart.push({ sku, name, price, qty: 1 });
-            
-            localStorage.setItem('arkan_cart', JSON.stringify(cart));
-            
-            // إظهار التنبيه الأنيق
-            const toast = document.getElementById("toast");
-            toast.textContent = "تمت إضافة " + name + " للسلة!";
-            toast.className = "show";
-            setTimeout(() => { toast.className = ""; }, 3000);
-        }
+    function handleAddToCart(sku, name, price) {
+        let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+        const existing = cart.find(i => String(i.sku) === String(sku));
+        if (existing) existing.qty += 1;
+        else cart.push({ sku, name, price, qty: 1 });
+        localStorage.setItem('arkan_cart', JSON.stringify(cart));
+        
+        const toast = document.getElementById("toast");
+        toast.textContent = "تمت إضافة " + name + " للسلة!";
+        toast.className = "show";
+        setTimeout(() => { toast.className = ""; }, 3000);
+    }
 
-        document.addEventListener('DOMContentLoaded', initPage);
-    </script>
+    document.addEventListener('DOMContentLoaded', loadProduct);
+</script>
 </body>
 </html>
