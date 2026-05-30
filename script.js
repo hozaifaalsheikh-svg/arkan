@@ -1,31 +1,32 @@
 const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
+
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let localProducts = [];
 let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
 let pendingProduct = null;
 
-async function initStore() {
-    const { data } = await supabaseClient.from('inventory').select('*');
-    localProducts = data || [];
-    renderProducts(localProducts);
-    updateCartCount();
+async function loadProductsFromSupabase() {
+    try {
+        const { data, error } = await supabaseClient.from('inventory').select('*');
+        if (error) { console.error("خطأ:", error); return; }
+
+        localProducts = data.map(product => ({
+            sku: product.sku,
+            name: product.name,
+            description: product.description || "منتج أركان فارما المميز.",
+            price: product.price || 0,
+            category: product.category || "عام",
+            imageUrl: product.image_url 
+        }));
+        renderProducts(localProducts); 
+    } catch (err) { console.error("فشل الاتصال:", err); }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    initStore();
-    // ربط الزر بعد التأكد من تحميل الصفحة
-    document.getElementById('confirm-btn').onclick = () => {
-        if (!pendingProduct) return;
-        const existing = cart.find(i => String(i.sku) === String(pendingProduct.sku));
-        if (existing) existing.qty += 1;
-        else cart.push({ ...pendingProduct, qty: 1 });
-        localStorage.setItem('arkan_cart', JSON.stringify(cart));
-        updateCartCount();
-        closeModal();
-        alert("تمت الإضافة بنجاح!");
-    };
+    loadProductsFromSupabase();
+    updateCartCount();
 });
 
 function renderProducts(productsList) {
@@ -37,7 +38,7 @@ function renderProducts(productsList) {
         card.className = 'product-card';
         card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
         card.innerHTML = `
-            <div class="image-container"><img src="${product.image_url || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
+            <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
             <div class="product-info">
                 <h4 class="product-title">${product.name}</h4>
                 <p class="product-description">${product.description}</p>
@@ -58,15 +59,31 @@ function prepareAddToCart(sku) {
     document.getElementById('confirm-modal').style.display = 'flex';
 }
 
+document.getElementById('confirm-btn').onclick = () => {
+    if (!pendingProduct) return;
+    const existingItem = cart.find(item => String(item.sku) === String(pendingProduct.sku));
+    if (existingItem) { existingItem.qty += 1; } 
+    else { cart.push({ ...pendingProduct, qty: 1 }); }
+    localStorage.setItem('arkan_cart', JSON.stringify(cart));
+    updateCartCount();
+    closeModal();
+};
+
 function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
 
 function updateCartCount() {
-    const el = document.getElementById('cart-count');
-    if(el) el.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
+    const cartCount = document.getElementById('cart-count');
+    if(cartCount) cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
 }
 
 function filterCategory(catName, btnElement) {
     document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
     btnElement.classList.add('active');
-    renderProducts((catName === 'الكل') ? localProducts : localProducts.filter(p => p.category === catName));
+    const filtered = (catName === 'الكل') ? localProducts : localProducts.filter(p => p.category === catName);
+    renderProducts(filtered);
 }
+
+document.getElementById('search-input')?.addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    renderProducts(localProducts.filter(p => p.name.toLowerCase().includes(query)));
+});
