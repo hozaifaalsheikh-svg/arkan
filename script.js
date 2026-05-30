@@ -5,7 +5,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 let localProducts = [];
 let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-let pendingProduct = null; // متغير لحفظ المنتج قبل التأكيد
+let pendingProduct = null;
 
 async function loadProductsFromSupabase() {
     try {
@@ -15,19 +15,18 @@ async function loadProductsFromSupabase() {
         localProducts = data.map(product => ({
             sku: product.sku,
             name: product.name,
-            description: product.description || "منتج مميز.",
-            price: product.price || "متوفر",
-            category: product.category || "واقيات شمس",
+            description: product.description || "منتج أركان فارما المميز.",
+            price: product.price || 0,
+            category: product.category || "عام",
             imageUrl: product.image_url 
         }));
         renderProducts(localProducts); 
-    } catch (err) { console.error("فشل:", err); }
+    } catch (err) { console.error("فشل الاتصال:", err); }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadProductsFromSupabase().then(() => {
-        updateCartCount(); // تحديث العداد فقط
-    });
+    loadProductsFromSupabase();
+    updateCartCount();
 });
 
 function renderProducts(productsList) {
@@ -35,16 +34,15 @@ function renderProducts(productsList) {
     if(!grid) return; 
     grid.innerHTML = '';
     productsList.forEach(product => {
-        const placeholderImg = "https://images.unsplash.com/photo-1608248597481-496100c8c836?w=400&q=80"; 
         const card = document.createElement('div');
         card.className = 'product-card';
-        card.style.cursor = 'pointer';
         card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
         card.innerHTML = `
-            <div class="image-container"><img src="${product.imageUrl || placeholderImg}"></div>
+            <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
             <div class="product-info">
                 <h4 class="product-title">${product.name}</h4>
                 <p class="product-description">${product.description}</p>
+                <div class="price-row">${product.price} ل.س</div>
                 <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); prepareAddToCart('${product.sku}')">إضافة إلى السلة</button>
             </div>
         `;
@@ -52,7 +50,6 @@ function renderProducts(productsList) {
     });
 }
 
-// دالة التحضير (تفتح النافذة)
 function prepareAddToCart(sku) {
     const product = localProducts.find(p => String(p.sku) === String(sku));
     if (!product) return;
@@ -62,13 +59,11 @@ function prepareAddToCart(sku) {
     document.getElementById('confirm-modal').style.display = 'flex';
 }
 
-// دالة التأكيد الفعلية (تنفذ الإضافة)
 document.getElementById('confirm-btn').onclick = () => {
     if (!pendingProduct) return;
     const existingItem = cart.find(item => String(item.sku) === String(pendingProduct.sku));
     if (existingItem) { existingItem.qty += 1; } 
     else { cart.push({ ...pendingProduct, qty: 1 }); }
-    
     localStorage.setItem('arkan_cart', JSON.stringify(cart));
     updateCartCount();
     closeModal();
@@ -80,3 +75,15 @@ function updateCartCount() {
     const cartCount = document.getElementById('cart-count');
     if(cartCount) cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
 }
+
+function filterCategory(catName, btnElement) {
+    document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+    btnElement.classList.add('active');
+    const filtered = (catName === 'الكل') ? localProducts : localProducts.filter(p => p.category === catName);
+    renderProducts(filtered);
+}
+
+document.getElementById('search-input')?.addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    renderProducts(localProducts.filter(p => p.name.toLowerCase().includes(query)));
+});
