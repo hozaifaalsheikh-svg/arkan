@@ -24,9 +24,23 @@ async function loadProductsFromSupabase() {
     } catch (err) { console.error("فشل الاتصال:", err); }
 }
 
+// دالة التأكيد (مربوطة بالزر)
+function initializeModal() {
+    document.getElementById('confirm-btn').onclick = () => {
+        if (!pendingProduct) return;
+        const existingItem = cart.find(item => String(item.sku) === String(pendingProduct.sku));
+        if (existingItem) { existingItem.qty += 1; } 
+        else { cart.push({ ...pendingProduct, qty: 1 }); }
+        localStorage.setItem('arkan_cart', JSON.stringify(cart));
+        updateCartCount();
+        closeModal();
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadProductsFromSupabase();
     updateCartCount();
+    initializeModal(); // تفعيل ربط الزر هنا
 });
 
 function renderProducts(productsList) {
@@ -59,16 +73,6 @@ function prepareAddToCart(sku) {
     document.getElementById('confirm-modal').style.display = 'flex';
 }
 
-document.getElementById('confirm-btn').onclick = () => {
-    if (!pendingProduct) return;
-    const existingItem = cart.find(item => String(item.sku) === String(pendingProduct.sku));
-    if (existingItem) { existingItem.qty += 1; } 
-    else { cart.push({ ...pendingProduct, qty: 1 }); }
-    localStorage.setItem('arkan_cart', JSON.stringify(cart));
-    updateCartCount();
-    closeModal();
-};
-
 function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
 
 function updateCartCount() {
@@ -79,8 +83,7 @@ function updateCartCount() {
 function filterCategory(catName, btnElement) {
     document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
     btnElement.classList.add('active');
-    const filtered = (catName === 'الكل') ? localProducts : localProducts.filter(p => p.category === catName);
-    renderProducts(filtered);
+    renderProducts((catName === 'الكل') ? localProducts : localProducts.filter(p => p.category === catName));
 }
 
 document.getElementById('search-input')?.addEventListener('input', function(e) {
