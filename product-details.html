@@ -7,16 +7,98 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        /* التنسيق الاحترافي لصفحة التفاصيل */
-        .details-container { max-width: 1000px; margin: 40px auto; padding: 20px; }
-        .product-view-card { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .img-wrapper img { width: 100%; border-radius: 8px; object-fit: contain; background: #fafafa; }
-        .details-info h1 { color: #1a365d; margin-bottom: 15px; }
-        .details-info .price { font-size: 28px; font-weight: 700; color: #f27a1a; margin: 20px 0; }
+        /* تنسيق خاص بصفحة التفاصيل لضمان الاحترافية */
+        .details-wrapper { max-width: 1100px; margin: 40px auto; padding: 20px; }
+        .product-display { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .img-viewer img { width: 100%; border-radius: 8px; object-fit: contain; background: #fafafa; padding: 10px; }
+        .info-panel h1 { color: var(--secondary-color); font-size: 28px; margin-bottom: 20px; }
+        .info-panel .price { font-size: 32px; font-weight: 700; color: var(--primary-color); margin: 20px 0; }
+        .action-box { display: flex; gap: 15px; margin-top: 30px; }
         
-        .action-btns { display: flex; gap: 15px; margin-top: 30px; }
-        .btn-ui { padding: 12px 25px; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.3s; }
-        .btn-cart { background: #f27a1a; color: white; }
-        .btn-cart
+        /* التنبيه الأنيق (Toast) */
+        #toast { visibility: hidden; min-width: 250px; background-color: #25D366; color: #fff; text-align: center; border-radius: 6px; padding: 16px; position: fixed; z-index: 9999; bottom: 30px; right: 30px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        #toast.show { visibility: visible; animation: fadein 0.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+
+        @media (max-width: 768px) { .product-display { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" style="text-decoration: none;">
+                <div class="logo">Arkan<span>PHARMACY</span></div>
+            </a>
+        </div>
+    </header>
+
+    <main class="details-wrapper">
+        <div id="product-content" class="product-display">
+            <div style="text-align: center; grid-column: span 2; padding: 50px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 30px; color: var(--primary-color);"></i>
+                <p>جاري تحميل البيانات يا وحش...</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function loadProduct() {
+            const sku = new URLSearchParams(window.location.search).get('id');
+            if (!sku) {
+                document.getElementById('product-content').innerHTML = "المنتج غير موجود.";
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase.from('inventory').select('*').eq('sku', sku).single();
+                if (error || !data) throw new Error("لا يوجد بيانات");
+
+                document.getElementById('product-content').innerHTML = `
+                    <div class="img-viewer"><img src="${data.image_url || 'https://via.placeholder.com/400'}" alt="${data.name}"></div>
+                    <div class="info-panel">
+                        <h1>${data.name}</h1>
+                        <p style="color: #666; line-height: 1.8;">${data.description || 'لا يوجد تفاصيل إضافية لهذا المنتج.'}</p>
+                        <div class="price">${data.price} ل.س</div>
+                        <div class="action-box">
+                            <button class="btn-add-to-cart" style="max-width: 200px;" onclick="addToCart('${data.sku}', '${data.name.replace(/'/g, "\\'")}', ${data.price})">
+                                <i class="fas fa-cart-plus"></i> إضافة للسلة
+                            </button>
+                            <a href="index.html" class="btn-add-to-cart" style="background:#1a365d; max-width: 150px; text-decoration:none; text-align:center;">
+                                <i class="fas fa-arrow-right"></i> عودة
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById('product-content').innerHTML = "عذراً، حدث خطأ في تحميل المنتج.";
+            }
+        }
+
+        function addToCart(sku, name, price) {
+            let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+            const existing = cart.find(i => String(i.sku) === String(sku));
+            if (existing) existing.qty += 1;
+            else cart.push({ sku, name, price, qty: 1 });
+            
+            localStorage.setItem('arkan_cart', JSON.stringify(cart));
+            
+            // التنبيه الأنيق
+            const toast = document.getElementById("toast");
+            toast.textContent = "تمت إضافة " + name + " للسلة!";
+            toast.className = "show";
+            setTimeout(() => { toast.className = ""; }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProduct);
+    </script>
+</body>
+</html>
