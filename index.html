@@ -2,10 +2,56 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Arkan Online Pharmacy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkan Online Pharmacy | صيدلية أركان</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body> 
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">Arkan<span>PHARMACY</span></div>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="ابحث عن منتج...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
+            <div class="header-actions">
+                <a href="cart.html" class="cart-icon-wrapper" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="cart-count">0</span>
+                    <span class="cart-text">سلتـي</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <nav class="categories-nav">
+        <button class="cat-btn active" onclick="filterCategory('الكل', this)">الكل</button>
+        <button class="cat-btn" onclick="filterCategory('واقيات شمس', this)">واقيات شمس</button>
+        <button class="cat-btn" onclick="filterCategory('عناية بالبشرة', this)">عناية بالبشرة</button>
+        <button class="cat-btn" onclick="filterCategory('عناية بالشعر', this)">عناية بالشعر</button>
+        <button class="cat-btn" onclick="filterCategory('مكملات غذائية', this)">متممات غذائية</button>
+        <button class="cat-btn" onclick="filterCategory('فيتامينات', this)">فيتامينات</button>
+    </nav>
+
+    <div id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+            <h3 style="color: #1a365d; margin-bottom: 15px;">هل تود إضافة المنتج؟</h3>
+            <p id="modal-product-name" style="font-size: 18px; font-weight: bold; color: #333; margin: 10px 0;"></p>
+            <p id="modal-product-price" style="color: #f27a1a; font-size: 16px; margin-bottom: 20px;"></p>
+            <div style="display: flex; gap: 10px;">
+                <button id="confirm-btn" style="flex: 1; padding: 12px; background: #25D366; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">تأكيد الإضافة</button>
+                <button onclick="closeModal()" style="flex: 1; padding: 12px; background: #eee; border: none; border-radius: 6px; cursor: pointer;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="shop-container">
+        <div class="products-grid" id="products-grid"></div>
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
