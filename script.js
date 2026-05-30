@@ -66,6 +66,13 @@ function renderProducts(productsList) {
         
         const card = document.createElement('div');
         card.className = 'product-card';
+        
+        // التعديل 1: جعل البطاقة بأكملها قابلة للضغط وتغيير شكل الماوس
+        card.style.cursor = 'pointer';
+        card.onclick = () => {
+            window.location.href = `product-details.html?id=${product.sku}`;
+        };
+
         card.innerHTML = `
             <div class="image-container">
                 <img src="${product.imageUrl ? product.imageUrl : placeholderImg}" alt="${product.name}">
@@ -75,14 +82,14 @@ function renderProducts(productsList) {
                 <h4 class="product-title" style="margin-bottom: 5px;">${product.name}</h4>
                 
                 <p class="product-description">${product.description}</p>
-                <a href="product-details.html?id=${product.sku}" class="read-more-link">اقرأ المزيد</a>
+                <a href="product-details.html?id=${product.sku}" class="read-more-link" onclick="event.stopPropagation();">اقرأ المزيد</a>
 
                 <div class="price-row" style="margin-top: auto; margin-bottom: 12px;">
                     <span class="product-price" style="font-size: 16px; font-weight: 700; color: #f27a1a;">
                         ${product.price} ${typeof product.price === 'number' ? 'ل.س' : ''}
                     </span>
                 </div>
-                <button class="btn-add-to-cart" onclick="addToCart('${product.sku}')">إضافة إلى السلة</button>
+                <button class="btn-add-to-cart" onclick="event.stopPropagation(); addToCart('${product.sku}')">إضافة إلى السلة</button>
             </div>
         `;
         grid.appendChild(card);
