@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سلة التسوق | صيدلية أركان</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .cart-page-container { max-width: 900px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .cart-page-title { text-align: center; color: var(--secondary-color); margin-bottom: 30px; font-size: 28px; }
+        .cart-list { margin-bottom: 30px; }
+        .cart-item-row { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border-color); gap: 15px; }
+        .cart-item-row:last-child { border-bottom: none; }
+        .cart-item-info { flex: 2; font-size: 16px; font-weight: 600; }
+        .cart-item-price { flex: 1; color: var(--primary-color); font-weight: bold; text-align: center; }
+        .qty-controls { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .qty-controls button { background: #eee; border: none; width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s; }
+        .qty-controls button:hover { background: #ddd; }
+        .delete-btn { background: #fff0f0 !important; color: #dc3545; }
+        .delete-btn:hover { background: #ffe0e0 !important; }
+        .cart-summary { background: #fdfdfd; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .summary-total { font-size: 22px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px dashed #ccc; padding-bottom: 15px;}
+        .summary-total span:last-child { color: var(--primary-color); }
+        .checkout-form { display: grid; gap: 15px; }
+        .checkout-form input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+        .checkout-form input:focus { border-color: var(--primary-color); }
+        .btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s;}
+        .btn-whatsapp:hover { background: #20ba5a; }
+        .empty-msg { text-align: center; padding: 50px; font-size: 18px; color: #888; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--secondary-color); text-decoration: none; font-weight: bold; }
+        .back-link:hover { color: var(--primary-color); }
+
+        @media (max-width: 768px) {
+            .cart-item-row { flex-direction: column; text-align: center; }
+            .cart-item-info, .cart-item-price, .qty-controls { width: 100%; justify-content: center; margin-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" style="text-decoration: none;">
+                <div class="logo">Arkan<span>PHARMACY</span></div>
+            </a>
+        </div>
+    </header>
+
+    <main class="cart-page-container">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> متابعة التسوق</a>
+        <h1 class="cart-page-title"><i class="fas fa-shopping-cart"></i> سلة مشترياتي</h1>
+
+        <div id="cart-content">
+            </div>
+
+        <div class="cart-summary" id="cart-summary" style="display: none;">
+            <div class="summary-total">
+                <span>الإجمالي المطلوب:</span>
+                <span id="final-total">0 ل.س</span>
+            </div>
+            
+            <h3 style="margin-bottom: 15px; color: #333;">معلومات التوصيل:</h3>
+            <div class="checkout-form">
+                <input type="text" id="cust-name" placeholder="اسمك الكريم / اسم الصيدلية" required>
+                <input type="text" id="cust-address" placeholder="المدينة / عنوان الشحن بالتفصيل" required>
+                <button class="btn-whatsapp" onclick="sendOrder()">
+                    <i class="fab fa-whatsapp"></i> اعتماد الطلب وإرساله واتساب
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // قراءة السلة من الذاكرة
+        let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+
+        function renderCartPage() {
+            const contentDiv = document.getElementById('cart-content');
+            const summaryDiv = document.getElementById('cart-summary');
+            
+            if (cart.length === 0) {
+                contentDiv.innerHTML = '<div class="empty-msg"><i class="fas fa-box-open" style="font-size: 40px; margin-bottom: 15px; display:block;"></i>سلتك فارغة حالياً. ارجع للمتجر واكتشف منتجاتنا!</div>';
+                summaryDiv.style.display = 'none';
+                return;
+            }
+
+            let html = '<div class="cart-list">';
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemPrice = parseInt(item.price) || 0;
+                total += itemPrice * item.qty;
+
+                html += `
+                    <div class="cart-item-row">
+                        <div class="cart-item-info">${item.name}</div>
+                        <div class="cart-item-price">${item.price} ل.س</div>
+                        <div class="qty-controls">
+                            <button onclick="changePageQty('${item.sku}', 1)">+</button>
+                            <span style="font-size: 18px; min-width: 30px; text-align: center;">${item.qty}</span>
+                            <button onclick="changePageQty('${item.sku}', -1)">-</button>
+                            <button class="delete-btn" onclick="removePageItem('${item.sku}')"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            contentDiv.innerHTML = html;
+            document.getElementById('final-total').textContent = `${total} ل.س`;
+            summaryDiv.style.display = 'block';
+        }
+
+        function changePageQty(sku, delta) {
+            const item = cart.find(i => i.sku === sku);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.sku !== sku);
+            }
+            localStorage.setItem('arkan_cart', JSON.stringify(cart));
+            renderCartPage();
+        }
+
+        function removePageItem(sku) {
+            cart = cart.filter(i => i.sku !== sku);
+            localStorage.setItem('arkan_cart', JSON.stringify(cart));
+            renderCartPage();
+        }
+
+        function sendOrder() {
+            const name = document.getElementById('cust-name').value;
+            const address = document.getElementById('cust-address').value;
+
+            if(!name || !address) {
+                alert("لطفاً، املأ اسمك وعنوانك بالكامل لتجهيز الشحن.");
+                return;
+            }
+
+            let message = `*طلب جديد من صيدلية أركان أونلاين 🛍️*\n\n*الاسم:* ${name}\n*العنوان:* ${address}\n-----------------------------\n`;
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const priceNum = parseInt(item.price) || 0;
+                message += `${index + 1}) *${item.name}*\n    الكمية: ${item.qty} | السعر: ${item.price}\n`;
+                total += priceNum * item.qty;
+            });
+
+            message += `-----------------------------\n*الإجمالي الحسابي:* ${total} ل.س\n\nيرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
+
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            // تفريغ السلة بعد الطلب
+            localStorage.removeItem('arkan_cart');
+            cart = [];
+            renderCartPage();
+        }
+
+        // تشغيل الدالة عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', renderCartPage);
+    </script>
+</body>
+</html>

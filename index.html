@@ -20,11 +20,11 @@
             </div>
 
             <div class="header-actions">
-                <div class="cart-icon-wrapper" onclick="toggleCart()">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span id="cart-count">0</span>
-                    <span class="cart-text">سلتـي</span>
-                </div>
+                <a href="cart.html" class="cart-icon-wrapper" style="text-decoration: none; color: inherit;">
+    <i class="fas fa-shopping-bag"></i>
+    <span id="cart-count">0</span>
+    <span class="cart-text">سلتـي</span>
+</a>
             </div>
         </div>
     </header>
@@ -41,37 +41,6 @@
     <main class="shop-container">
         <div class="products-grid" id="products-grid"></div>
     </main>
-
-    <div class="cart-sidebar" id="cart-sidebar">
-        <div class="cart-header">
-            <h3>سلة التسوق</h3>
-            <i class="fas fa-times close-cart" onclick="toggleCart()"></i>
-        </div>
-        
-        <div class="cart-items" id="cart-items">
-            <div class="empty-cart-msg">سلتك فارغة حالياً، ابدأ بالتسوق!</div>
-        </div>
-
-        <div class="cart-footer">
-            <div class="total-price-row">
-                <span>الإجمالي:</span>
-                <span id="cart-total-price">0 ل.س</span>
-            </div>
-            <div class="customer-info">
-                <input type="text" id="cust-name" placeholder="اسمك الكريم / اسم الصيدلية" required>
-                <input type="text" id="cust-address" placeholder="المدينة / عنوان الشحن بالتفصيل" required>
-            </div>
-            
-            <button onclick="toggleCart()" style="width: 100%; background: #f4f5f7; color: #1a365d; border: 1px solid #ccc; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;">
-                <i class="fas fa-shopping-basket"></i> إخفاء السلة ومتابعة التسوق
-            </button>
-
-            <button class="btn-checkout" onclick="sendOrderToWhatsApp()">
-                <i class="fab fa-whatsapp"></i> تأكيد الطلب عبر الواتساب
-            </button>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script src="script.js"></script>
