@@ -142,3 +142,67 @@ document.getElementById('search-input')?.addEventListener('input', function(e) {
     const query = e.target.value.toLowerCase();
     renderProducts(localProducts.filter(p => p.name.toLowerCase().includes(query)));
 });
+/* ========================================================
+   نظام المصادقة (إنشاء حساب + تسجيل دخول) - شركة أركان
+   ======================================================== */
+
+// 1. كود إنشاء حساب جديد (Register)
+const registerForm = document.getElementById('register-form');
+if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // منع تحديث الصفحة الافتراضي
+        
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+        // التحقق من تطابق كلمتي المرور
+        if (password !== confirmPassword) {
+            alert("عذراً، كلمات المرور غير متطابقة. يرجى التأكد!");
+            return;
+        }
+
+        // إرسال البيانات إلى Supabase
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    full_name: name // حفظ اسم المستخدم كبيانات إضافية
+                }
+            }
+        });
+
+        if (error) {
+            alert("حدث خطأ أثناء التسجيل: " + error.message);
+        } else {
+            alert("تم إنشاء حسابك في شركة أركان بنجاح! أهلاً بك.");
+            window.location.href = 'login.html'; // توجيه العميل لصفحة الدخول
+        }
+    });
+}
+
+// 2. كود تسجيل الدخول (Login)
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // منع تحديث الصفحة الافتراضي
+        
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        // إرسال طلب تسجيل الدخول إلى Supabase
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if (error) {
+            alert("بيانات الدخول غير صحيحة، يرجى التأكد من البريد الإلكتروني وكلمة المرور.");
+        } else {
+            alert("تم تسجيل الدخول بنجاح! جاري التوجيه...");
+            window.location.href = 'index.html'; // توجيه العميل للصفحة الرئيسية
+        }
+    });
+}
