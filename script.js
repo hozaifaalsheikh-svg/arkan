@@ -5,7 +5,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 let localProducts = [];
 let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-let productToConfirm = null; // المتغير الجديد لتخزين المنتج مؤقتاً لحين التأكيد
+let productToConfirm = null; 
 
 // 1. جلب البيانات من Supabase
 async function loadProductsFromSupabase() {
@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProductsFromSupabase();
     updateCartCount();
 
-    // تفعيل زر التأكيد داخل النافذة بعد تحميل عناصر الصفحة
     const confirmBtn = document.getElementById('modal-btn-confirm');
     if(confirmBtn) {
         confirmBtn.addEventListener('click', confirmAddToCart);
@@ -65,7 +64,6 @@ function renderProducts(productsList) {
 // 3. دوال نافذة التأكيد والإشعارات
 // =========================================
 
-// فتح النافذة
 function askToConfirmAdd(sku, name, price) {
     productToConfirm = { sku, name, price };
     const nameElement = document.getElementById('modal-target-product');
@@ -77,7 +75,6 @@ function askToConfirmAdd(sku, name, price) {
     }
 }
 
-// إغلاق النافذة
 function closeConfirmModal() {
     const modalElement = document.getElementById('custom-confirm-modal');
     if(modalElement) {
@@ -86,7 +83,6 @@ function closeConfirmModal() {
     productToConfirm = null; 
 }
 
-// تأكيد الإضافة للسلة
 function confirmAddToCart() {
     if (!productToConfirm) return;
 
@@ -99,12 +95,11 @@ function confirmAddToCart() {
     }
     
     localStorage.setItem('arkan_cart', JSON.stringify(cart));
-    updateCartCount(); // تحديث العداد
-    closeConfirmModal(); // إغلاق النافذة
-    showToast("تمت الإضافة إلى سلتك بنجاح! 🛒"); // إظهار الإشعار
+    updateCartCount(); 
+    closeConfirmModal(); 
+    showToast("تمت الإضافة إلى سلتك بنجاح! 🛒"); 
 }
 
-// عرض إشعار النجاح (Toast)
 function showToast(message) {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -115,7 +110,6 @@ function showToast(message) {
     
     container.appendChild(toast);
 
-    // إخفاء الإشعار بعد 3 ثوانٍ
     setTimeout(() => {
         toast.classList.add('fade-out');
         toast.addEventListener('animationend', () => toast.remove());
@@ -146,12 +140,10 @@ document.getElementById('search-input')?.addEventListener('input', function(e) {
 // ========================================================
 // 5. نظام المصادقة (إنشاء حساب + تسجيل دخول)
 // ========================================================
-// 5. نظام المصادقة (إنشاء حساب + تسجيل دخول)
-// ========================================================
 
-// كود إنشاء حساب جديد بالطريقة المباشرة
+// دالة إنشاء حساب جديد (مربوطة مباشرة بزر HTML)
 async function registerUser(event) {
-    event.preventDefault(); // إيقاف تحديث الصفحة الإجباري
+    event.preventDefault(); 
     
     const name = document.getElementById('reg-name').value;
     const email = document.getElementById('reg-email').value;
@@ -163,7 +155,6 @@ async function registerUser(event) {
         return;
     }
 
-    // إرسال البيانات لـ Supabase
     const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
