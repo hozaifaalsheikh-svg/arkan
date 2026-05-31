@@ -15,8 +15,10 @@
         .info-box h1 { color: #1a365d; margin-bottom: 10px; }
         .info-box .price { font-size: 28px; font-weight: bold; color: #f27a1a; margin: 20px 0; }
         .btn-group { display: flex; gap: 10px; }
-        .btn-add { background: #f27a1a; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-back { background: #1a365d; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; text-decoration: none; }
+        .btn-add { background: #f27a1a; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        .btn-add:hover { background: #e06912; }
+        .btn-back { background: #1a365d; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; transition: background 0.3s;}
+        .btn-back:hover { background: #112440; }
     </style>
 </head>
 <body>
@@ -31,29 +33,46 @@
 
     <main class="details-wrapper">
         <div id="product-content" class="product-grid">
-            <p>جاري تحميل التفاصيل...</p>
+            <p style="text-align: center; width: 100%; grid-column: span 2;">جاري تحميل التفاصيل...</p>
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <script>
-        const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
-        const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- نافذة التأكيد الاحترافية الجديدة -->
+    <div id="custom-confirm-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="fas fa-shopping-basket"></i></div>
+            <h3>تأكيد الإضافة</h3>
+            <p>هل أنت متأكد من إضافة <br><strong id="modal-target-product" style="color: var(--primary-color);"></strong><br> إلى السلة؟</p>
+            <div class="modal-actions">
+                <button id="modal-btn-confirm" class="btn-confirm">نعم، أضف للسلة</button>
+                <button id="modal-btn-cancel" class="btn-cancel" onclick="closeConfirmModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- حاوية الإشعارات -->
+    <div id="toast-container"></div>
+
+    <!-- استدعاء المكتبات والملف الرئيسي -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+    
+    <!-- كود جلب تفاصيل المنتج الخاص بهذه الصفحة فقط -->
+    <script>
         async function loadProduct() {
             const urlParams = new URLSearchParams(window.location.search);
             const sku = urlParams.get('id');
             if (!sku) return;
 
+            // نستخدم supabaseClient المُعرف مسبقاً في ملف script.js
             const { data, error } = await supabaseClient.from('inventory').select('*').eq('sku', sku).single();
+            
             if (error || !data) {
-                document.getElementById('product-content').innerHTML = "المنتج غير موجود.";
+                document.getElementById('product-content').innerHTML = "<p style='text-align:center; grid-column: span 2; padding: 30px;'>عذراً، المنتج غير موجود.</p>";
                 return;
             }
 
-            // عرض المنتج
+            // عرض المنتج وربط زر الإضافة بدالة الإشعارات الجديدة (askToConfirmAdd)
             document.getElementById('product-content').innerHTML = `
                 <div class="img-box">
                     <img src="${data.image_url || 'https://via.placeholder.com/400'}" alt="${data.name}">
@@ -63,29 +82,14 @@
                     <p>${data.description || 'لا يوجد وصف حالياً.'}</p>
                     <div class="price">${data.price} ل.س</div>
                     <div class="btn-group">
-                        <button class="btn-add" onclick="addToCart('${data.sku}', '${data.name}', ${data.price})">إضافة للسلة</button>
-                        <a href="index.html" class="btn-back">العودة</a>
+                        <button class="btn-add" onclick="askToConfirmAdd('${data.sku}', '${data.name}', ${data.price})">إضافة للسلة</button>
+                        <a href="index.html" class="btn-back">العودة للمتجر</a>
                     </div>
                 </div>
             `;
         }
 
-        // دالة إضافة للسلة (تطابق منطق الـ index.html)
-        function addToCart(sku, name, price) {
-            let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
-            const existing = cart.find(item => String(item.sku) === String(sku));
-            
-            if (existing) {
-                existing.qty += 1;
-            } else {
-                cart.push({ sku: sku, name: name, price: price, qty: 1 });
-            }
-            
-            localStorage.setItem('arkan_cart', JSON.stringify(cart));
-            alert("تمت الإضافة للسلة!");
-            // إذا كنت تريد تحديث شيء معين في الصفحة، يمكن إضافته هنا
-        }
-
+        // تشغيل الدالة عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', loadProduct);
     </script>
 </body>

@@ -338,6 +338,129 @@ body, html {
     align-items: center;
     gap: 10px;
 }
+/* =========================================
+   تنسيقات نافذة التأكيد (Confirm Modal)
+   ========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(26, 54, 93, 0.6); /* لون أزرق داكن شفاف */
+    backdrop-filter: blur(3px); /* تأثير ضبابي للخلفية */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    background: white;
+    padding: 30px 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active .modal-box {
+    transform: translateY(0) scale(1);
+}
+
+.modal-icon i {
+    font-size: 40px;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.modal-box h3 {
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.modal-box p {
+    color: #555;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-confirm, .btn-cancel {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    transition: background 0.2s;
+}
+
+.btn-confirm { background: #25D366; color: white; }
+.btn-confirm:hover { background: #20ba5a; }
+
+.btn-cancel { background: #eee; color: #333; }
+.btn-cancel:hover { background: #ddd; }
+
+
+/* =========================================
+   تنسيقات الإشعار السريع (Toast Notification)
+   ========================================= */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast-message {
+    background: white;
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    border-right: 5px solid #25D366; /* خط أخضر على اليمين */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    animation: slideIn 0.4s ease forwards;
+}
+
+.toast-message i { color: #25D366; font-size: 20px; }
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
+}
+
+.toast-message.fade-out {
+    animation: slideOut 0.4s ease forwards;
+}
 .btn-checkout:hover { background: #20ba5a; }
 .empty-cart-msg { text-align: center; color: #aaa; font-size: 14px; margin-top: 40px; }
 
