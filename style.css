@@ -14,12 +14,11 @@
 }
 
 body, html {
-    overflow-x: hidden;
+    overflow-x: clip; /* تم تغيير hidden إلى clip هنا */
     width: 100%;
     background-color: var(--bg-color);
     color: var(--text-color);
 }
-
 /* =========================================
    الغلاف الثابت (الهيدر + الأقسام)
    ========================================= */
@@ -480,10 +479,13 @@ body, html {
 @media (max-width: 768px) {
     html, body {
         width: 100% !important;
-        overflow-x: hidden !important; 
+        overflow-x: clip !important; /* تم تغيير hidden إلى clip هنا أيضاً */
         margin: 0 !important;
         padding: 0 !important;
     }
+    
+    /* ... باقي الأكواد كما هي ... */
+}
 
     header, .navbar, .header-container, .logo {
         max-width: 100% !important;
