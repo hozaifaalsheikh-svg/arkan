@@ -555,40 +555,60 @@ body, html {
 }
 
 @media (max-width: 768px) {
-    /* تجنب أي تمدد أفقي مزعج */
+    /* ضمان عدم خروج العناصر عن الشاشة */
     html, body {
-        width: 100% !important;
-        overflow-x: hidden !important; 
+        overflow-x: hidden !important;
     }
 
-    /* جعل الكروت تأخذ عرض مناسب لشاشة الموبايل */
+    /* توزيع الشبكة: عمودان بجانب بعضهما */
     .products-grid {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important; /* عمودان بجانب بعضهما */
-        gap: 10px !important;
-        padding: 10px !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        padding: 5px !important;
     }
 
-    /* تصغير الكرت قليلاً على الموبايل ليتناسب مع الشاشة */
+    /* تعديل الكرت ليكون مناسباً للعرض الأفقي الصغير */
     .product-card {
-        aspect-ratio: 2 / 3 !important; /* نسبة أطول قليلاً لتناسب الموبايل */
+        aspect-ratio: 1 / 1.8 !important; /* نسبة طولية مريحة للموبايل */
+        padding: 5px;
     }
 
-    /* تصغير حجم الخطوط على الموبايل لتتجنب التداخل */
-    .product-title {
-        font-size: 12px !important;
+    /* تصغير العناصر داخل الكرت لتناسب المساحة */
+    .image-container {
+        height: 45% !important;
     }
-    
+
+    .product-info {
+        height: 55% !important;
+        padding: 5px !important;
+    }
+
+    .product-title {
+        font-size: 11px !important;
+        margin-bottom: 3px !important;
+    }
+
+    .product-description {
+        font-size: 9px !important; /* تصغير الوصف لعدم التداخل */
+        margin-bottom: 3px !important;
+        min-height: 20px;
+    }
+
     .product-price {
-        font-size: 14px !important;
+        font-size: 13px !important;
+        margin-bottom: 5px !important;
     }
 
     .btn-add-to-cart {
-        padding: 6px !important;
-        font-size: 11px !important;
+        padding: 4px !important;
+        font-size: 10px !important;
+    }
+    
+    /* إخفاء الشريط البرتقالي إذا كان يسبب ازدحاماً على الموبايل */
+    .product-info::before {
+        width: 25px !important;
     }
 }
-
 .auth-page-container {
     display: flex;
     justify-content: center;
