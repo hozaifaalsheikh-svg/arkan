@@ -761,3 +761,12 @@ body, html {
     font-size: 16px;
     margin-bottom: 15px; /* للحفاظ على مسافة فوق الزر */
 }
+/* إجبار الأيقونات على الظهور في الروابط */
+.header-links a i {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-size: 16px !important;
+    margin-left: 8px !important; /* مسافة بسيطة بين الأيقونة والنص */
+    color: #f27a1a !important; /* لون برتقالي لضمان وضوحها */
+}
