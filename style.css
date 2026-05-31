@@ -701,3 +701,7 @@ body, html {
     color: var(--primary-color);
     text-decoration: underline;
 }
+/* --- تعديل إجباري للون السعر في الصفحة الرئيسية --- */
+.product-card .product-price {
+    color: #f27a1a !important;
+}
