@@ -21,12 +21,20 @@ body, html {
 }
 
 /* الهيدر */
-.main-header {
-    background: white;
+/* =========================================
+   تعديل الهيدر ليصبح جزءاً من الغلاف الثابت
+   ========================================= */
+.sticky-wrapper {
     position: sticky;
     top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    z-index: 1000;
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.main-header {
+    background: white;
+    /* تمت إزالة position: sticky و top و z-index من هنا */
     border-bottom: 1px solid var(--border-color);
 }
 

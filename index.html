@@ -9,48 +9,50 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body> 
-    <header class="main-header">
-        <div class="header-container">
-            <div class="logo">Arkan<span>PHARMACY</span></div>
-            <div class="search-bar">
-                <input type="text" id="search-input" placeholder="ابحث عن متمم غذائي..كريمات.. سيرومات...">
-                <button><i class="fas fa-search"></i></button>
+    <div class="sticky-wrapper">
+        <header class="main-header">
+            <div class="header-container">
+                <div class="logo">Arkan<span>PHARMACY</span></div>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="ابحث عن متمم غذائي..كريمات.. سيرومات...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="header-actions">
+                    <a href="cart.html" class="cart-icon-wrapper" style="text-decoration: none; color: inherit;">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span id="cart-count">0</span>
+                        <span class="cart-text">سلتـي</span>
+                    </a>
+                </div>
             </div>
-            <div class="header-actions">
-                <a href="cart.html" class="cart-icon-wrapper" style="text-decoration: none; color: inherit;">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span id="cart-count">0</span>
-                    <span class="cart-text">سلتـي</span>
-                </a>
-            </div>
-        </div>
-    </header>
+        </header>
 
-    <nav class="categories-nav">
-        <button class="cat-btn active" onclick="filterCategory('الكل', this)">الكل</button>
-        <button class="cat-btn" onclick="filterCategory('واقيات شمس', this)">واقيات شمس</button>
-        <button class="cat-btn" onclick="filterCategory('عناية بالبشرة', this)">عناية بالبشرة</button>
-        <button class="cat-btn" onclick="filterCategory('عناية بالشعر', this)">عناية بالشعر</button>
-        <button class="cat-btn" onclick="filterCategory('مكملات غذائية', this)">متممات غذائية</button>
-        <button class="cat-btn" onclick="filterCategory('فيتامينات', this)">فيتامينات</button>
-    </nav>
-
+        <nav class="categories-nav">
+            <button class="cat-btn active" onclick="filterCategory('الكل', this)">الكل</button>
+            <button class="cat-btn" onclick="filterCategory('واقيات شمس', this)">واقيات شمس</button>
+            <button class="cat-btn" onclick="filterCategory('عناية بالبشرة', this)">عناية بالبشرة</button>
+            <button class="cat-btn" onclick="filterCategory('عناية بالشعر', this)">عناية بالشعر</button>
+            <button class="cat-btn" onclick="filterCategory('مكملات غذائية', this)">متممات غذائية</button>
+            <button class="cat-btn" onclick="filterCategory('فيتامينات', this)">فيتامينات</button>
+        </nav>
+    </div>
     <main class="shop-container">
         <div class="products-grid" id="products-grid"></div>
     </main>
 
-  <div id="custom-confirm-modal" class="modal-overlay">
-    <div class="modal-box">        <div class="modal-icon"><i class="fas fa-shopping-basket"></i></div>
-        <h3>تأكيد الإضافة</h3>
-        <p>هل أنت متأكد من إضافة <br><strong id="modal-target-product" style="color: var(--primary-color);"></strong><br> إلى السلة؟</p>
-        <div class="modal-actions">
-            <button id="modal-btn-confirm" class="btn-confirm">نعم، أضف للسلة</button>
-            <button id="modal-btn-cancel" class="btn-cancel" onclick="closeConfirmModal()">إلغاء</button>
+    <div id="custom-confirm-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="fas fa-shopping-basket"></i></div>
+            <h3>تأكيد الإضافة</h3>
+            <p>هل أنت متأكد من إضافة <br><strong id="modal-target-product" style="color: var(--primary-color);"></strong><br> إلى السلة؟</p>
+            <div class="modal-actions">
+                <button id="modal-btn-confirm" class="btn-confirm">نعم، أضف للسلة</button>
+                <button id="modal-btn-cancel" class="btn-cancel" onclick="closeConfirmModal()">إلغاء</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="toast-container"></div>
+    <div id="toast-container"></div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
