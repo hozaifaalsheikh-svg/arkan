@@ -142,3 +142,63 @@ document.getElementById('search-input')?.addEventListener('input', function(e) {
     const query = e.target.value.toLowerCase();
     renderProducts(localProducts.filter(p => p.name.toLowerCase().includes(query)));
 });
+
+// ========================================================
+// 5. نظام المصادقة (إنشاء حساب + تسجيل دخول) - المضاف حديثاً
+// ========================================================
+
+// كود إنشاء حساب جديد
+const registerForm = document.getElementById('register-form');
+if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+        
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const confirmPassword = document.getElementById('reg-confirm-password').value;
+
+        if (password !== confirmPassword) {
+            alert("عذراً، كلمات المرور غير متطابقة. يرجى التأكد!");
+            return;
+        }
+
+        // إرسال البيانات لـ Supabase
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: { full_name: name }
+            }
+        });
+
+        if (error) {
+            alert("حدث خطأ: " + error.message);
+        } else {
+            alert("تم إنشاء حسابك في شركة أركان بنجاح! أهلاً بك."); 
+            window.location.href = 'login.html'; 
+        }
+    });
+}
+
+// كود تسجيل الدخول
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if (error) {
+            alert("بيانات الدخول غير صحيحة، يرجى التأكد من البريد الإلكتروني وكلمة المرور.");
+        } else {
+            window.location.href = 'index.html'; 
+        }
+    });
+}
