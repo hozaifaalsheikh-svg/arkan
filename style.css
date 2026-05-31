@@ -213,6 +213,8 @@ body, html {
     flex-direction: column;
     position: relative;
     transition: transform 0.2s, box-shadow 0.2s;
+    aspect-ratio: 2 / 2.5; 
+    width: 100%; 
 }
 
 .product-card:hover {
@@ -222,7 +224,7 @@ body, html {
 
 .image-container {
     width: 100%;
-    aspect-ratio: 2 / 2.5; 
+    height: 55%; 
     background: #fdfdfd;
     display: flex;
     align-items: center;
@@ -240,7 +242,23 @@ body, html {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
+    justify-content: space-between; 
+    align-items: center;
+    text-align: center;
+    height: 45%; 
+    position: relative; 
+}
+
+.product-info::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
 }
 
 .brand-tag {
@@ -657,7 +675,7 @@ body, html {
 .btn-auth:hover {
     background-color: #e06912;
 }
-
+    
 .auth-footer {
     text-align: center;
     margin-top: 25px;
