@@ -64,6 +64,49 @@ body, html {
     position: relative;
     width: 100%; /* تم التعديل هنا ليرجع شريط البحث عريض */
 }
+/* =========================================
+   تنسيقات الشعار والروابط الجديدة
+   ========================================= */
+.brand-group {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* المسافة بين اسم الشركة والروابط */
+}
+
+.header-links {
+    display: flex;
+    gap: 20px;
+}
+
+.header-links a {
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px; /* المسافة بين الأيقونة والكلمة */
+    transition: color 0.2s ease;
+}
+
+.header-links a i {
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+.header-links a:hover {
+    color: var(--primary-color);
+}
+
+/* تعديل بسيط لشاشات الموبايل حتى لا يتزاحم الهيدر */
+@media (max-width: 600px) {
+    .brand-group {
+        gap: 15px;
+    }
+    .header-links {
+        display: none; /* إخفاء الروابط في الموبايل لتوفير المساحة للسلة والشعار */
+    }
+}
 
 .search-bar input {
     width: 100%;
