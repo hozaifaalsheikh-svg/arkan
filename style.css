@@ -14,11 +14,12 @@
 }
 
 body, html {
-    overflow-x: clip; /* تم تغيير hidden إلى clip هنا */
+    overflow-x: clip; /* تم التعديل هنا لحل مشكلة التثبيت */
     width: 100%;
     background-color: var(--bg-color);
     color: var(--text-color);
 }
+
 /* =========================================
    الغلاف الثابت (الهيدر + الأقسام)
    ========================================= */
@@ -28,6 +29,7 @@ body, html {
     z-index: 1000;
     background-color: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    width: 100%; /* تم التعديل هنا ليفرد الهيدر */
 }
 
 /* الهيدر */
@@ -43,6 +45,7 @@ body, html {
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
+    width: 100%; /* تم التعديل هنا */
 }
 
 .logo {
@@ -59,6 +62,7 @@ body, html {
     margin: 0 20px;
     display: flex;
     position: relative;
+    width: 100%; /* تم التعديل هنا ليرجع شريط البحث عريض */
 }
 
 .search-bar input {
@@ -479,13 +483,10 @@ body, html {
 @media (max-width: 768px) {
     html, body {
         width: 100% !important;
-        overflow-x: clip !important; /* تم تغيير hidden إلى clip هنا أيضاً */
+        overflow-x: clip !important; /* تم التعديل هنا أيضاً */
         margin: 0 !important;
         padding: 0 !important;
     }
-    
-    /* ... باقي الأكواد كما هي ... */
-}
 
     header, .navbar, .header-container, .logo {
         max-width: 100% !important;
