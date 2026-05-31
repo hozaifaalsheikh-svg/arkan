@@ -39,13 +39,13 @@ body, html {
 }
 
 .header-container {
-    max-width: 1200px;
+    max-width: 98%; /* 👈 تم التوسيع هنا */
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    width: 100%; /* تم التعديل هنا */
+    width: 100%; 
 }
 
 .logo {
@@ -58,11 +58,11 @@ body, html {
 
 .search-bar {
     flex: 1;
-    max-width: 1200px;
+    max-width: 100%; /* 👈 تم التوسيع هنا */
     margin: 0 20px;
     display: flex;
     position: relative;
-    width: 100%; /* تم التعديل هنا ليرجع شريط البحث عريض */
+    width: 100%; 
 }
 /* =========================================
    تنسيقات الشعار والروابط الجديدة
@@ -192,7 +192,7 @@ body, html {
 
 /* شبكة عرض المنتجات */
 .shop-container {
-    max-width: 1200px;
+    max-width: 98%; /* 👈 تم التوسيع هنا */
     margin: 30px auto;
     padding: 0 20px;
 }
@@ -222,7 +222,7 @@ body, html {
 
 .image-container {
     width: 100%;
-    height: 220px; 
+    aspect-ratio: 2 / 2.5; /* 👈 تم ضبط نسبة العرض إلى الطول هنا */
     background: #fdfdfd;
     display: flex;
     align-items: center;
@@ -531,7 +531,8 @@ body, html {
         padding: 0 !important;
     }
 
-    header, .navbar, .header-container, .logo {
+    header, .navbar,
+     .header-container, .logo {
         max-width: 100% !important;
         width: 100% !important;
         box-sizing: border-box !important;
