@@ -138,10 +138,10 @@ document.getElementById('search-input')?.addEventListener('input', function(e) {
 });
 
 // ========================================================
-// 5. نظام المصادقة (إنشاء حساب + تسجيل دخول)
+// 5. نظام المصادقة (إنشاء حساب + تسجيل دخول) - رسائل أنيقة
 // ========================================================
 
-// دالة إنشاء حساب جديد (مربوطة مباشرة بزر HTML)
+// دالة إنشاء حساب جديد
 async function registerUser(event) {
     event.preventDefault(); 
     
@@ -151,7 +151,13 @@ async function registerUser(event) {
     const confirmPassword = document.getElementById('reg-confirm-password').value;
 
     if (password !== confirmPassword) {
-        alert("عذراً، كلمات المرور غير متطابقة. يرجى التأكد!");
+        Swal.fire({
+            icon: 'warning',
+            title: 'انتبه من فضلك',
+            text: 'كلمات المرور غير متطابقة 🧐',
+            confirmButtonText: 'حسناً',
+            confirmButtonColor: '#f39c12' // لون برتقالي
+        });
         return;
     }
 
@@ -164,10 +170,24 @@ async function registerUser(event) {
     });
 
     if (error) {
-        alert("حدث خطأ: " + error.message);
+        Swal.fire({
+            icon: 'error',
+            title: 'حدث خطأ',
+            text: error.message,
+            confirmButtonText: 'حسناً',
+            confirmButtonColor: '#e74c3c' // لون أحمر
+        });
     } else {
-        alert("تم انشاء الحساب بنجاح"); 
-        window.location.href = 'login.html'; 
+        Swal.fire({
+            icon: 'success',
+            title: 'أهلاً بك في عائلة أركان!',
+            text: 'تم إنشاء حسابك بنجاح 🎉',
+            confirmButtonText: 'الذهاب لتسجيل الدخول',
+            confirmButtonColor: '#2ecc71' // لون أخضر
+        }).then(() => {
+            // يتم التحويل فقط بعد أن يضغط المستخدم على زر "الذهاب لتسجيل الدخول"
+            window.location.href = 'login.html'; 
+        });
     }
 }
 
@@ -186,10 +206,23 @@ if (loginForm) {
         });
 
         if (error) {
-            alert("كلمة السر او الايميل غير صحيحين");
+            Swal.fire({
+                icon: 'error',
+                title: 'عذراً!',
+                text: 'البريد الإلكتروني أو كلمة المرور غير صحيحة 😔',
+                confirmButtonText: 'إعادة المحاولة',
+                confirmButtonColor: '#e74c3c'
+            });
         } else {
-            alert("تم تسجيل الدخول بنجاح"); 
-            window.location.href = 'index.html'; 
+            Swal.fire({
+                icon: 'success',
+                title: 'مرحباً بعودتك!',
+                text: 'تم تسجيل الدخول بنجاح 🌟',
+                timer: 2000, // ستختفي الرسالة تلقائياً بعد ثانيتين
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = 'index.html'; 
+            });
         }
     });
 }
