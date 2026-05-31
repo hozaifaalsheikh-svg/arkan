@@ -400,7 +400,7 @@ body, html {
 
 .cart-footer { padding: 20px; border-top: 1px solid var(--border-color); background: #fafafa; }
 .total-price-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 15px; }
-#cart-total-price { color: #f27a1a !important; }
+#cart-total-price { color: var(--primary-color); }
 
 .customer-info input {
     width: 100%;
@@ -702,3 +702,10 @@ body, html {
     text-decoration: underline;
 }
 /* --- تعديل إجباري للون السعر في الصفحة الرئيسية --- */
+/* استهداف السعر داخل الكلاس price-row مباشرة */
+.price-row {
+    color: #f27a1a !important;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 15px; /* للحفاظ على مسافة فوق الزر */
+}
