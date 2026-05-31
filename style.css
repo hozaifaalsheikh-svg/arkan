@@ -204,26 +204,56 @@ body, html {
 }
 
 /* كرت المنتج */
-/* إعدادات كرت المنتج الأساسية مع نسبة الأبعاد وحركة النعومة */
-/* إعدادات كرت المنتج الأساسية مع نسبة الأبعاد وحركة النعومة */
+/* إعدادات كرت المنتج بالنسبة الجديدة */
 .product-card {
-    aspect-ratio: 2 / 2.5; 
+    aspect-ratio: 2 / 2.5; /* هذا السطر السحري يضمن نسبة العرض 2 والطول 2.5 دائماً */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; 
+    justify-content: space-between; /* يوزع المساحة ليبقى الزر في الأسفل */
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-    overflow: hidden; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* ظل خفيف لإبراز الكرت */
+    overflow: hidden; /* يمنع خروج أي محتوى خارج حدود الكرت */
     padding: 15px;
-    transition: all 0.3s ease; /* 👈 سطر النعومة موجود هنا لضمان حركة سلسة */
+}
+
+/* إعدادات مساحة الصورة داخل الكرت الجديد */
+.product-card .image-container {
+    flex-grow: 1; /* يجعل الصورة تأخذ المساحة المتاحة براحة */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+/* إجبار الصورة على احترام المساحة بدون تمطيط */
+.product-card .image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* يمنع تشوه الصورة ويحافظ على دقتها */
+}
+
+/* إعدادات قسم النصوص والزر */
+.product-card .product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.product-card .btn-add-to-cart {
+    width: 100%;
+    margin-top: 10px;
 }
 
 /* تأثير مرور الماوس على الكرت */
 .product-card:hover {
-    transform: translateY(-8px); /* يرفع الكرت للأعلى */
-    box-shadow: 0 12px 20px rgba(0,0,0,0.15); /* يزيد الظل */
+    transform: translateY(-8px); /* يرفع الكرت للأعلى بمقدار 8 بيكسل */
+    box-shadow: 0 12px 20px rgba(0,0,0,0.15); /* يزيد من كثافة الظل ليعطي بروزاً */
 }
+
 .image-container {
     width: 100%;
     aspect-ratio: 2 / 2.5; 
