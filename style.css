@@ -555,33 +555,37 @@ body, html {
 }
 
 @media (max-width: 768px) {
+    /* تجنب أي تمدد أفقي مزعج */
     html, body {
         width: 100% !important;
-        overflow-x: clip !important; 
-        margin: 0 !important;
-        padding: 0 !important;
+        overflow-x: hidden !important; 
     }
 
-    header, .navbar,
-     .header-container, .logo {
-        max-width: 100% !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    #products-grid {
+    /* جعل الكروت تأخذ عرض مناسب لشاشة الموبايل */
+    .products-grid {
         display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+        grid-template-columns: repeat(2, 1fr) !important; /* عمودان بجانب بعضهما */
         gap: 10px !important;
         padding: 10px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
     }
 
+    /* تصغير الكرت قليلاً على الموبايل ليتناسب مع الشاشة */
     .product-card {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
+        aspect-ratio: 2 / 3 !important; /* نسبة أطول قليلاً لتناسب الموبايل */
+    }
+
+    /* تصغير حجم الخطوط على الموبايل لتتجنب التداخل */
+    .product-title {
+        font-size: 12px !important;
+    }
+    
+    .product-price {
+        font-size: 14px !important;
+    }
+
+    .btn-add-to-cart {
+        padding: 6px !important;
+        font-size: 11px !important;
     }
 }
 
