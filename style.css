@@ -14,7 +14,7 @@
 }
 
 body, html {
-    overflow-x: clip; /* تم التعديل هنا لحل مشكلة التثبيت */
+    overflow-x: clip;
     width: 100%;
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -29,7 +29,7 @@ body, html {
     z-index: 1000;
     background-color: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    width: 100%; /* تم التعديل هنا ليفرد الهيدر */
+    width: 100%; 
 }
 
 /* الهيدر */
@@ -39,7 +39,7 @@ body, html {
 }
 
 .header-container {
-    max-width: 98%; /* 👈 تم التوسيع هنا */
+    max-width: 98%; 
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -58,19 +58,20 @@ body, html {
 
 .search-bar {
     flex: 1;
-    max-width: 100%; /* 👈 تم التوسيع هنا */
+    max-width: 100%; 
     margin: 0 20px;
     display: flex;
     position: relative;
     width: 100%; 
 }
+
 /* =========================================
    تنسيقات الشعار والروابط الجديدة
    ========================================= */
 .brand-group {
     display: flex;
     align-items: center;
-    gap: 30px; /* المسافة بين اسم الشركة والروابط */
+    gap: 30px; 
 }
 
 .header-links {
@@ -85,7 +86,7 @@ body, html {
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 6px; /* المسافة بين الأيقونة والكلمة */
+    gap: 6px; 
     transition: color 0.2s ease;
 }
 
@@ -98,13 +99,12 @@ body, html {
     color: var(--primary-color);
 }
 
-/* تعديل بسيط لشاشات الموبايل حتى لا يتزاحم الهيدر */
 @media (max-width: 600px) {
     .brand-group {
         gap: 15px;
     }
     .header-links {
-        display: none; /* إخفاء الروابط في الموبايل لتوفير المساحة للسلة والشعار */
+        display: none; 
     }
 }
 
@@ -192,7 +192,7 @@ body, html {
 
 /* شبكة عرض المنتجات */
 .shop-container {
-    max-width: 98%; /* 👈 تم التوسيع هنا */
+    max-width: 98%; 
     margin: 30px auto;
     padding: 0 20px;
 }
@@ -222,7 +222,7 @@ body, html {
 
 .image-container {
     width: 100%;
-    aspect-ratio: 2 / 2.5; /* 👈 تم ضبط نسبة العرض إلى الطول هنا */
+    aspect-ratio: 2 / 2.5; 
     background: #fdfdfd;
     display: flex;
     align-items: center;
@@ -516,7 +516,9 @@ body, html {
     animation: slideOut 0.4s ease forwards;
 }
 
-/* للهواتف المحمولة */
+/* =========================================
+   للهواتف المحمولة
+   ========================================= */
 @media (max-width: 480px) {
     .search-bar { display: none; } 
     .cart-sidebar { width: 100%; left: -100%; }
@@ -526,7 +528,7 @@ body, html {
 @media (max-width: 768px) {
     html, body {
         width: 100% !important;
-        overflow-x: clip !important; /* تم التعديل هنا أيضاً */
+        overflow-x: clip !important; 
         margin: 0 !important;
         padding: 0 !important;
     }
@@ -552,7 +554,9 @@ body, html {
         max-width: 100% !important;
         box-sizing: border-box !important;
     }
-    /* =========================================
+}
+
+/* =========================================
    تنسيقات صفحات تسجيل الدخول وإنشاء الحساب
    ========================================= */
 .auth-page-container {
@@ -618,7 +622,7 @@ body, html {
 
 .input-with-icon input {
     width: 100%;
-    padding: 12px 15px 12px 40px; /* ترك مساحة للأيقونة على اليمين */
+    padding: 12px 15px 12px 40px; 
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 14px;
@@ -670,5 +674,4 @@ body, html {
 .auth-footer a:hover {
     color: var(--primary-color);
     text-decoration: underline;
-}
 }
