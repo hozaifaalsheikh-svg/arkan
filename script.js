@@ -146,40 +146,38 @@ document.getElementById('search-input')?.addEventListener('input', function(e) {
 // ========================================================
 // 5. نظام المصادقة (إنشاء حساب + تسجيل دخول)
 // ========================================================
+// 5. نظام المصادقة (إنشاء حساب + تسجيل دخول)
+// ========================================================
 
-// كود إنشاء حساب جديد
-const registerForm = document.getElementById('register-form');
-if (registerForm) {
-    registerForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); 
-        
-        const name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-password').value;
-        const confirmPassword = document.getElementById('reg-confirm-password').value;
+// كود إنشاء حساب جديد بالطريقة المباشرة
+async function registerUser(event) {
+    event.preventDefault(); // إيقاف تحديث الصفحة الإجباري
+    
+    const name = document.getElementById('reg-name').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
+    const confirmPassword = document.getElementById('reg-confirm-password').value;
 
-        if (password !== confirmPassword) {
-            alert("عذراً، كلمات المرور غير متطابقة. يرجى التأكد!");
-            return;
-        }
+    if (password !== confirmPassword) {
+        alert("عذراً، كلمات المرور غير متطابقة. يرجى التأكد!");
+        return;
+    }
 
-        // إرسال البيانات لـ Supabase
-        const { data, error } = await supabaseClient.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: { full_name: name }
-            }
-        });
-
-        if (error) {
-            alert("حدث خطأ: " + error.message);
-        } else {
-            // 👈 رسالة نجاح إنشاء الحساب
-            alert("تم انشاء الحساب بنجاح"); 
-            window.location.href = 'login.html'; 
+    // إرسال البيانات لـ Supabase
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+            data: { full_name: name }
         }
     });
+
+    if (error) {
+        alert("حدث خطأ: " + error.message);
+    } else {
+        alert("تم انشاء الحساب بنجاح"); 
+        window.location.href = 'login.html'; 
+    }
 }
 
 // كود تسجيل الدخول
@@ -197,10 +195,8 @@ if (loginForm) {
         });
 
         if (error) {
-            // 👈 رسالة الخطأ في الإيميل أو كلمة المرور
             alert("كلمة السر او الايميل غير صحيحين");
         } else {
-            // 👈 رسالة نجاح تسجيل الدخول
             alert("تم تسجيل الدخول بنجاح"); 
             window.location.href = 'index.html'; 
         }
