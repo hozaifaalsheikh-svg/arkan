@@ -73,6 +73,10 @@
         </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
     <script>
         // قراءة السلة من الذاكرة
         let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
@@ -131,10 +135,61 @@
             renderCartPage();
         }
 
-        
+        // دالة إرسال الطلب المحمية بحساب المستخدم
+        async function sendOrder() {
+            // التحقق من تسجيل الدخول أولاً من Supabase
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (!session) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'عذراً!',
+                    text: 'يرجى تسجيل الدخول أو إنشاء حساب لتتمكن من إرسال الطلب واعتماده.',
+                    confirmButtonText: 'تسجيل الدخول',
+                    confirmButtonColor: '#f27a1a',
+                    showCancelButton: true,
+                    cancelButtonText: 'إلغاء'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return;
+            }
+
+            const name = document.getElementById('cust-name').value;
+            const address = document.getElementById('cust-address').value;
+
+            if(!name || !address) {
+                Swal.fire({
+                    icon: 'info',
+                    text: 'لطفاً، املأ اسمك وعنوانك بالكامل لتجهيز الشحن.',
+                    confirmButtonColor: '#1a365d'
+                });
+                return;
+            }
+
+            let message = `*طلب جديد من شركة أركان 🛍️*\n\n*الاسم:* ${name}\n*العنوان:* ${address}\n-----------------------------\n`;
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const priceNum = parseInt(item.price) || 0;
+                message += `${index + 1}) *${item.name}*\n    الكمية: ${item.qty} | السعر: ${item.price}\n`;
+                total += priceNum * item.qty;
+            });
+
+            message += `-----------------------------\n*الإجمالي الحسابي:* ${total} ل.س\n\nيرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
+
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            localStorage.removeItem('arkan_cart');
+            cart = [];
+            renderCartPage();
+        }
+
         // تشغيل الدالة عند فتح الصفحة
         document.addEventListener('DOMContentLoaded', renderCartPage);
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
