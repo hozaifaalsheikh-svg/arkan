@@ -226,3 +226,56 @@ if (loginForm) {
         }
     });
 }
+// =========================================
+// 6. إدارة جلسات المستخدمين (Session Management)
+// =========================================
+
+// مراقبة حالة تسجيل الدخول تلقائياً
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    updateAuthUI(session);
+});
+
+// دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
+function updateAuthUI(session) {
+    // نبحث عن حاوية الروابط في الهيدر
+    const headerLinks = document.querySelector('.header-links');
+    if (!headerLinks) return;
+
+    if (session) {
+        // المستخدم مسجل الدخول: نجلب اسمه من قاعدة البيانات
+        const userName = session.user.user_metadata.full_name || "صديق أركان";
+        
+        headerLinks.innerHTML = `
+            <a href="#" style="cursor: default;"><i class="fas fa-user" style="margin-left: 5px;"></i> مرحباً، ${userName}</a>
+            <a href="#" onclick="logoutUser(event)" style="color: #e74c3c;"><i class="fas fa-sign-out-alt" style="margin-left: 5px;"></i> خروج</a>
+        `;
+    } else {
+        // المستخدم غير مسجل (زائر عادي)
+        headerLinks.innerHTML = `
+            <a href="about.html"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول الشركة</a>
+            <a href="login.html"><i class="fas fa-user-plus" style="margin-left: 5px;"></i> تسجيل الدخول</a>
+        `;
+    }
+}
+
+// دالة تسجيل الخروج
+async function logoutUser(event) {
+    event.preventDefault();
+    const { error } = await supabaseClient.auth.signOut();
+    
+    if (!error) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'إلى اللقاء!',
+                text: 'تم تسجيل الخروج بنجاح',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.reload(); // إعادة تحميل الصفحة لتطبيق التغييرات
+            });
+        } else {
+            window.location.reload();
+        }
+    }
+}

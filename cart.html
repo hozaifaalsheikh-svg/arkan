@@ -131,37 +131,10 @@
             renderCartPage();
         }
 
-        function sendOrder() {
-            const name = document.getElementById('cust-name').value;
-            const address = document.getElementById('cust-address').value;
-
-            if(!name || !address) {
-                alert("لطفاً، املأ اسمك وعنوانك بالكامل لتجهيز الشحن.");
-                return;
-            }
-
-            let message = `*طلب جديد من شركة أركان 🛍️*\n\n*الاسم:* ${name}\n*العنوان:* ${address}\n-----------------------------\n`;
-            let total = 0;
-            
-            cart.forEach((item, index) => {
-                const priceNum = parseInt(item.price) || 0;
-                message += `${index + 1}) *${item.name}*\n    الكمية: ${item.qty} | السعر: ${item.price}\n`;
-                total += priceNum * item.qty;
-            });
-
-            message += `-----------------------------\n*الإجمالي الحسابي:* ${total} ل.س\n\nيرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
-
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            // تفريغ السلة بعد الطلب
-            localStorage.removeItem('arkan_cart');
-            cart = [];
-            renderCartPage();
-        }
-
+        
         // تشغيل الدالة عند فتح الصفحة
         document.addEventListener('DOMContentLoaded', renderCartPage);
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
