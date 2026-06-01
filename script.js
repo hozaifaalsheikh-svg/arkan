@@ -245,28 +245,27 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 });
 
 // دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
+// دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
 function updateAuthUI(session) {
-    // نبحث عن حاوية الروابط في الهيدر
     const headerLinks = document.querySelector('.header-links');
     if (!headerLinks) return;
 
     if (session) {
-        // المستخدم مسجل الدخول: نجلب اسمه من قاعدة البيانات
+        // المستخدم مسجل الدخول: نخفي كلمة "مرحباً" على الموبايل ونترك الاسم فقط لتوفير المساحة
         const userName = session.user.user_metadata.full_name || "صديق أركان";
         
         headerLinks.innerHTML = `
-            <a href="#" style="cursor: default;"><i class="fas fa-user" style="margin-left: 5px;"></i> مرحباً، ${userName}</a>
+            <a href="#" style="cursor: default;"><i class="fas fa-user" style="margin-left: 5px;"></i> <span class="hide-on-mobile">مرحباً، </span>${userName}</a>
             <a href="#" onclick="logoutUser(event)" style="color: #e74c3c;"><i class="fas fa-sign-out-alt" style="margin-left: 5px;"></i> خروج</a>
         `;
     } else {
-        // المستخدم غير مسجل (زائر عادي)
+        // المستخدم غير مسجل: نطبق طلبك بتبديل الكلمات للموبايل
         headerLinks.innerHTML = `
-            <a href="about.html"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول الشركة</a>
-            <a href="login.html"><i class="fas fa-user-plus" style="margin-left: 5px;"></i> تسجيل الدخول</a>
+            <a href="about.html"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول <span class="hide-on-mobile">الشركة</span></a>
+            <a href="login.html"><i class="fas fa-user-plus" style="margin-left: 5px;"></i> <span class="desktop-only-text">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span></a>
         `;
     }
 }
-
 // دالة تسجيل الخروج
 async function logoutUser(event) {
     event.preventDefault();

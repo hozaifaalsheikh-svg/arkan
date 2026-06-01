@@ -96,12 +96,16 @@ body, html {
 .header-links a:hover {
     color: var(--primary-color);
 }
-
+.mobile-only-text { display: none; }
 @media (max-width: 600px) {
     .header-container {
         flex-direction: column; 
         padding: 10px;
     }
+    /* --- نصوص خاصة للموبايل فقط --- */
+    .hide-on-mobile { display: none !important; }
+    .desktop-only-text { display: none !important; }
+    .mobile-only-text { display: inline !important; }
 
     .brand-group {
         width: 100%;
@@ -235,42 +239,41 @@ body, html {
     position: relative;
     transition: transform 0.2s, box-shadow 0.2s;
     width: 100%;
-    min-height: 420px; /* أزلنا aspect-ratio ووضعنا حد أدنى للارتفاع */
-}
-
+    height: 100%;
 .product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
-
-.image-container {
-    width: 100%;
-    height: 200px; /* تثبيت الارتفاع بدلاً من 50% */
-    background: #fdfdfd;
+.product-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-}
-
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+    height: 100%;
 .image-container img {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
+/* --- 3. المعلومات: جعلها مرنة تمتص فقط المساحة التي تحتاجها --- */
 .product-info {
-    padding: 15px 12px; /* أضفنا مسافة حماية مريحة من الأسفل والجوانب */
+    padding: 12px 10px 15px 10px; 
     display: flex;
     flex-direction: column;
     justify-content: flex-start; 
     align-items: center;
     text-align: center;
-    flex-grow: 1; /* هذا الأمر السحري يجعل القسم يمتص باقي المساحة براحته */
+    flex-grow: 1; /* هذا يجعل القسم يتمدد بذكاء لملء الفراغ الصغير المتبقي */
     position: relative;
     gap: 5px; 
+    /* تم حذف الـ height من هنا نهائياً */
 }
-
 .product-info::before {
     content: "";
     position: absolute;
