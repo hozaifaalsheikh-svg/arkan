@@ -83,7 +83,6 @@ body, html {
     transition: color 0.2s ease;
 }
 
-/* إجبار الأيقونات على الظهور في الروابط */
 .header-links a i {
     display: inline-block !important;
     visibility: visible !important;
@@ -96,13 +95,16 @@ body, html {
 .header-links a:hover {
     color: var(--primary-color);
 }
+
 .mobile-only-text { display: none; }
+.hide-on-mobile { display: inline; }
+
 @media (max-width: 600px) {
     .header-container {
         flex-direction: column; 
         padding: 10px;
     }
-    /* --- نصوص خاصة للموبايل فقط --- */
+    
     .hide-on-mobile { display: none !important; }
     .desktop-only-text { display: none !important; }
     .mobile-only-text { display: inline !important; }
@@ -228,7 +230,7 @@ body, html {
     gap: 20px;
 }
 
-/* --- كرت المنتج المعدل --- */
+/* --- كرت المنتج --- */
 .product-card {
     background: white;
     border-radius: 8px;
@@ -240,28 +242,29 @@ body, html {
     transition: transform 0.2s, box-shadow 0.2s;
     width: 100%;
     height: 100%;
+}
+
 .product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
-.product-card {
-    background: white;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    transition: transform 0.2s, box-shadow 0.2s;
+
+.image-container {
     width: 100%;
-    height: 100%;
+    height: 160px;
+    background: #fdfdfd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
 .image-container img {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-/* --- 3. المعلومات: جعلها مرنة تمتص فقط المساحة التي تحتاجها --- */
 .product-info {
     padding: 12px 10px 15px 10px; 
     display: flex;
@@ -269,11 +272,11 @@ body, html {
     justify-content: flex-start; 
     align-items: center;
     text-align: center;
-    flex-grow: 1; /* هذا يجعل القسم يتمدد بذكاء لملء الفراغ الصغير المتبقي */
+    flex-grow: 1; 
     position: relative;
     gap: 5px; 
-    /* تم حذف الـ height من هنا نهائياً */
 }
+
 .product-info::before {
     content: "";
     position: absolute;
@@ -296,20 +299,17 @@ body, html {
     width: 100%;
 }
 
-/* --- الوصف يتمدد ليمتص الفراغ --- */
-/* --- تثبيت الوصف على سطرين بدون النقاط التلقائية --- */
 .product-description {
     font-size: 11px;
     color: #777;
     line-height: 1.5;
     margin-bottom: 5px;
-    height: 33px; /* حجز مساحة ثابتة لسطرين لضمان تناسق الكروت */
+    height: 33px; 
     overflow: hidden;
 }
 
-/* --- تنسيق كلمة اقرأ المزيد باللون الكحلي --- */
 .read-more {
-    color: var(--secondary-color); /* اللون الكحلي الخاص بأركان */
+    color: var(--secondary-color);
     font-weight: 700;
     font-size: 11px;
     cursor: pointer;
@@ -319,7 +319,6 @@ body, html {
     text-decoration: underline;
 }
 
-/* --- السعر للشاشات الكبيرة (يُدفع لأسفل الكرت) --- */
 .price-row {
     color: #f27a1a !important;
     font-weight: 700;
@@ -356,17 +355,16 @@ body, html {
     }
 
     .product-card {
-        aspect-ratio: 1 / 1.8 !important; 
-        padding: 5px;
+        padding: 0;
     }
 
     .image-container {
-        height: 45% !important;
+        height: 120px !important;
+        padding: 5px !important;
     }
 
     .product-info {
-        height: 55% !important;
-        padding: 5px !important;
+        padding: 8px 5px 10px 5px !important; 
     }
 
     .product-title {
@@ -380,7 +378,6 @@ body, html {
         min-height: 20px;
     }
 
-    /* طلبك الخاص بالسعر للموبايل تنفذ هنا */
     .price-row {
         font-size: 11px !important;
         margin-bottom: 3px !important;
@@ -396,7 +393,7 @@ body, html {
     }
 }
 
-/* --- صفحات الحسابات (تسجيل الدخول، إنشاء حساب) --- */
+/* --- صفحات الحسابات --- */
 .auth-page-container {
     display: flex;
     justify-content: center;
@@ -514,7 +511,7 @@ body, html {
     text-decoration: underline;
 }
 
-/* --- النوافذ والإشعارات (Modals & Toasts) --- */
+/* --- النوافذ والإشعارات --- */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
