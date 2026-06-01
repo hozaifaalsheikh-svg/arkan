@@ -26,32 +26,42 @@
     </div>
 
     <div class="account-container">
-        
         <aside class="account-sidebar">
             <div class="sidebar-user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user-circle"></i>
-                </div>
+                <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
                 <h3 id="user-name-display">أهلاً بك</h3>
             </div>
-            
             <ul class="sidebar-menu">
-                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a></li>
+                <li><a href="#" class="active" onclick="showPanel('dashboard-panel', this)"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a></li>
                 <li><a href="#"><i class="fas fa-box-open"></i> طلباتي</a></li>
                 <li><a href="#"><i class="fas fa-map-marker-alt"></i> عناويني</a></li>
-                <li><a href="#"><i class="fas fa-user-edit"></i> تفاصيل الحساب</a></li>
+                <li><a href="#" onclick="showPanel('profile-panel', this)"><i class="fas fa-user-edit"></i> تفاصيل الحساب</a></li>
                 <li><a href="#"><i class="fas fa-heart"></i> المفضلة</a></li>
                 <li><a href="#" class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
             </ul>
         </aside>
 
         <main class="account-content">
-            <div class="content-panel">
+            <div id="dashboard-panel" class="content-panel">
                 <h2>لوحة التحكم</h2>
                 <p>مرحباً بك في لوحة تحكم حسابك. من هنا يمكنك متابعة طلباتك الأخيرة وإدارة عناوين الشحن وتفاصيل حسابك بكل سهولة.</p>
             </div>
+
+            <div id="profile-panel" class="content-panel" style="display: none;">
+                <h2>تفاصيل الحساب</h2>
+                <form id="profile-form">
+                    <div style="margin-bottom: 15px;">
+                        <label>الاسم الكامل:</label>
+                        <input type="text" id="full-name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label>رقم الهاتف:</label>
+                        <input type="text" id="phone-number" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <button type="button" onclick="saveProfile()" style="background: #f27a1a; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">حفظ التعديلات</button>
+                </form>
+            </div>
         </main>
-        
     </div>
 
     <script src="script.js"></script>

@@ -8,7 +8,6 @@ let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
 let productToConfirm = null; 
 
 // 1. جلب البيانات من Supabase
-// 1. جلب البيانات من Supabase
 async function loadProductsFromSupabase() {
     try {
         const { data, error } = await supabaseClient.from('inventory').select('*');
@@ -22,14 +21,7 @@ async function loadProductsFromSupabase() {
             category: product.category || "عام",
             imageUrl: product.image_url 
         }));
-
-        // --- الحماية الذكية هنا ---
-        const grid = document.getElementById('products-grid');
-        if (grid) { 
-            renderProducts(localProducts); 
-        } else {
-            console.log("هذه الصفحة لا تحتوي على شبكة منتجات، لن أحاول الرسم.");
-        }
+        renderProducts(localProducts); 
     } catch (err) { console.error("فشل الاتصال:", err); }
 }
 
@@ -300,3 +292,32 @@ async function logoutUser(event) {
         }
     }
 }
+// دالة تبديل اللوحات (Panels)
+function showPanel(panelId, element) {
+    // إخفاء جميع اللوحات
+    document.querySelectorAll('.content-panel').forEach(p => p.style.display = 'none');
+    // إظهار اللوحة المطلوبة
+    const target = document.getElementById(panelId);
+    if (target) target.style.display = 'block';
+
+    // تحديث تفعيل الزر في القائمة
+    document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+    if (element) element.classList.add('active');
+}
+
+// دالة حفظ البروفايل (مبدئية)
+function saveProfile() {
+    const name = document.getElementById('full-name').value;
+    const phone = document.getElementById('phone-number').value;
+    console.log("جاري حفظ:", name, phone);
+    alert("تم حفظ البيانات بنجاح!");
+}
+
+// حماية الكود من الانهيار عند فتح صفحة الحساب
+window.addEventListener('DOMContentLoaded', () => {
+    // إذا كنت في الصفحة الرئيسية، حمل المنتجات
+    const grid = document.getElementById('products-grid');
+    if (grid) {
+        loadProductsFromSupabase();
+    }
+});
