@@ -51,9 +51,9 @@ function renderProducts(productsList) {
         
         // --- المعالجة الجديدة للوصف ---
         let descText = product.description || "منتج أركان فارما المميز.";
-        // إذا كان الوصف أطول من 50 حرف، نقصه ونضع "اقرأ المزيد"
-        if (descText.length > 50) {
-            descText = descText.substring(0, 50) + ' <span class="read-more">اقرأ المزيد</span>';
+        // إذا كان الوصف أطول من 50 حرف، نقصه ونضع "..اقرأ المزيد"
+        if (descText.length > 120) {
+            descText = descText.substring(0, 120) + ' <span class="read-more">إقرأ المزيد ..</span>';
         }
 
         card.innerHTML = `
