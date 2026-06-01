@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 2. عرض المنتجات في الصفحة الرئيسية
-// 2. عرض المنتجات في الصفحة الرئيسية
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
     if(!grid) return; 
@@ -46,28 +45,34 @@ function renderProducts(productsList) {
     productsList.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
-        // النقر على أي مكان في الكرت (بما فيه اقرأ المزيد) سينقلك لصفحة التفاصيل
+        // النقر على الكرت ينقلك لصفحة التفاصيل
         card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
         
-        // --- المعالجة الجديدة للوصف ---
         let descText = product.description || "منتج أركان فارما المميز.";
-        // إذا كان الوصف أطول من 50 حرف، نقصه ونضع "..اقرأ المزيد"
-        if (descText.length > 120) {
-            descText = descText.substring(0, 120) + ' <span class="read-more">إقرأ المزيد ..</span>';
+        let readMoreHtml = '';
+        
+        // إذا كان النص أطول من 60 حرف، سيقوم بإنشاء زر "اقرأ المزيد"
+        if (descText.length > 60) {
+            readMoreHtml = '<span class="read-more">اقرأ المزيد</span>';
         }
 
         card.innerHTML = `
             <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
             <div class="product-info">
                 <h4 class="product-title">${product.name}</h4>
-                <p class="product-description">${descText}</p>
+                
+                <div class="desc-wrapper">
+                    <p class="product-description">${descText}</p>
+                    ${readMoreHtml}
+                </div>
+
                 <div class="price-row">${product.price} ل.س</div>
                 <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); askToConfirmAdd('${product.sku}', '${product.name}', ${product.price})">إضافة إلى السلة</button>
             </div>
         `;
         grid.appendChild(card);
     });
-}   
+}
 
 // =========================================
 // 3. دوال نافذة التأكيد والإشعارات
