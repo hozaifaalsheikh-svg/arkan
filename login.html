@@ -1,62 +1,62 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | شركة أركان</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>تسجيل الدخول | شركة أركان</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
 
-    <header class="main-header" style="text-align: center; padding: 20px 0;">
-        <a href="index.html" style="text-decoration: none; display: inline-block;">
-            <div class="logo" style="direction: ltr; display: flex; justify-content: center; align-items: center;">Arkan<span style="margin-left: 5px;">COMPANY</span></div>
-        </a>
-    </header>
+        <header class="main-header" style="text-align: center; padding: 20px 0;">
+            <a href="index.html" style="text-decoration: none; display: inline-block;">
+                <div class="logo" style="direction: ltr; display: flex; justify-content: center; align-items: center;">Arkan<span style="margin-left: 5px;">COMPANY</span></div>
+            </a>
+        </header>
 
-    <main class="auth-page-container">
-        <div class="auth-box">
-            <div class="auth-header">
-                <h2>تسجيل الدخول</h2>
-                <p>أهلاً بك مجدداً في شركة أركان</p>
-            </div>
+        <main class="auth-page-container">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <h2>تسجيل الدخول</h2>
+                    <p>أهلاً بك مجدداً في شركة أركان</p>
+                </div>
 
-            <form id="login-form" class="auth-form">
-                <div class="input-group">
-                    <label for="login-email">البريد الإلكتروني</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="login-email" placeholder="example@mail.com" required>
+                <form id="login-form" class="auth-form">
+                    <div class="input-group">
+                        <label for="login-email">البريد الإلكتروني</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="login-email" placeholder="example@mail.com" required>
+                        </div>
                     </div>
-                </div>
 
-                <div class="input-group">
-                    <label for="login-password">كلمة المرور</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+                    <div class="input-group">
+                        <label for="login-password">كلمة المرور</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+                        </div>
                     </div>
+
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-top: -10px;">
+                        <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox"> تذكرني
+                        </label>
+                        <a href="forgot-password.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">نسيت كلمة المرور؟</a>
+                    </div>
+
+                    <button type="submit" class="btn-auth">تسجيل الدخول</button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>ليس لديك حساب بعد؟ <a href="register.html">إنشاء حساب جديد</a></p>
                 </div>
-
-                <div style="display: flex; justify-content: space-between; font-size: 13px; margin-top: -10px;">
-                    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                        <input type="checkbox"> تذكرني
-                    </label>
-                    <a href="forgot-password.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">نسيت كلمة المرور؟</a>
-                </div>
-
-                <button type="submit" class="btn-auth">تسجيل الدخول</button>
-            </form>
-
-            <div class="auth-footer">
-                <p>ليس لديك حساب بعد؟ <a href="register.html">إنشاء حساب جديد</a></p>
             </div>
-        </div>
-    </main>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="script.js"></script>
+    </body>
+    </html>
