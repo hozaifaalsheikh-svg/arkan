@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 2. عرض المنتجات في الصفحة الرئيسية
+// 2. عرض المنتجات في الصفحة الرئيسية
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
     if(!grid) return; 
@@ -45,20 +46,28 @@ function renderProducts(productsList) {
     productsList.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
+        // النقر على أي مكان في الكرت (بما فيه اقرأ المزيد) سينقلك لصفحة التفاصيل
         card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
         
+        // --- المعالجة الجديدة للوصف ---
+        let descText = product.description || "منتج أركان فارما المميز.";
+        // إذا كان الوصف أطول من 50 حرف، نقصه ونضع "اقرأ المزيد"
+        if (descText.length > 50) {
+            descText = descText.substring(0, 50) + ' <span class="read-more">اقرأ المزيد</span>';
+        }
+
         card.innerHTML = `
             <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
             <div class="product-info">
                 <h4 class="product-title">${product.name}</h4>
-                <p class="product-description">${product.description}</p>
+                <p class="product-description">${descText}</p>
                 <div class="price-row">${product.price} ل.س</div>
                 <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); askToConfirmAdd('${product.sku}', '${product.name}', ${product.price})">إضافة إلى السلة</button>
             </div>
         `;
         grid.appendChild(card);
     });
-}
+}   
 
 // =========================================
 // 3. دوال نافذة التأكيد والإشعارات
