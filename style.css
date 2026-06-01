@@ -234,8 +234,8 @@ body, html {
     flex-direction: column;
     position: relative;
     transition: transform 0.2s, box-shadow 0.2s;
-    aspect-ratio: 2 / 2.8; 
     width: 100%;
+    min-height: 420px; /* أزلنا aspect-ratio ووضعنا حد أدنى للارتفاع */
 }
 
 .product-card:hover {
@@ -245,12 +245,12 @@ body, html {
 
 .image-container {
     width: 100%;
-    height: 50%;
+    height: 200px; /* تثبيت الارتفاع بدلاً من 50% */
     background: #fdfdfd;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5px;
+    padding: 10px;
 }
 
 .image-container img {
@@ -260,13 +260,13 @@ body, html {
 }
 
 .product-info {
-    padding: 12px 10px; 
+    padding: 15px 12px; /* أضفنا مسافة حماية مريحة من الأسفل والجوانب */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; 
     align-items: center;
     text-align: center;
-    height: 50%;
+    flex-grow: 1; /* هذا الأمر السحري يجعل القسم يمتص باقي المساحة براحته */
     position: relative;
     gap: 5px; 
 }
