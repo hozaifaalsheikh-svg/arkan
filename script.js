@@ -8,6 +8,7 @@ let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
 let productToConfirm = null; 
 
 // 1. جلب البيانات من Supabase
+// 1. جلب البيانات من Supabase
 async function loadProductsFromSupabase() {
     try {
         const { data, error } = await supabaseClient.from('inventory').select('*');
@@ -21,7 +22,14 @@ async function loadProductsFromSupabase() {
             category: product.category || "عام",
             imageUrl: product.image_url 
         }));
-        renderProducts(localProducts); 
+
+        // --- الحماية الذكية هنا ---
+        const grid = document.getElementById('products-grid');
+        if (grid) { 
+            renderProducts(localProducts); 
+        } else {
+            console.log("هذه الصفحة لا تحتوي على شبكة منتجات، لن أحاول الرسم.");
+        }
     } catch (err) { console.error("فشل الاتصال:", err); }
 }
 
