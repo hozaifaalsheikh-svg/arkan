@@ -299,20 +299,35 @@ body, html {
     width: 100%;
 }
 
+/* --- تغليف الوصف والزر معاً --- */
+.desc-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+/* --- الكود الموحد للوصف (سطرين فقط مع نقاط) --- */
 .product-description {
     font-size: 11px;
     color: #777;
     line-height: 1.5;
-    margin-bottom: 5px;
-    height: 33px; 
+    display: -webkit-box;
+    -webkit-line-clamp: 2 !important; /* الإجبار على سطرين فقط */
+    -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+    min-height: 33px; 
 }
 
+/* --- تنسيق زر اقرأ المزيد --- */
 .read-more {
     color: var(--secondary-color);
     font-weight: 700;
     font-size: 11px;
     cursor: pointer;
+    align-self: flex-start;
 }
 
 .read-more:hover {
@@ -375,7 +390,8 @@ body, html {
     .product-description {
         font-size: 9px !important; 
         margin-bottom: 3px !important;
-        min-height: 20px;
+        min-height: 27px; /* حجز مساحة مناسبة لسطرين بخط الموبايل الصغير */
+        -webkit-line-clamp: 2 !important; /* ضمان بقائه سطرين أيضاً على الموبايل */
     }
 
     .price-row {
