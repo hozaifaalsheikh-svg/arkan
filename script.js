@@ -61,11 +61,8 @@ function renderProducts(productsList) {
         card.innerHTML = `
             <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
             <div class="product-info">
-                
                 <span class="product-brand">${product.brand}</span>
-                
                 <h4 class="product-title">${product.name}</h4>
-                
                 <div class="desc-wrapper">
                     <p class="product-description">${descText}</p>
                     ${readMoreHtml}
