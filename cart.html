@@ -65,7 +65,8 @@
             <h3 style="margin-bottom: 15px; color: #333;">معلومات التوصيل:</h3>
             <div class="checkout-form">
                 <input type="text" id="cust-name" placeholder="اسمك الكريم / اسم الصيدلية" required>
-                <input type="text" id="cust-address" placeholder="المدينة / عنوان الشحن بالتفصيل" required>
+                <input type="text" id="cust-address" placeholder="المدينة / القرية  " required>
+                <input type="text" id="cust-address" placeholder="العنوان بالتفصيل " required>
                 <button class="btn-whatsapp" onclick="sendOrder()">
                     <i class="fab fa-whatsapp"></i> اعتماد الطلب وإرساله واتساب
                 </button>
@@ -136,56 +137,69 @@
         }
 
         // دالة إرسال الطلب المحمية بحساب المستخدم
-        async function sendOrder() {
-            // التحقق من تسجيل الدخول أولاً من Supabase
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            
-            if (!session) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'عذراً!',
-                    text: 'يرجى تسجيل الدخول أو إنشاء حساب لتتمكن من إرسال الطلب واعتماده.',
-                    confirmButtonText: 'تسجيل الدخول',
-                    confirmButtonColor: '#f27a1a',
-                    showCancelButton: true,
-                    cancelButtonText: 'إلغاء'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = 'login.html';
-                    }
-                });
-                return;
-            }
-
+        async function submitOrder() {
+            // 1. جلب بيانات العميل
             const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const city = document.getElementById('cust-city').value;
             const address = document.getElementById('cust-address').value;
 
-            if(!name || !address) {
+            // 2. التحقق من إدخال جميع الحقول
+            if(!name || !phone || !city || !address) {
                 Swal.fire({
-                    icon: 'info',
-                    text: 'لطفاً، املأ اسمك وعنوانك بالكامل لتجهيز الشحن.',
-                    confirmButtonColor: '#1a365d'
+                    icon: 'warning',
+                    title: 'بيانات ناقصة',
+                    text: 'يرجى تعبئة جميع الحقول (الاسم، الرقم، المدينة، والعنوان التفصيلي) لضمان وصول طلبك.',
+                    confirmButtonColor: '#f27a1a'
                 });
                 return;
             }
 
-            let message = `*طلب جديد من شركة أركان 🛍️*\n\n*الاسم:* ${name}\n*العنوان:* ${address}\n-----------------------------\n`;
+            // 3. حساب الإجمالي وتجهيز تفاصيل المنتجات كـ JSON
             let total = 0;
-            
-            cart.forEach((item, index) => {
-                const priceNum = parseInt(item.price) || 0;
-                message += `${index + 1}) *${item.name}*\n    الكمية: ${item.qty} | السعر: ${item.price}\n`;
-                total += priceNum * item.qty;
+            const orderItems = cart.map(item => {
+                const itemPrice = parseInt(item.price) || 0;
+                total += itemPrice * item.qty;
+                return { name: item.name, qty: item.qty, price: item.price };
             });
 
-            message += `-----------------------------\n*الإجمالي الحسابي:* ${total} ل.س\n\nيرجى تأكيد وتجهيز الطلب للشحن فوراً 🚚`;
+            // إظهار رسالة تحميل للعميل
+            Swal.fire({
+                title: 'جاري إرسال الطلب...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
 
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-            
-            localStorage.removeItem('arkan_cart');
-            cart = [];
-            renderCartPage();
+            // 4. الإرسال الصامت إلى قاعدة بيانات Supabase (جدول orders)
+            const { data, error } = await supabaseClient
+                .from('orders')
+                .insert([
+                    { 
+                        customer_name: name, 
+                        customer_phone: phone, 
+                        city: city, 
+                        detailed_address: address, 
+                        order_details: orderItems, 
+                        total_amount: total 
+                    }
+                ]);
+
+            if (error) {
+                Swal.fire({ icon: 'error', title: 'حدث خطأ', text: 'لم نتمكن من إرسال الطلب، يرجى المحاولة لاحقاً.' });
+                console.error(error);
+            } else {
+                // نجاح العملية: مسح السلة وإظهار رسالة شكر
+                localStorage.removeItem('arkan_cart');
+                cart = [];
+                renderCartPage();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم استلام طلبك بنجاح!',
+                    text: 'سيقوم فريقنا بالتواصل معك قريباً لتأكيد الشحن.',
+                    confirmButtonColor: '#2ecc71'
+                });
+            }
         }
 
         // تشغيل الدالة عند فتح الصفحة
