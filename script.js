@@ -139,6 +139,7 @@ function showToast(message) {
 function updateCartCount() {
     const cartCount = document.getElementById('cart-count');
     if(cartCount) cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
+    document.getElementById('cart-counter-badge').textContent = cart.length; // أو مجموع الكميات حسب برمجتك
 }
 
 function filterCategory(catName, btnElement) {

@@ -655,4 +655,63 @@
         animation: slideOut 0.4s ease forwards;
     }
     /* =========================================
-    تنسيقات صفحة حسابي (القائمة والمحتوى)
+    /* --- السلة العائمة (Floating Cart) --- */
+.floating-cart-btn {
+    position: fixed;
+    bottom: 30px; /* الارتفاع من أسفل الشاشة */
+    left: 30px;   /* البعد عن يسار الشاشة */
+    background-color: #f27a1a; /* لون أركان البرتقالي */
+    color: white;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%; /* لجعلها دائرية بالكامل */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(242, 122, 26, 0.4); /* ظل ناعم يبرزها عن الخلفية */
+    z-index: 9999; /* لضمان بقائها فوق جميع الصور والمنتجات */
+    text-decoration: none;
+    font-size: 26px;
+    transition: transform 0.3s ease, background-color 0.3s;
+}
+
+/* تأثير عند تمرير الماوس */
+.floating-cart-btn:hover {
+    transform: scale(1.1);
+    background-color: #e06912;
+    color: white;
+}
+
+/* الدائرة الصغيرة التي تعرض عدد المنتجات داخل السلة */
+.floating-cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #1a365d; /* لون أركان الكحلي */
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid white; /* إطار أبيض ليفصلها عن السلة */
+}
+
+/* تصغير حجم السلة قليلاً على شاشات الموبايل كي لا تزعج الرؤية */
+@media (max-width: 768px) {
+    .floating-cart-btn {
+        bottom: 20px;
+        left: 20px;
+        width: 55px;
+        height: 55px;
+        font-size: 22px;
+    }
+    .floating-cart-count {
+        width: 22px;
+        height: 22px;
+        font-size: 12px;
+    }
+}
