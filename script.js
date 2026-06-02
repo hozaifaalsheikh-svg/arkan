@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 2. عرض المنتجات في الصفحة الرئيسية
-// 2. عرض المنتجات في الصفحة الرئيسية
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
     if(!grid) return; 
