@@ -47,21 +47,26 @@
     <div class="admin-container">
         <div class="admin-header">
             <h1><i class="fas fa-tachometer-alt"></i> لوحة إدارة الطلبات</h1>
-            <a href="index.html" style="color: var(--secondary-color); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> العودة للمتجر</a>
+            <div style="display: flex; gap: 15px;">
+                <button onclick="exportToExcel()" style="background: #27ae60; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
+                    <i class="fas fa-file-excel"></i> تحميل التقرير (Excel)
+                </button>
+                <a href="index.html" style="color: var(--secondary-color); text-decoration: none; font-weight: bold; padding: 10px;"><i class="fas fa-home"></i> العودة للمتجر</a>
+            </div>
         </div>
 
         <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
-                        <th>رقم الطلب</th>
-                        <th>التاريخ</th>
-                        <th>العميل</th>
+                        <th onclick="sortTable(0)" style="cursor: pointer;">رقم الطلب <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(1)" style="cursor: pointer;">التاريخ <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(2)" style="cursor: pointer;">العميل <i class="fas fa-sort"></i></th>
                         <th>التواصل</th>
-                        <th>العنوان</th>
+                        <th onclick="sortTable(4)" style="cursor: pointer;">العنوان <i class="fas fa-sort"></i></th>
                         <th>تفاصيل المنتجات</th>
-                        <th>الإجمالي</th>
-                        <th>الحالة</th>
+                        <th onclick="sortTable(6)" style="cursor: pointer;">الإجمالي <i class="fas fa-sort"></i></th>
+                        <th onclick="sortTable(7)" style="cursor: pointer;">الحالة <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
                 <tbody id="orders-table-body">
@@ -70,7 +75,7 @@
             </table>
         </div>
     </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // دالة التحقق من كلمة المرور
@@ -149,6 +154,55 @@
             } catch (err) {
                 console.error("خطأ في جلب الطلبات:", err);
                 tableBody.innerHTML = `<tr><td colspan="8" class="loading-text" style="color: red;">حدث خطأ أثناء الاتصال بقاعدة البيانات.</td></tr>`;
+            }
+        }
+        // 1. دالة تصدير الجدول إلى ملف إكسل
+        function exportToExcel() {
+            let table = document.querySelector("table");
+            // تحويل الجدول مع دعم اللغة العربية
+            let wb = XLSX.utils.table_to_book(table, { sheet: "طلبات أركان", raw: true });
+            // تحميل الملف
+            XLSX.writeFile(wb, "Arkan_Orders_Report.xlsx");
+        }
+
+        // 2. دالة ترتيب الجدول عند الضغط على اسم العمود (فرز أبجدي ورقمي)
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.querySelector("table");
+            switching = true;
+            dir = "asc"; 
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    
+                    let valX = x.innerText.toLowerCase().replace(/[^0-9a-zأ-ي]/g, '');
+                    let valY = y.innerText.toLowerCase().replace(/[^0-9a-zأ-ي]/g, '');
+                    
+                    if (Number(valX) && Number(valY)) {
+                        valX = parseFloat(valX);
+                        valY = parseFloat(valY);
+                    }
+
+                    if (dir == "asc") {
+                        if (valX > valY) { shouldSwitch = true; break; }
+                    } else if (dir == "desc") {
+                        if (valX < valY) { shouldSwitch = true; break; }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount ++;      
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
             }
         }
 
