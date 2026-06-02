@@ -761,3 +761,32 @@
         display: none !important;
     }
 }
+/* --- تخصيص نافذة SweetAlert لتصبح احترافية وأصغر --- */
+.swal2-popup.my-swal-popup {
+    width: 300px !important; /* تصغير العرض للموبايل */
+    padding: 15px !important;
+    border-radius: 15px !important;
+}
+
+.swal2-title.my-swal-title {
+    font-size: 18px !important;
+    color: #1a365d !important;
+    margin-bottom: 5px !important;
+}
+
+.swal2-html-container {
+    font-size: 14px !important;
+    color: #555 !important;
+}
+
+/* تصغير الأزرار وجعلها متناسقة */
+.swal2-actions {
+    margin-top: 15px !important;
+}
+
+.swal2-styled.swal2-confirm, 
+.swal2-styled.swal2-cancel {
+    padding: 8px 20px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+}
