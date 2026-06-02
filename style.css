@@ -741,3 +741,23 @@
     background-color: #fff1e6;
     color: var(--primary-color);
 }
+/* --- التحكم المزدوج بزر حول الشركة --- */
+
+/* الوضع الافتراضي (شاشات اللابتوب): إخفاء زر الموبايل وإظهار زر اللابتوب */
+.mobile-about-btn {
+    display: none !important;
+}
+.desktop-about-btn {
+    display: flex !important;
+}
+
+/* شاشات الموبايل: إخفاء زر اللابتوب وإظهار زر الموبايل في مكانه الطبيعي */
+@media (max-width: 600px) {
+    .mobile-about-btn {
+        display: flex !important;
+        align-items: center;
+    }
+    .desktop-about-btn {
+        display: none !important;
+    }
+}

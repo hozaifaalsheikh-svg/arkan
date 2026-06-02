@@ -11,7 +11,7 @@
 <body> 
     </div>
     <div class="sticky-wrapper">
-       <header class="main-header">
+        <header class="main-header">
             <div class="header-container">
                 
                 <div class="brand-group">
@@ -20,8 +20,9 @@
                     </a>
                     
                     <div class="header-links">
-                        <!-- تم إزالة "حول الشركة" من هنا وترك زر تسجيل الدخول فقط -->
-                        <a href="register.html"><i class="fas fa-user-plus" style="margin-left: 5px;"></i> تسجيل الدخول</a>
+                        <!-- زر الموبايل (مخفي في اللابتوب) -->
+                        <a href="about.html" class="mobile-about-btn"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول</a>
+                        <a href="register.html"><i class="fas fa-user-plus" style="margin-left: 5px;"></i> <span class="desktop-only-text">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span></a>
                     </div>
                 </div>
 
@@ -30,8 +31,8 @@
                     <button><i class="fas fa-search"></i></button>
                 </div>
                 
-                <div class="header-actions">
-                    <!-- وضعنا زر "حول الشركة" هنا مكان السلة القديمة -->
+                <!-- زر اللابتوب الاحترافي (مخفي في الموبايل) -->
+                <div class="header-actions desktop-about-btn">
                     <a href="about.html" class="header-action-btn" style="text-decoration: none;">
                         <i class="fas fa-info-circle"></i>
                         <span class="cart-text">حول الشركة</span>
