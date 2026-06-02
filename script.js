@@ -281,7 +281,7 @@ function updateAuthUI(session) {
             <!-- تم دمج الخروج مع الاسم هنا -->
             <a href="#" onclick="askToLogout(event)" style="cursor: pointer; transition: color 0.3s;" title="اضغط لتسجيل الخروج">
                 <i class="fas fa-user" style="margin-left: 5px;"></i> 
-                <span class="hide-on-mobile">مرحباً، </span>${userName}
+                <span class="hide-on-mobile"></span>${userName}
             </a>
         `;
     } else {
