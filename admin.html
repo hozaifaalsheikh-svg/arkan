@@ -144,7 +144,15 @@
                             <td style="font-size: 13px;">${order.city} - ${order.detailed_address}</td>
                             <td>${productsHtml}</td>
                             <td class="total-amount">${order.total_amount} ل.س</td>
-                            <td><span class="status-badge">قيد المراجعة</span></td>
+                            <td>
+                <select onchange="updateOrderStatus(${order.id}, this.value)" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc; background: ${order.status === 'تم التسليم' ? '#d4edda' : order.status === 'ملغي' ? '#f8d7da' : '#fff3cd'}; font-weight: bold; cursor: pointer;">
+                <option value="قيد المراجعة" ${order.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
+                <option value="قيد التجهيز" ${order.status === 'قيد التجهيز' ? 'selected' : ''}>قيد التجهيز</option>
+                <option value="تم الشحن" ${order.status === 'تم الشحن' ? 'selected' : ''}>تم الشحن</option>
+                <option value="تم التسليم" ${order.status === 'تم التسليم' ? 'selected' : ''}>تم التسليم</option>
+                <option value="ملغي" ${order.status === 'ملغي' ? 'selected' : ''}>ملغي</option>
+                </select>
+                </td>
                         </tr>
                     `;
                 });
@@ -205,7 +213,24 @@
                 }
             }
         }
+// دالة تحديث حالة الطلب في قاعدة البيانات
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .update({ status: newStatus })
+                    .eq('id', orderId);
 
+                if (error) throw error;
+                
+                // إعادة تحميل الطلبات لتحديث ألوان الجدول
+                fetchOrders(); 
+                
+            } catch (err) {
+                console.error("خطأ في تحديث الحالة:", err);
+                alert("حدث خطأ أثناء تحديث حالة الطلب.");
+            }
+        }
         // تشغيل الدالة فور تحميل الصفحة
         document.addEventListener('DOMContentLoaded', fetchOrders);
     </script>
