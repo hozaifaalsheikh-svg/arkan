@@ -19,6 +19,7 @@ async function loadProductsFromSupabase() {
             description: product.description || "منتج أركان فارما المميز.",
             price: product.price || 0,
             category: product.category || "عام",
+            brand: product.brand || "Bioxcin", // جلب البراند من قاعدة البيانات
             imageUrl: product.image_url 
         }));
         renderProducts(localProducts); 
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// 2. عرض المنتجات في الصفحة الرئيسية
 // 2. عرض المنتجات في الصفحة الرئيسية
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
@@ -56,9 +58,13 @@ function renderProducts(productsList) {
             readMoreHtml = '<span class="read-more">اقرأ المزيد</span>';
         }
 
+        // قمنا بتعديل محتوى البطاقة (card.innerHTML) هنا
         card.innerHTML = `
             <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
             <div class="product-info">
+                
+                <span class="product-brand">${product.brand}</span>
+                
                 <h4 class="product-title">${product.name}</h4>
                 
                 <div class="desc-wrapper">

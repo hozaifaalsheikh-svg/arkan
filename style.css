@@ -298,7 +298,18 @@
         display: block;
         width: 100%;
     }
-
+    .product-brand {
+        font-size: 10px;
+        color: var(--primary-color);
+        background-color: #fff1e6; 
+        padding: 3px 10px;
+        border-radius: 10px;
+        font-weight: 700;
+        margin-top: 5px;
+        margin-bottom: 8px;
+        display: inline-block;
+        letter-spacing: 0.5px;
+    }
     /* --- تغليف الوصف والزر معاً --- */
     .desc-wrapper {
         display: flex;
