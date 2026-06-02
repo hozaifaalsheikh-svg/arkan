@@ -8,17 +8,40 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* تنسيقات إضافية لصفحة التفاصيل */
+        /* تنسيقات محسّنة لصفحة التفاصيل */
         .details-wrapper { max-width: 1000px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        
+        /* حاوية الصورة مع شارة ARKAN */
+        .img-box { position: relative; background: #fdfdfd; border-radius: 8px; padding: 15px; text-align: center; }
         .img-box img { width: 100%; border-radius: 8px; object-fit: contain; }
-        .info-box h1 { color: #1a365d; margin-bottom: 10px; }
+        
+        /* شارة ARKAN الحصرية */
+        .arkan-tag { position: absolute; top: 15px; right: 15px; background: #1a365d; color: white; font-weight: 800; font-size: 13px; padding: 5px 12px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); letter-spacing: 0.5px; }
+        
+        /* صندوق تفاصيل المنتج المحاذي لليمين */
+        .info-box { text-align: right; }
+        
+        /* شارة البراند الديناميكية */
+        .brand-badge { display: inline-block; background: #f4f7f6; color: #666; padding: 6px 14px; border-radius: 20px; font-size: 13px; margin-bottom: 12px; border: 1px solid #eaeaea; }
+        .brand-badge strong { color: #f27a1a; font-weight: 700; }
+        
+        .info-box h1 { color: #1a365d; margin-top: 5px; margin-bottom: 10px; font-size: 28px; }
         .info-box .price { font-size: 28px; font-weight: bold; color: #f27a1a; margin: 20px 0; }
-        .btn-group { display: flex; gap: 10px; }
-        .btn-add { background: #f27a1a; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        
+        /* تنسيق أزرار التحكم */
+        .btn-group { display: flex; gap: 15px; }
+        .btn-add { background: #f27a1a; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; flex: 1; }
         .btn-add:hover { background: #e06912; }
-        .btn-back { background: #1a365d; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; transition: background 0.3s;}
+        .btn-back { background: #1a365d; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; transition: background 0.3s; flex: 1; }
         .btn-back:hover { background: #112440; }
+
+        /* التجاوب مع شاشات الموبايل */
+        @media (max-width: 768px) {
+            .product-grid { grid-template-columns: 1fr; gap: 20px; }
+            .info-box { text-align: center; }
+            .btn-group { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -37,7 +60,6 @@
         </div>
     </main>
 
-    <!-- نافذة التأكيد الاحترافية الجديدة -->
     <div id="custom-confirm-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-icon"><i class="fas fa-shopping-basket"></i></div>
@@ -50,14 +72,11 @@
         </div>
     </div>
 
-    <!-- حاوية الإشعارات -->
     <div id="toast-container"></div>
 
-    <!-- استدعاء المكتبات والملف الرئيسي -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
     
-    <!-- كود جلب تفاصيل المنتج الخاص بهذه الصفحة فقط -->
     <script>
         async function loadProduct() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -72,15 +91,17 @@
                 return;
             }
 
-            // عرض المنتج وربط زر الإضافة بدالة الإشعارات الجديدة (askToConfirmAdd)
+            // عرض المنتج وربط زر الإضافة بدالة الإشعارات الجديدة مع عرض البراند وتنسيق السعر ديناميكياً
             document.getElementById('product-content').innerHTML = `
                 <div class="img-box">
+                    <div class="arkan-tag">ARKAN</div>
                     <img src="${data.image_url || 'https://via.placeholder.com/400'}" alt="${data.name}">
                 </div>
                 <div class="info-box">
+                    <div class="brand-badge">العلامة التجارية: <strong>${data.brand || 'عام'}</strong></div>
                     <h1>${data.name}</h1>
                     <p>${data.description || 'لا يوجد وصف حالياً.'}</p>
-                    <div class="price">${data.price} ل.س</div>
+                    <div class="price">${Number(data.price).toLocaleString()} ل.س</div>
                     <div class="btn-group">
                         <button class="btn-add" onclick="askToConfirmAdd('${data.sku}', '${data.name}', ${data.price})">إضافة للسلة</button>
                         <a href="index.html" class="btn-back">العودة للمتجر</a>
