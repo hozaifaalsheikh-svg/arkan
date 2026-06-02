@@ -267,7 +267,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 });
 
 // دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
-/
+
 function updateAuthUI(session) {
     const headerLinks = document.querySelector('.header-links');
     if (!headerLinks) return;
