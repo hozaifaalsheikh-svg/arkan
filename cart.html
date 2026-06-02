@@ -27,8 +27,8 @@
         .checkout-form { display: grid; gap: 15px; }
         .checkout-form input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
         .checkout-form input:focus { border-color: var(--primary-color); }
-        .btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s;}
-        .btn-whatsapp:hover { background: #20ba5a; }
+        .btn-whatsapp { color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s;}
+        .btn-whatsapp:hover { opacity: 0.9; }
         .empty-msg { text-align: center; padding: 50px; font-size: 18px; color: #888; }
         .back-link { display: inline-block; margin-bottom: 20px; color: var(--secondary-color); text-decoration: none; font-weight: bold; }
         .back-link:hover { color: var(--primary-color); }
@@ -53,8 +53,7 @@
         <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> متابعة التسوق</a>
         <h1 class="cart-page-title"><i class="fas fa-shopping-cart"></i> سلة مشترياتي</h1>
 
-        <div id="cart-content">
-            </div>
+        <div id="cart-content"></div>
 
         <div class="cart-summary" id="cart-summary" style="display: none;">
             <div class="summary-total">
@@ -64,11 +63,13 @@
             
             <h3 style="margin-bottom: 15px; color: #333;">معلومات التوصيل:</h3>
             <div class="checkout-form">
-                <input type="text" id="cust-name" placeholder="اسمك الكريم / اسم الصيدلية" required>
-                <input type="text" id="cust-address" placeholder="المدينة / القرية  " required>
-                <input type="text" id="cust-address" placeholder="العنوان بالتفصيل " required>
-                <button class="btn-whatsapp" onclick="sendOrder()">
-                    <i class="fab fa-whatsapp"></i> اعتماد الطلب وإرساله واتساب
+                <input type="text" id="cust-name" placeholder="اسمك الكريم / اسم المركز أو الصيدلية" required>
+                <input type="tel" id="cust-phone" placeholder="رقم الموبايل للتواصل (مثال: 09...)" required>
+                <input type="text" id="cust-city" placeholder="المدينة / القرية" required>
+                <input type="text" id="cust-address" placeholder="العنوان بالتفصيل" required>
+                
+                <button class="btn-whatsapp" style="background: var(--secondary-color);" onclick="submitOrder()">
+                    <i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب
                 </button>
             </div>
         </div>
@@ -80,7 +81,7 @@
 
     <script>
         // قراءة السلة من الذاكرة
-         cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+        let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
 
         function renderCartPage() {
             const contentDiv = document.getElementById('cart-content');
