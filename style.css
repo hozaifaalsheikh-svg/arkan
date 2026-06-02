@@ -715,3 +715,29 @@
         font-size: 12px;
     }
 }
+/* --- تنسيق زر حول الشركة في الهيدر --- */
+.header-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    color: var(--secondary-color);
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.header-action-btn i {
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.header-action-btn:hover {
+    border-color: var(--primary-color);
+    background-color: #fff1e6;
+    color: var(--primary-color);
+}
