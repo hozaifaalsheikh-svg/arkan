@@ -58,28 +58,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <script src="script.js"></script>
-        <!-- كود زر تذكرني -->
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const emailInput = document.getElementById("login-email");
-                // تأكد من أنك عدلت الـ id الخاص بالـ checkbox في الـ HTML كما اتفقنا
-                const rememberCheckbox = document.getElementById("remember-me");
-                const loginForm = document.getElementById("login-form");
 
-                const savedEmail = localStorage.getItem("arkan_remembered_email");
-                if (savedEmail) {
-                    emailInput.value = savedEmail;
-                    rememberCheckbox.checked = true;
-                }
-
-                loginForm.addEventListener("submit", function() {
-                    if (rememberCheckbox.checked) {
-                        localStorage.setItem("arkan_remembered_email", emailInput.value);
-                    } else {
-                        localStorage.removeItem("arkan_remembered_email");
-                    }
-                });
-            });
-        </script>
-    </body>
+        
+     </body>
     </html>

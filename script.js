@@ -208,11 +208,19 @@ async function registerUser(event) {
 // كود تسجيل الدخول
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
+    // 1. استرجاع الإيميل المحفوظ تلقائياً عند فتح صفحة تسجيل الدخول
+    const savedEmail = localStorage.getItem("arkan_remembered_email");
+    if (savedEmail) {
+        document.getElementById('login-email').value = savedEmail;
+        document.getElementById('remember-me').checked = true;
+    }
+
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
+        const rememberCheckbox = document.getElementById('remember-me'); // جلب حالة زر تذكرني
 
         const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
@@ -228,11 +236,18 @@ if (loginForm) {
                 confirmButtonColor: '#e74c3c'
             });
         } else {
+            // 2. إذا نجح تسجيل الدخول، نتحقق من زر "تذكرني"
+            if (rememberCheckbox && rememberCheckbox.checked) {
+                localStorage.setItem("arkan_remembered_email", email); // حفظ الإيميل
+            } else {
+                localStorage.removeItem("arkan_remembered_email"); // مسحه إذا ألغى التحديد
+            }
+
             Swal.fire({
                 icon: 'success',
                 title: 'مرحباً بعودتك!',
                 text: 'تم تسجيل الدخول بنجاح 🌟',
-                timer: 2000, // ستختفي الرسالة تلقائياً بعد ثانيتين
+                timer: 2000, 
                 showConfirmButton: false
             }).then(() => {
                 window.location.href = 'index.html'; 
@@ -240,7 +255,6 @@ if (loginForm) {
         }
     });
 }
-// =========================================
 // 6. إدارة جلسات المستخدمين (Session Management)
 // =========================================
 
