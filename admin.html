@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | شركة أركان</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #e67e22;
+            --bg-color: #f4f7f6;
+        }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
+        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .admin-header h1 { color: var(--primary-color); margin: 0; font-size: 24px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid #ddd; }
+        th { background-color: var(--primary-color); color: white; font-weight: 600; }
+        tr:hover { background-color: #f9f9f9; }
+        
+        .order-details-list { margin: 0; padding-right: 15px; font-size: 13px; color: #555; }
+        .total-amount { font-weight: bold; color: var(--secondary-color); }
+        .status-badge { background: #ffeaa7; color: #d35400; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        
+        .loading-text { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fas fa-tachometer-alt"></i> لوحة إدارة الطلبات</h1>
+            <a href="index.html" style="color: var(--secondary-color); text-decoration: none; font-weight: bold;"><i class="fas fa-home"></i> العودة للمتجر</a>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الطلب</th>
+                        <th>التاريخ</th>
+                        <th>العميل</th>
+                        <th>التواصل</th>
+                        <th>العنوان</th>
+                        <th>تفاصيل المنتجات</th>
+                        <th>الإجمالي</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <tr><td colspan="8" class="loading-text">جاري جلب الطلبات...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ضع مفاتيح Supabase الخاصة بك هنا (نفسها الموجودة في script.js)
+        const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function fetchOrders() {
+            const tableBody = document.getElementById('orders-table-body');
+
+            try {
+                // جلب الطلبات وترتيبها من الأحدث للأقدم
+                const { data: orders, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (orders.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="8" class="loading-text">لا توجد طلبات حالياً.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                orders.forEach(order => {
+                    // تنسيق التاريخ ليصبح مقروءاً
+                    const date = new Date(order.created_at).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
+                    
+                    // تنسيق المنتجات المطلوبة من الـ JSON
+                    let productsHtml = '<ul class="order-details-list">';
+                    if(order.order_details && Array.isArray(order.order_details)) {
+                        order.order_details.forEach(item => {
+                            productsHtml += `<li>${item.qty}x ${item.name}</li>`;
+                        });
+                    }
+                    productsHtml += '</ul>';
+
+                    html += `
+                        <tr>
+                            <td style="font-weight: bold;">#${order.id}</td>
+                            <td style="font-size: 13px;">${date}</td>
+                            <td style="font-weight: 600;">${order.customer_name}</td>
+                            <td style="direction: ltr; text-align: right;">${order.customer_phone}</td>
+                            <td style="font-size: 13px;">${order.city} - ${order.detailed_address}</td>
+                            <td>${productsHtml}</td>
+                            <td class="total-amount">${order.total_amount} ل.س</td>
+                            <td><span class="status-badge">قيد المراجعة</span></td>
+                        </tr>
+                    `;
+                });
+
+                tableBody.innerHTML = html;
+
+            } catch (err) {
+                console.error("خطأ في جلب الطلبات:", err);
+                tableBody.innerHTML = `<tr><td colspan="8" class="loading-text" style="color: red;">حدث خطأ أثناء الاتصال بقاعدة البيانات.</td></tr>`;
+            }
+        }
+
+        // تشغيل الدالة فور تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', fetchOrders);
+    </script>
+</body>
+</html>
