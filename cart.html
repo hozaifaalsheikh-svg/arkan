@@ -138,6 +138,7 @@
         }
 
         // دالة إرسال الطلب المحمية بحساب المستخدم
+        // دالة إرسال الطلب (حفظ في قاعدة البيانات + توجيه للواتساب)
         async function submitOrder() {
             // 1. جلب بيانات العميل
             const name = document.getElementById('cust-name').value;
@@ -145,61 +146,78 @@
             const city = document.getElementById('cust-city').value;
             const address = document.getElementById('cust-address').value;
 
-            // 2. التحقق من إدخال جميع الحقول
+            // 2. التحقق من الحقول
             if(!name || !phone || !city || !address) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'بيانات ناقصة',
-                    text: 'يرجى تعبئة جميع الحقول (الاسم، الرقم، المدينة، والعنوان التفصيلي) لضمان وصول طلبك.',
+                    text: 'يرجى تعبئة جميع الحقول لضمان وصول طلبك.',
                     confirmButtonColor: '#f27a1a'
                 });
                 return;
             }
 
-            // 3. حساب الإجمالي وتجهيز تفاصيل المنتجات كـ JSON
+            // 3. حساب الإجمالي وتجهيز الطلب ورسالة الواتساب
             let total = 0;
-            const orderItems = cart.map(item => {
+            let whatsappMessage = `*طلب جديد من شركة أركان 🛍️*\n\n*الاسم:* ${name}\n*رقم التواصل:* ${phone}\n*المدينة:* ${city}\n*العنوان:* ${address}\n-----------------------------\n`;
+            
+            const orderItems = cart.map((item, index) => {
                 const itemPrice = parseInt(item.price) || 0;
                 total += itemPrice * item.qty;
+                
+                // إضافة تفاصيل المنتج لرسالة الواتساب
+                whatsappMessage += `${index + 1}) *${item.name}*\n   الكمية: ${item.qty} | السعر: ${item.price}\n`;
+                
                 return { name: item.name, qty: item.qty, price: item.price };
             });
 
-            // إظهار رسالة تحميل للعميل
+            whatsappMessage += `-----------------------------\n*الإجمالي المطلوب:* ${total} ل.س\n\nيرجى تأكيد وتجهيز الطلب للشحن 🚚`;
+
             Swal.fire({
-                title: 'جاري إرسال الطلب...',
+                title: 'جاري تسجيل الطلب...',
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 
-            // 4. الإرسال الصامت إلى قاعدة بيانات Supabase (جدول orders)
-            const { data, error } = await supabaseClient
-                .from('orders')
-                .insert([
-                    { 
-                        customer_name: name, 
-                        customer_phone: phone, 
-                        city: city, 
-                        detailed_address: address, 
-                        order_details: orderItems, 
-                        total_amount: total 
-                    }
-                ]);
+            try {
+                // 4. الحفظ في قاعدة البيانات (Supabase)
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .insert([
+                        { 
+                            customer_name: name, 
+                            customer_phone: phone, 
+                            city: city, 
+                            detailed_address: address, 
+                            order_details: orderItems, 
+                            total_amount: total 
+                        }
+                    ]);
 
-            if (error) {
-                Swal.fire({ icon: 'error', title: 'حدث خطأ', text: 'لم نتمكن من إرسال الطلب، يرجى المحاولة لاحقاً.' });
-                console.error(error);
-            } else {
-                // نجاح العملية: مسح السلة وإظهار رسالة شكر
+                if (error) throw error;
+
+                // 5. مسح السلة بعد نجاح الحفظ
                 localStorage.removeItem('arkan_cart');
                 cart = [];
                 renderCartPage();
-                
+
+                // 6. إظهار رسالة النجاح وفتح الواتساب
                 Swal.fire({
                     icon: 'success',
-                    title: 'تم استلام طلبك بنجاح!',
-                    text: 'سيقوم فريقنا بالتواصل معك قريباً لتأكيد الشحن.',
-                    confirmButtonColor: '#2ecc71'
+                    title: 'تم تسجيل الطلب!',
+                    text: 'سيتم تحويلك الآن للواتساب لإرسال رسالة التأكيد.',
+                    confirmButtonColor: '#2ecc71',
+                    timer: 2500, // الانتظار ثانيتين ونصف قبل فتح الواتساب
+                    showConfirmButton: false
+                }).then(() => {
+                    // توجيه العميل للواتساب مع الرسالة الجاهزة
+                    const whatsappUrl = `https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(whatsappMessage)}`;
+                    window.open(whatsappUrl, '_blank');
                 });
+
+            } catch (err) {
+                console.error("خطأ تقني:", err);
+                Swal.fire({ icon: 'error', title: 'عذراً', text: 'تعذر الإرسال. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.' });
             }
         }
 
