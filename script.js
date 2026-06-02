@@ -293,30 +293,29 @@ function updateAuthUI(session) {
     }
 }
 // دالة تأكيد تسجيل الخروج
+// دالة تأكيد تسجيل الخروج الاحترافية
 function askToLogout(event) {
     event.preventDefault();
     
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'تسجيل الخروج',
-            text: 'هل أنت متأكد أنك تريد المغادرة؟',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#e74c3c', // أحمر للتنبيه
-            cancelButtonColor: '#1a365d', // كحلي أركان للإلغاء
-            confirmButtonText: 'نعم، خروج',
-            cancelButtonText: 'إلغاء'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                logoutUser(event); // إذا وافق، يتم استدعاء دالة الخروج الأصلية
-            }
-        });
-    } else {
-        // بديل احتياطي في حال لم يتم تحميل مكتبة Swal
-        if(confirm('هل تريد تسجيل الخروج حقاً؟')) {
-            logoutUser(event);
+    Swal.fire({
+        title: 'تسجيل الخروج؟',
+        text: 'هل أنت متأكد أنك تريد مغادرة حسابك في أركان؟',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c', // لون أحمر أنيق لزر الخروج
+        cancelButtonColor: '#1a365d', // لون كحلي لزر التراجع (ألوان أركان)
+        confirmButtonText: 'نعم، تسجيل خروج',
+        cancelButtonText: 'تراجع',
+        reverseButtons: true, // مهم جداً: لعكس أماكن الأزرار لتناسب الواجهة العربية
+        customClass: {
+            title: 'my-swal-title',
+            popup: 'my-swal-popup'
         }
-    }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            logoutUser(event); // إذا وافق، يتم استدعاء دالة الخروج التي تظهر رسالة "إلى اللقاء"
+        }
+    });
 }
 // دالة تسجيل الخروج
 async function logoutUser(event) {
