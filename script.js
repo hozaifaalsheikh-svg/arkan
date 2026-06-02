@@ -267,8 +267,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 });
 
 // دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
-// دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
-// دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
+/
 function updateAuthUI(session) {
     const headerLinks = document.querySelector('.header-links');
     if (!headerLinks) return;
@@ -277,14 +276,46 @@ function updateAuthUI(session) {
         // المستخدم مسجل الدخول
         const userName = session.user.user_metadata.full_name || "صديق أركان";
         headerLinks.innerHTML = `
-            <a href="#" style="cursor: default;"><i class="fas fa-user" style="margin-left: 5px;"></i> <span class="hide-on-mobile">مرحباً، </span>${userName}</a>
-            <a href="#" onclick="logoutUser(event)" style="color: #e74c3c;"><i class="fas fa-sign-out-alt" style="margin-left: 5px;"></i> خروج</a>
+            <a href="about.html" class="mobile-about-btn"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول</a>
+            
+            <!-- تم دمج الخروج مع الاسم هنا -->
+            <a href="#" onclick="askToLogout(event)" style="cursor: pointer; transition: color 0.3s;" title="اضغط لتسجيل الخروج">
+                <i class="fas fa-user" style="margin-left: 5px;"></i> 
+                <span class="hide-on-mobile">مرحباً، </span>${userName}
+            </a>
         `;
     } else {
         // المستخدم غير مسجل
         headerLinks.innerHTML = `
+            <a href="about.html" class="mobile-about-btn"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول</a>
             <a href="login.html"><i class="fas fa-user-plus" style="margin-left: 5px;"></i> <span class="desktop-only-text">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span></a>
         `;
+    }
+}
+// دالة تأكيد تسجيل الخروج
+function askToLogout(event) {
+    event.preventDefault();
+    
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'تسجيل الخروج',
+            text: 'هل أنت متأكد أنك تريد المغادرة؟',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c', // أحمر للتنبيه
+            cancelButtonColor: '#1a365d', // كحلي أركان للإلغاء
+            confirmButtonText: 'نعم، خروج',
+            cancelButtonText: 'إلغاء'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                logoutUser(event); // إذا وافق، يتم استدعاء دالة الخروج الأصلية
+            }
+        });
+    } else {
+        // بديل احتياطي في حال لم يتم تحميل مكتبة Swal
+        if(confirm('هل تريد تسجيل الخروج حقاً؟')) {
+            logoutUser(event);
+        }
     }
 }
 // دالة تسجيل الخروج
