@@ -61,6 +61,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // دالة التحقق من كلمة المرور
+        function checkAdminPassword() {
+            const passInput = document.getElementById('admin-pass').value;
+            // يمكنك تغيير "arkan123" لأي كلمة مرور تفضلها
+            if(passInput === 'arkan123') { 
+                document.getElementById('admin-login-overlay').style.display = 'none';
+            } else {
+                alert('عذراً، كلمة المرور غير صحيحة!');
+            }
+        }
+
+        // تفعيل الضغط على زر Enter لتسجيل الدخول
+        document.getElementById('admin-pass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkAdminPassword();
+            }
+        });
         // ضع مفاتيح Supabase الخاصة بك هنا (نفسها الموجودة في script.js)
         const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 

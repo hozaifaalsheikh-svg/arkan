@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body> 
+    <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%;">
+            <h2 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-lock"></i> منطقة الإدارة المحمية</h2>
+            <p style="color: #666; font-size: 14px;">الرجاء إدخال كلمة المرور للمتابعة</p>
+            <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; text-align: center; box-sizing: border-box; outline: none;">
+            <button onclick="checkAdminPassword()" style="width: 100%; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">تسجيل الدخول</button>
+        </div>
+    </div>
     <div class="sticky-wrapper">
         <header class="main-header">
             <div class="header-container">
@@ -74,4 +82,5 @@
         </a>
     </div>
 </body>
+
 </html>
