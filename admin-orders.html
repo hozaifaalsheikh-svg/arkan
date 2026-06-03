@@ -21,17 +21,20 @@
         .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
         .table-wrapper { overflow-x: auto; overflow-y: visible; border-radius: 8px; border: 1px solid #eee; width: 100%; min-height: 450px; }
-        table { width: 100%; border-collapse: collapse; background: white; table-layout: auto; word-wrap: break-word; }
+        table { width: 100%; border-collapse: collapse; background: white; table-layout: auto; word-wrap: break-word; font-family: 'Cairo', sans-serif; }
         
         th, td { padding: 10px 8px; font-size: 12px; white-space: normal !important; word-break: break-word; border-bottom: 1px solid #eee; vertical-align: middle; text-align: right; }
         
-        th { background-color: var(--primary-color); color: white; font-weight: 600; user-select: none; position: relative; }
-        .th-content { display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 5px; }
+        /* توحيد تنسيق الخطوط في الترويسة */
+        th { background-color: var(--primary-color); color: #ffffff !important; font-weight: 700 !important; font-size: 13px !important; user-select: none; position: relative; }
+        
+        /* التعديل الجذري: جعل الأيقونة بجانب النص مباشرة */
+        .th-content { display: flex; justify-content: flex-start; align-items: center; gap: 8px; cursor: pointer; }
         .th-content:hover { color: var(--secondary-color); }
-        .filter-icon { font-size: 10px; color: rgba(255,255,255,0.7); transition: 0.2s; padding: 4px; border-radius: 4px; }
+        .filter-icon { font-size: 11px; color: rgba(255,255,255,0.8); transition: 0.2s; padding: 4px; border-radius: 4px; }
         .filter-icon:hover { background: rgba(255,255,255,0.2); color: #fff; }
 
-        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; padding: 10px; z-index: 999; min-width: 180px; margin-top: 5px; cursor: default; }
+        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; padding: 10px; z-index: 999; min-width: 180px; margin-top: 5px; cursor: default; font-weight: normal; color: #333; }
         .filter-popup::before { content: ''; position: absolute; top: -6px; right: 15px; border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent #fff transparent; }
         
         .sort-btns { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
@@ -44,7 +47,6 @@
         
         tr:hover td { background-color: #f8fbff; }
         
-        /* التحديث الاحترافي لمربع الحالة */
         .status-select { padding: 6px 8px; border-radius: 5px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 11px; transition: 0.3s; }
         .status-select:hover { opacity: 0.8; }
 
@@ -218,15 +220,14 @@
             }
         }
 
-        // هندسة الألوان الاحترافية الجديدة (الباستيل)
         function getStatusStyle(status) {
             switch(status) {
-                case 'تم التسليم': return { bg: '#d1fae5', text: '#065f46', border: '#34d399' }; // أخضر ناعم
-                case 'تم الشحن': return { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd' }; // أزرق ناعم
-                case 'قيد التجهيز': return { bg: '#f3e8ff', text: '#6b21a8', border: '#d8b4fe' }; // بنفسجي ناعم
-                case 'ملغي': return { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' }; // أحمر ناعم
+                case 'تم التسليم': return { bg: '#d1fae5', text: '#065f46', border: '#34d399' };
+                case 'تم الشحن': return { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd' };
+                case 'قيد التجهيز': return { bg: '#f3e8ff', text: '#6b21a8', border: '#d8b4fe' };
+                case 'ملغي': return { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' };
                 case 'قيد المراجعة':
-                default: return { bg: '#fef3c7', text: '#92400e', border: '#fcd34d' }; // برتقالي/أصفر ناعم
+                default: return { bg: '#fef3c7', text: '#92400e', border: '#fcd34d' };
             }
         }
 
@@ -241,8 +242,6 @@
 
             dataArray.forEach(o => {
                 const date = new Date(o.created_at).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
-                
-                // جلب تنسيق الألوان الجديد
                 const style = getStatusStyle(o.status);
                 
                 let itemsStr = '';
