@@ -1,109 +1,13 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سلة التسوق | شركة أركان</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    
-    <style>
-        .cart-page-container { max-width: 900px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .cart-page-title { text-align: center; color: var(--secondary-color); margin-bottom: 30px; font-size: 28px; }
-        .cart-list { margin-bottom: 30px; }
-        .cart-item-row { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border-color); gap: 15px; }
-        .cart-item-row:last-child { border-bottom: none; }
-        .cart-item-info { flex: 2; font-size: 16px; font-weight: 600; }
-        .cart-item-price { flex: 1; color: var(--primary-color); font-weight: bold; text-align: center; }
-        .qty-controls { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .qty-controls button { background: #eee; border: none; width: 35px; height: 35px; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s; }
-        .qty-controls button:hover { background: #ddd; }
-        .delete-btn { background: #fff0f0 !important; color: #dc3545; }
-        .delete-btn:hover { background: #ffe0e0 !important; }
-        .cart-summary { background: #fdfdfd; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .summary-total { font-size: 22px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px dashed #ccc; padding-bottom: 15px;}
-        .summary-total span:last-child { color: var(--primary-color); }
-        .checkout-form { display: grid; gap: 15px; }
-        .checkout-form input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
-        .checkout-form input:focus { border-color: var(--primary-color); }
-        .btn-whatsapp { color: white; border: none; padding: 15px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s;}
-        .btn-whatsapp:hover { opacity: 0.9; }
-        .empty-msg { text-align: center; padding: 50px; font-size: 18px; color: #888; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: var(--secondary-color); text-decoration: none; font-weight: bold; }
-        .back-link:hover { color: var(--primary-color); }
-
-        @media (max-width: 768px) {
-            .cart-item-row { flex-direction: column; text-align: center; }
-            .cart-item-info, .cart-item-price, .qty-controls { width: 100%; justify-content: center; margin-bottom: 10px; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="sticky-wrapper">
-        <header class="main-header">
-            <div class="header-container">
-                <div class="brand-group">
-                    <a href="index.html" style="text-decoration: none;">
-                        <div class="logo">Arkan<span>COMPANY</span></div>
-                    </a>
-                </div>
-                
-                <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
-                    <a href="about.html" class="header-action-btn" style="text-decoration: none;">
-                        <i class="fas fa-info-circle"></i> <span class="hide-on-mobile">حول الشركة</span><span class="mobile-only-text">حول</span>
-                    </a>
-
-                    <div class="header-links" style="display: flex; align-items: center; gap: 10px;">
-                        <a href="login.html" class="header-action-btn" style="text-decoration: none;">
-                            <i class="fas fa-user-plus"></i> <span class="hide-on-mobile">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </header>
-    </div>
-
-    <main class="cart-page-container">
-        <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> متابعة التسوق</a>
-        <h1 class="cart-page-title"><i class="fas fa-shopping-cart"></i> سلة مشترياتي</h1>
-
-        <div id="cart-content"></div>
-
-        <div class="cart-summary" id="cart-summary" style="display: none;">
-            <div class="summary-total">
-                <span>الإجمالي المطلوب:</span>
-                <span id="final-total">0 ل.س</span>
-            </div>
-            
-            <h3 style="margin-bottom: 15px; color: #333;">معلومات التوصيل:</h3>
-            <div class="checkout-form">
-                <input type="text" id="cust-name" placeholder="اسمك الكريم / اسم المركز أو الصيدلية" required>
-                <input type="tel" id="cust-phone" placeholder="رقم الموبايل للتواصل (مثال: 09...)" style="text-align: right; direction: rtl;" required>
-                <input type="text" id="cust-city" placeholder="المدينة / القرية" required>
-                <input type="text" id="cust-address" placeholder="العنوان بالتفصيل" required>
-                
-                <button class="btn-whatsapp" style="background: var(--secondary-color);" onclick="submitOrder()">
-                    <i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
-
-    <script>
-        cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+<script>
+        // تعريف المتغير العام في أعلى السكربت لضمان رؤيته من كل الدوال
+        let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
 
         function renderCartPage() {
             const contentDiv = document.getElementById('cart-content');
             const summaryDiv = document.getElementById('cart-summary');
             
             if (cart.length === 0) {
-                contentDiv.innerHTML = '<div class="empty-msg"><i class="fas fa-box-open" style="font-size: 40px; margin-bottom: 15px; display:block;"></i>سلتك فارغة حالياً. ارجع للمتجر واكتشف منتجاتنا!</div>';
+                contentDiv.innerHTML = '<div class="empty-msg"><i class="fas fa-box-open" style="font-size: 40px; margin-bottom: 15px; display:block;"></i>سلتك فارغة حالياً.</div>';
                 summaryDiv.style.display = 'none';
                 return;
             }
@@ -113,15 +17,16 @@
 
             cart.forEach(item => {
                 const itemPrice = parseInt(item.price) || 0;
-                total += itemPrice * item.qty;
+                const qty = parseInt(item.qty) || 1;
+                total += itemPrice * qty;
 
                 html += `
                     <div class="cart-item-row">
                         <div class="cart-item-info">${item.name}</div>
-                        <div class="cart-item-price">${item.price} ل.س</div>
+                        <div class="cart-item-price">${(itemPrice * qty).toLocaleString()} ل.س</div>
                         <div class="qty-controls">
                             <button onclick="changePageQty('${item.sku}', 1)">+</button>
-                            <span style="font-size: 18px; min-width: 30px; text-align: center;">${item.qty}</span>
+                            <span style="font-size: 18px; min-width: 30px; text-align: center; font-weight:bold;">${qty}</span>
                             <button onclick="changePageQty('${item.sku}', -1)">-</button>
                             <button class="delete-btn" onclick="removePageItem('${item.sku}')"><i class="fas fa-trash-alt"></i></button>
                         </div>
@@ -131,18 +36,26 @@
             html += '</div>';
 
             contentDiv.innerHTML = html;
-            document.getElementById('final-total').textContent = `${total} ل.س`;
+            document.getElementById('final-total').textContent = `${total.toLocaleString()} ل.س`;
             summaryDiv.style.display = 'block';
         }
 
         function changePageQty(sku, delta) {
+            // البحث عن المنتج في المصفوفة العامة
             const item = cart.find(i => i.sku === sku);
             if (!item) return;
-            item.qty += delta;
+
+            // تحديث الكمية والتأكد أنها رقم
+            item.qty = parseInt(item.qty) + delta;
+            
             if (item.qty <= 0) {
                 cart = cart.filter(i => i.sku !== sku);
             }
+            
+            // حفظ التحديث
             localStorage.setItem('arkan_cart', JSON.stringify(cart));
+            
+            // إعادة الرسم فوراً
             renderCartPage();
         }
 
@@ -152,79 +65,8 @@
             renderCartPage();
         }
 
-        async function submitOrder() {
-            const name = document.getElementById('cust-name').value;
-            const phone = document.getElementById('cust-phone').value;
-            const city = document.getElementById('cust-city').value;
-            const address = document.getElementById('cust-address').value;
-
-            if(!name || !phone || !city || !address) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'بيانات ناقصة',
-                    text: 'يرجى تعبئة جميع الحقول لضمان وصول طلبك.',
-                    confirmButtonColor: '#f27a1a'
-                });
-                return;
-            }
-
-            let total = 0;
-            let whatsappMessage = `*طلب جديد من شركة أركان 🛍️*\n\n*الاسم:* ${name}\n*رقم التواصل:* ${phone}\n*المدينة:* ${city}\n*العنوان:* ${address}\n-----------------------------\n`;
-            
-            const orderItems = cart.map((item, index) => {
-                const itemPrice = parseInt(item.price) || 0;
-                total += itemPrice * item.qty;
-                whatsappMessage += `${index + 1}) *${item.name}*\n   الكمية: ${item.qty} | السعر: ${item.price}\n`;
-                return { name: item.name, qty: item.qty, price: item.price };
-            });
-
-            whatsappMessage += `-----------------------------\n*الإجمالي المطلوب:* ${total} ل.س\n\nيرجى تأكيد وتجهيز الطلب للشحن 🚚`;
-
-            Swal.fire({
-                title: 'جاري تسجيل الطلب...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('orders')
-                    .insert([
-                        { 
-                            customer_name: name, 
-                            customer_phone: phone, 
-                            city: city, 
-                            detailed_address: address, 
-                            order_details: orderItems, 
-                            total_amount: total 
-                        }
-                    ]);
-
-                if (error) throw error;
-
-                localStorage.removeItem('arkan_cart');
-                cart = [];
-                renderCartPage();
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'تم تسجيل الطلب!',
-                    text: 'سيتم تحويلك الآن للواتساب لإرسال رسالة التأكيد.',
-                    confirmButtonColor: '#2ecc71',
-                    timer: 2500,
-                    showConfirmButton: false
-                }).then(() => {
-                    const whatsappUrl = `https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(whatsappMessage)}`;
-                    window.open(whatsappUrl, '_blank');
-                });
-
-            } catch (err) {
-                console.error("خطأ تقني:", err);
-                Swal.fire({ icon: 'error', title: 'عذراً', text: 'تعذر الإرسال. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.' });
-            }
-        }
-
+        // باقي دوال الإرسال (submitOrder) تبقى كما هي...
+        // ... (تأكد أن الدوال الأخرى موجودة بنفس الأسماء)
+        
         document.addEventListener('DOMContentLoaded', renderCartPage);
-    </script>
-</body>
-</html>
+    </script>ٍ
