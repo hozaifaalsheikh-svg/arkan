@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f0f4f8; --success: #27ae60; }
+        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f0f4f8; --success: #27ae60; --text-unified: #2c3e50; }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 15px; margin: 0; box-sizing: border-box; }
         
         .admin-container { width: 100%; max-width: 100%; margin: 0 auto; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); box-sizing: border-box; }
@@ -23,12 +23,25 @@
         .table-wrapper { overflow-x: auto; overflow-y: visible; border-radius: 8px; border: 1px solid #eee; width: 100%; min-height: 450px; }
         table { width: 100%; border-collapse: collapse; background: white; table-layout: auto; word-wrap: break-word; font-family: 'Cairo', sans-serif; }
         
-        th, td { padding: 10px 8px; font-size: 12px; white-space: normal !important; word-break: break-word; border-bottom: 1px solid #eee; vertical-align: middle; text-align: right; }
+        /* 
+         =========================================
+         التوحيد الشامل لجميع الخلايا 
+         =========================================
+        */
+        td { 
+            padding: 12px 10px; 
+            font-size: 13px; /* توحيد حجم الخط */
+            font-weight: 600; /* توحيد سماكة الخط (Bold) */
+            color: var(--text-unified); /* توحيد لون الخط */
+            font-family: 'Cairo', sans-serif; /* توحيد نوع الخط */
+            white-space: normal !important; 
+            word-break: break-word; 
+            border-bottom: 1px solid #eee; 
+            vertical-align: middle; 
+            text-align: right; 
+        }
         
-        /* توحيد تنسيق الخطوط في الترويسة */
-        th { background-color: var(--primary-color); color: #ffffff !important; font-weight: 700 !important; font-size: 13px !important; user-select: none; position: relative; }
-        
-        /* التعديل الجذري: جعل الأيقونة بجانب النص مباشرة */
+        th { background-color: var(--primary-color); color: #ffffff !important; font-weight: 700 !important; font-size: 13px !important; user-select: none; position: relative; padding: 12px 10px; }
         .th-content { display: flex; justify-content: flex-start; align-items: center; gap: 8px; cursor: pointer; }
         .th-content:hover { color: var(--secondary-color); }
         .filter-icon { font-size: 11px; color: rgba(255,255,255,0.8); transition: 0.2s; padding: 4px; border-radius: 4px; }
@@ -47,16 +60,18 @@
         
         tr:hover td { background-color: #f8fbff; }
         
-        .status-select { padding: 6px 8px; border-radius: 5px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 11px; transition: 0.3s; }
+        .status-select { padding: 8px; border-radius: 6px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 12px; transition: 0.3s; }
         .status-select:hover { opacity: 0.8; }
 
+        /* تحديد العروض للحفاظ على الترتيب دون التلاعب بالخطوط */
         .col-id { width: 6%; }
-        .col-date { width: 10%; font-size: 11px !important; color: #666; }
-        .col-name { width: 14%; font-weight: bold; }
+        .col-date { width: 10%; }
+        .col-name { width: 14%; }
         .col-phone { width: 12%; direction: ltr; text-align: right; }
         .col-city { width: 16%; }
-        .col-items { width: 22%; line-height: 1.5; color: #444; }
-        .col-total { width: 10%; font-weight: bold; color: var(--secondary-color); }
+        .col-items { width: 22%; line-height: 1.6; }
+        /* استثناءات الإجمالي فقط */
+        .col-total { width: 10%; color: var(--secondary-color); font-weight: 700; font-size: 14px; }
         .col-status { width: 10%; }
 
         @media (max-width: 768px) { 
@@ -251,8 +266,9 @@
                     itemsStr = 'غير متوفر';
                 }
 
+                // تم إزالة كافة الأنماط المدمجة (Inline Styles) لتوحيد الخطوط بشكل كامل
                 html += `<tr>
-                    <td class="col-id" style="font-weight: bold; color: var(--primary-color);">#${o.id}</td>
+                    <td class="col-id">#${o.id}</td>
                     <td class="col-date">${date}</td>
                     <td class="col-name">${o.customer_name || '-'}</td>
                     <td class="col-phone">${o.customer_phone || '-'}</td>
