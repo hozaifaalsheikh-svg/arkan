@@ -7,46 +7,126 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary-color: #1a365d; }
-        body { font-family: 'Cairo', sans-serif; background-color: #f4f7f6; padding: 20px; }
-        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f8f9fa; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 20px; margin: 0; }
         
-        .btn-nav { background: #1a365d; color: #fff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+        /* تنسيقات الكمبيوتر (الأساسية) */
+        .admin-container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #ddd; }
-        th { background-color: #1a365d; color: white; }
+        /* حاوية الأزرار العلوية */
+        .header-buttons { display: flex; gap: 10px; }
         
-        @media (max-width: 600px) { .hide-on-mobile { display: none !important; } }
+        .btn-store { background: var(--secondary-color); color: #fff; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
+        .btn-dash { background: var(--primary-color); color: #fff; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
+        
+        .btn-store:hover, .btn-dash:hover { opacity: 0.9; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th { background-color: var(--primary-color); color: white; padding: 15px; font-weight: 600; }
+        th:first-child { border-radius: 0 10px 0 0; }
+        th:last-child { border-radius: 10px 0 0 0; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+        
+        .status-select { padding: 6px 10px; border-radius: 6px; border: none; font-family: 'Cairo', sans-serif; font-weight: bold; outline: none; cursor: pointer; transition: 0.3s; }
+
+        /* =========================================
+           تحديثات الموبايل فقط
+           ========================================= */
+        @media (max-width: 768px) { 
+            .hide-on-mobile { display: none !important; } 
+            
+            body { padding: 0 !important; background-color: #fff; }
+            .admin-container { max-width: 100% !important; padding: 15px !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100vh; }
+
+            /* ترتيب الهيدر والأزرار في الموبايل */
+            .admin-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-buttons { width: 100%; display: flex; gap: 8px; }
+            
+            /* تصغير الأزرار وجعلها متجاورة */
+            .btn-store, .btn-dash { 
+                font-size: 11px !important; 
+                padding: 6px 8px !important; 
+                flex: 1; 
+                justify-content: center; 
+            }
+
+            .admin-header h1 { font-size: 18px !important; margin: 0; }
+            table { font-size: 12px !important; }
+            th, td { padding: 10px 5px !important; }
+            .status-select { font-size: 11px !important; padding: 4px !important; width: 100%; }
+        }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="admin-header">
             <h1>إدارة الطلبات</h1>
-            <a href="admin.html" class="btn-nav"><i class="fas fa-arrow-right"></i> العودة للوحة التحكم</a>
+            <div class="header-buttons">
+                <a href="admin.html" class="btn-dash"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                <a href="index.html" class="btn-store"><i class="fas fa-store"></i> المتجر</a>
+            </div>
         </div>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr><th>رقم</th><th>العميل</th><th class="hide-on-mobile">العنوان</th><th>الإجمالي</th><th>الحالة</th></tr>
                 </thead>
-                <tbody id="orders-table-body"><tr><td colspan="5">جاري التحميل...</td></tr></tbody>
+                <tbody id="orders-table-body"><tr><td colspan="5" style="text-align:center;">جاري التحميل...</td></tr></tbody>
             </table>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
+        
         async function fetchOrders() {
-            const { data: orders } = await client.from('orders').select('*');
+            const { data: orders, error } = await client.from('orders').select('*').order('created_at', { ascending: false });
             let html = '';
-            orders.forEach(o => {
-                html += `<tr><td>#${o.id}</td><td>${o.customer_name}</td><td class="hide-on-mobile">${o.city}</td><td>${Number(o.total_amount).toLocaleString()}</td><td>${o.status}</td></tr>`;
-            });
+            
+            if (orders && orders.length > 0) {
+                orders.forEach(o => {
+                    const statusColor = getStatusColor(o.status);
+                    const textColor = o.status === 'قيد المراجعة' ? '#333' : '#fff';
+                    
+                    html += `<tr>
+                        <td><strong>#${o.id}</strong></td>
+                        <td>${o.customer_name}</td>
+                        <td class="hide-on-mobile">${o.city || '-'}</td>
+                        <td style="font-weight: bold; color: var(--secondary-color);">${Number(o.total_amount).toLocaleString()} ل.س</td>
+                        <td>
+                            <select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background-color: ${statusColor}; color: ${textColor};">
+                                <option value="قيد المراجعة" ${o.status=='قيد المراجعة'?'selected':''}>قيد المراجعة</option>
+                                <option value="تم الشحن" ${o.status=='تم الشحن'?'selected':''}>تم الشحن</option>
+                                <option value="تم التسليم" ${o.status=='تم التسليم'?'selected':''}>تم التسليم</option>
+                                <option value="ملغي" ${o.status=='ملغي'?'selected':''}>ملغي</option>
+                            </select>
+                        </td>
+                    </tr>`;
+                });
+            } else {
+                html = '<tr><td colspan="5" style="text-align:center;">لا توجد طلبات حالياً</td></tr>';
+            }
+            
             document.getElementById('orders-table-body').innerHTML = html;
         }
+
+        // دالة لتحديد لون الخلفية بناءً على حالة الطلب
+        function getStatusColor(status) {
+            switch(status) {
+                case 'تم التسليم': return '#27ae60'; // أخضر
+                case 'تم الشحن': return '#2980b9'; // أزرق
+                case 'ملغي': return '#c0392b'; // أحمر
+                default: return '#f1c40f'; // أصفر (قيد المراجعة)
+            }
+        }
+
+        async function updateStatus(id, newStatus) {
+            await client.from('orders').update({ status: newStatus }).eq('id', id);
+            fetchOrders(); // إعادة جلب البيانات لتحديث الألوان
+        }
+
         fetchOrders();
     </script>
 </body>
