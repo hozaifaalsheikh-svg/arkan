@@ -20,28 +20,33 @@
         .btn-excel { background: var(--success); color: #fff; }
         .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* البحث الشامل والفلترة */
-        .controls-bar { display: flex; gap: 15px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; }
-        .search-input { flex: 2; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Cairo'; outline: none; transition: 0.3s; font-size: 14px; }
-        .search-input:focus, .filter-select:focus, .col-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1); }
-        .filter-select { flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Cairo', sans-serif; outline: none; transition: 0.3s; background-color: #fff; font-weight: bold; color: var(--primary-color); font-size: 14px; cursor: pointer; }
-
-        /* إعدادات الجدول وعناوين الأعمدة */
-        .table-wrapper { overflow-x: auto; border-radius: 10px; border: 1px solid #eee; width: 100%; }
+        /* الجدول الاحترافي */
+        /* أضفنا min-height لضمان عدم اختفاء القوائم المنسدلة في حال كان الجدول فارغاً */
+        .table-wrapper { overflow-x: auto; overflow-y: visible; border-radius: 10px; border: 1px solid #eee; width: 100%; min-height: 450px; }
         table { width: 100%; border-collapse: collapse; background: white; table-layout: auto; }
-        th { background-color: var(--primary-color); color: white; padding: 12px; font-weight: 600; text-align: right; user-select: none; white-space: nowrap; }
-        .sortable { cursor: pointer; transition: 0.2s; }
-        .sortable:hover { background-color: #2c5282; }
-        th i { font-size: 12px; margin-right: 8px; color: rgba(255,255,255,0.6); }
+        
+        /* تنسيق عناوين الأعمدة لتستوعب القوائم المنسدلة */
+        th { background-color: var(--primary-color); color: white; padding: 12px; font-weight: 600; text-align: right; user-select: none; white-space: nowrap; position: relative; }
+        .th-content { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .th-content:hover { color: var(--secondary-color); }
+        .filter-icon { font-size: 12px; color: rgba(255,255,255,0.7); transition: 0.2s; padding: 5px; border-radius: 4px; }
+        .filter-icon:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+        /* تصميم القوائم المنسدلة للفلترة (Excel Like) */
+        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; padding: 12px; z-index: 999; min-width: 200px; margin-top: 5px; cursor: default; }
+        .filter-popup::before { content: ''; position: absolute; top: -6px; right: 15px; border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent #fff transparent; }
+        
+        .sort-btns { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+        .sort-btns button { background: #f8f9fa; border: 1px solid #eee; padding: 8px; border-radius: 5px; font-family: inherit; font-size: 13px; cursor: pointer; display: flex; justify-content: flex-start; align-items: center; gap: 8px; color: #333; transition: 0.2s; }
+        .sort-btns button:hover { background: #e2e8f0; border-color: #cbd5e1; color: var(--primary-color); }
+        
+        .filter-divider { height: 1px; background: #eee; margin: 10px 0; }
+        .filter-input { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; font-size: 12px; outline: none; }
+        .filter-input:focus { border-color: var(--primary-color); }
         
         td { padding: 16px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
         tr:hover td { background-color: #f8fbff; }
         .status-select { padding: 8px 12px; border-radius: 6px; border: none; font-family: inherit; font-weight: bold; outline: none; cursor: pointer; width: 100%; min-width: 120px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
-        /* مربعات البحث الخاصة بكل عمود (الجديد) */
-        .col-filter-row th { background-color: #2c5282; padding: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .col-filter { width: 100%; padding: 6px; font-size: 12px; border: none; border-radius: 4px; box-sizing: border-box; font-family: 'Cairo'; outline: none; text-align: right; }
-        .col-filter::placeholder { color: #aaa; }
 
         @media (max-width: 768px) { 
             body { padding: 0 !important; background-color: #fff; }
@@ -50,8 +55,6 @@
             .header-buttons { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
             .btn-excel { grid-column: span 2; justify-content: center; }
             .btn { font-size: 12px; justify-content: center; padding: 10px; }
-            .controls-bar { flex-direction: column; padding: 10px; gap: 10px; }
-            .search-input, .filter-select { width: 100%; box-sizing: border-box; }
             
             .table-wrapper { padding-bottom: 15px; } 
             .table-wrapper::-webkit-scrollbar { height: 8px; }
@@ -59,9 +62,6 @@
             .table-wrapper::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
             td, th { padding: 12px 10px; font-size: 13px; }
             td { white-space: nowrap; } 
-            
-            /* إخفاء فلاتر الأعمدة في الموبايل لمنع التشويه، والاعتماد على البحث الشامل */
-            .col-filter-row { display: none; }
         }
     </style>
 </head>
@@ -76,38 +76,105 @@
             </div>
         </div>
 
-        <div class="controls-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 بحث شامل وسريع..." oninput="filterData()">
-            <select id="statusFilter" class="filter-select" onchange="filterData()">
-                <option value="all">كافة الحالات (عرض الكل)</option>
-                <option value="قيد المراجعة">قيد المراجعة</option>
-                <option value="قيد التجهيز">قيد التجهيز</option>
-                <option value="تم الشحن">تم الشحن</option>
-                <option value="تم التسليم">تم التسليم</option>
-                <option value="ملغي">ملغي</option>
-            </select>
-        </div>
-
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th class="sortable" onclick="sortData('id')">رقم <i class="fas fa-sort"></i></th>
-                        <th class="sortable" onclick="sortData('created_at')">التاريخ <i class="fas fa-sort"></i></th>
-                        <th class="sortable" onclick="sortData('customer_name')">العميل <i class="fas fa-sort"></i></th>
-                        <th class="sortable" onclick="sortData('customer_phone')">رقم الهاتف <i class="fas fa-sort"></i></th>
-                        <th class="sortable" onclick="sortData('city')">المدينة/العنوان <i class="fas fa-sort"></i></th>
+                        <th>
+                            <div class="th-content" onclick="togglePopup('popup-id', event)">
+                                <span>رقم</span> <i class="fas fa-filter filter-icon"></i>
+                            </div>
+                            <div id="popup-id" class="filter-popup" onclick="event.stopPropagation()">
+                                <div class="sort-btns">
+                                    <button onclick="sortData('id', true)"><i class="fas fa-sort-numeric-up"></i> ترتيب من الأقدم للأحدث</button>
+                                    <button onclick="sortData('id', false)"><i class="fas fa-sort-numeric-down"></i> ترتيب من الأحدث للأقدم</button>
+                                </div>
+                                <div class="filter-divider"></div>
+                                <input type="text" class="filter-input" placeholder="بحث برقم الطلب..." oninput="applyFilter('id', this.value)">
+                            </div>
+                        </th>
+                        
+                        <th>
+                            <div class="th-content" onclick="togglePopup('popup-date', event)">
+                                <span>التاريخ</span> <i class="fas fa-filter filter-icon"></i>
+                            </div>
+                            <div id="popup-date" class="filter-popup" onclick="event.stopPropagation()">
+                                <div class="sort-btns">
+                                    <button onclick="sortData('created_at', true)"><i class="fas fa-calendar-plus"></i> الأقدم أولاً</button>
+                                    <button onclick="sortData('created_at', false)"><i class="fas fa-calendar-minus"></i> الأحدث أولاً</button>
+                                </div>
+                            </div>
+                        </th>
+
+                        <th>
+                            <div class="th-content" onclick="togglePopup('popup-name', event)">
+                                <span>العميل</span> <i class="fas fa-filter filter-icon"></i>
+                            </div>
+                            <div id="popup-name" class="filter-popup" onclick="event.stopPropagation()">
+                                <div class="sort-btns">
+                                    <button onclick="sortData('customer_name', true)"><i class="fas fa-sort-alpha-down"></i> ترتيب أبجدي (أ-ي)</button>
+                                    <button onclick="sortData('customer_name', false)"><i class="fas fa-sort-alpha-up"></i> ترتيب أبجدي (ي-أ)</button>
+                                </div>
+                                <div class="filter-divider"></div>
+                                <input type="text" class="filter-input" placeholder="بحث باسم العميل..." oninput="applyFilter('customer_name', this.value)">
+                            </div>
+                        </th>
+
+                        <th>
+                            <div class="th-content" onclick="togglePopup('popup-phone', event)">
+                                <span>رقم الهاتف</span> <i class="fas fa-filter filter-icon"></i>
+                            </div>
+                            <div id="popup-phone" class="filter-popup" onclick="event.stopPropagation()">
+                                <input type="text" class="filter-input" placeholder="بحث برقم الهاتف..." oninput="applyFilter('customer_phone', this.value)">
+                            </div>
+                        </th>
+
+                        <th>
+                            <div class="th-content" onclick="togglePopup('popup-city', event)">
+                                <span>المدينة/العنوان</span> <i class="fas fa-filter filter-icon"></i>
+                            </div>
+                            <div id="popup-city" class="filter-popup" onclick="event.stopPropagation()">
+                                <div class="sort-btns">
+                                    <button onclick="sortData('city', true)"><i class="fas fa-sort-alpha-down"></i> ترتيب أبجدي (أ-ي)</button>
+                                    <button onclick="sortData('city', false)"><i class="fas fa-sort-alpha-up"></i> ترتيب أبجدي (ي-أ)</button>
+                                </div>
+                                <div class="filter-divider"></div>
+                                <input type="text" class="filter-input" placeholder="بحث بالمدينة..." oninput="applyFilter('city', this.value)">
+                            </div>
+                        </th>
+
                         <th>تفاصيل المنتجات</th>
-                        <th class="sortable" onclick="sortData('total_amount')">الإجمالي <i class="fas fa-sort"></i></th>
-                        <th class="sortable" onclick="sortData('status')">الحالة <i class="fas fa-sort"></i></th>
+
+                        <th>
+                            <div class="th-content" onclick="togglePopup('popup-total', event)">
+                                <span>الإجمالي</span> <i class="fas fa-filter filter-icon"></i>
+                            </div>
+                            <div id="popup-total" class="filter-popup" onclick="event.stopPropagation()">
+                                <div class="sort-btns">
+                                    <button onclick="sortData('total_amount', false)"><i class="fas fa-sort-amount-down"></i> السعر (الأعلى أولاً)</button>
+                                    <button onclick="sortData('total_amount', true)"><i class="fas fa-sort-amount-up"></i> السعر (الأقل أولاً)</button>
+                                </div>
+                            </div>
+                        </th>
+
+                        <th>
+                            <div class="th-content" onclick="togglePopup('popup-status', event)">
+                                <span>الحالة</span> <i class="fas fa-filter filter-icon"></i>
+                            </div>
+                            <div id="popup-status" class="filter-popup" onclick="event.stopPropagation()">
+                                <div class="sort-btns">
+                                    <select class="filter-input" onchange="applyFilter('status', this.value)" style="cursor: pointer;">
+                                        <option value="all">كافة الحالات (عرض الكل)</option>
+                                        <option value="قيد المراجعة">قيد المراجعة</option>
+                                        <option value="قيد التجهيز">قيد التجهيز</option>
+                                        <option value="تم الشحن">تم الشحن</option>
+                                        <option value="تم التسليم">تم التسليم</option>
+                                        <option value="ملغي">ملغي</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </th>
                     </tr>
-                    <tr class="col-filter-row">
-                        <th><input type="text" id="col-id" class="col-filter" placeholder="بحث رقم..." oninput="filterData()"></th>
-                        <th></th> <th><input type="text" id="col-name" class="col-filter" placeholder="بحث اسم..." oninput="filterData()"></th>
-                        <th><input type="text" id="col-phone" class="col-filter" placeholder="بحث هاتف..." oninput="filterData()"></th>
-                        <th><input type="text" id="col-city" class="col-filter" placeholder="بحث مدينة..." oninput="filterData()"></th>
-                        <th><input type="text" id="col-items" class="col-filter" placeholder="بحث منتج..." oninput="filterData()"></th>
-                        <th></th> <th></th> </tr>
                 </thead>
                 <tbody id="orders-table-body">
                     <tr><td colspan="8" style="text-align:center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px; color: var(--primary-color);"></i><br>جاري جلب الطلبات من السيرفر...</td></tr>
@@ -124,6 +191,31 @@
         let allOrders = [];
         let filteredOrders = [];
         let currentSort = { column: 'created_at', asc: false };
+        
+        // كائن لحفظ القيم النشطة في فلاتر كل عمود
+        let columnFilters = { id: '', customer_name: '', customer_phone: '', city: '', status: 'all' };
+
+        // إخفاء القوائم المنسدلة عند النقر في أي مكان آخر
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.filter-popup').forEach(popup => {
+                popup.style.display = 'none';
+            });
+        });
+
+        // دالة فتح/إغلاق القائمة المنسدلة للعمود
+        function togglePopup(popupId, event) {
+            event.stopPropagation();
+            const popup = document.getElementById(popupId);
+            const isCurrentlyOpen = popup.style.display === 'block';
+            
+            // إغلاق كل القوائم الأخرى أولاً
+            document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none');
+            
+            // فتح القائمة المطلوبة إذا لم تكن مفتوحة بالفعل
+            if (!isCurrentlyOpen) {
+                popup.style.display = 'block';
+            }
+        }
 
         async function fetchOrders() {
             const { data: orders, error } = await client.from('orders').select('*').order('created_at', { ascending: false });
@@ -141,7 +233,7 @@
             let html = '';
             
             if (dataArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px;">لا توجد بيانات مطابقة للبحث أو التصفية</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px;">لا توجد بيانات مطابقة للفلتر المحدد</td></tr>';
                 return;
             }
 
@@ -179,58 +271,48 @@
             tbody.innerHTML = html;
         }
 
-        // محرك الفلترة المتطور (شامل + حالة + أعمدة فردية)
-        function filterData() {
-            const globalTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusTerm = document.getElementById('statusFilter').value;
-            
-            const idTerm = document.getElementById('col-id').value.toLowerCase();
-            const nameTerm = document.getElementById('col-name').value.toLowerCase();
-            const phoneTerm = document.getElementById('col-phone').value.toLowerCase();
-            const cityTerm = document.getElementById('col-city').value.toLowerCase();
-            const itemsTerm = document.getElementById('col-items').value.toLowerCase();
-
-            filteredOrders = allOrders.filter(o => {
-                // 1. الفلتر الشامل
-                const searchStr = `${o.id} ${o.customer_name} ${o.customer_phone} ${o.city}`.toLowerCase();
-                const matchesGlobal = globalTerm === '' || searchStr.includes(globalTerm);
-                
-                // 2. فلتر الحالة
-                const matchesStatus = (statusTerm === 'all') ? true : (o.status === statusTerm);
-                
-                // 3. فلاتر الأعمدة الفردية (AND Logic)
-                const matchesId = idTerm === '' || String(o.id).includes(idTerm);
-                const matchesName = nameTerm === '' || (o.customer_name || '').toLowerCase().includes(nameTerm);
-                const matchesPhone = phoneTerm === '' || (o.customer_phone || '').toLowerCase().includes(phoneTerm);
-                const matchesCity = cityTerm === '' || (`${o.city} ${o.detailed_address}`).toLowerCase().includes(cityTerm);
-                
-                let itemsStr = o.order_details && Array.isArray(o.order_details) ? o.order_details.map(i => i.name).join(' ').toLowerCase() : '';
-                const matchesItems = itemsTerm === '' || itemsStr.includes(itemsTerm);
-
-                return matchesGlobal && matchesStatus && matchesId && matchesName && matchesPhone && matchesCity && matchesItems;
-            });
-            
-            sortData(currentSort.column, true); 
+        // تسجيل إدخال الفلتر من أي عمود وتطبيقه فوراً
+        function applyFilter(column, value) {
+            columnFilters[column] = value.toLowerCase();
+            runFilters();
         }
 
-        function sortData(column, keepDirection = false) {
-            if (!keepDirection) {
-                if (currentSort.column === column) {
-                    currentSort.asc = !currentSort.asc;
-                } else {
-                    currentSort.column = column;
-                    currentSort.asc = true;
-                }
-            }
+        // معالجة كافة الفلاتر معاً
+        function runFilters() {
+            filteredOrders = allOrders.filter(o => {
+                const matchesId = columnFilters.id === '' || String(o.id).includes(columnFilters.id);
+                const matchesName = columnFilters.customer_name === '' || (o.customer_name || '').toLowerCase().includes(columnFilters.customer_name);
+                const matchesPhone = columnFilters.customer_phone === '' || (o.customer_phone || '').toLowerCase().includes(columnFilters.customer_phone);
+                const matchesCity = columnFilters.city === '' || (`${o.city} ${o.detailed_address}`).toLowerCase().includes(columnFilters.city);
+                const matchesStatus = columnFilters.status === 'all' || o.status === columnFilters.status;
 
+                return matchesId && matchesName && matchesPhone && matchesCity && matchesStatus;
+            });
+            
+            // إعادة الترتيب بناءً على آخر ترتيب محفوظ
+            applySort(); 
+        }
+
+        // استدعاء من أزرار الترتيب في القوائم المنسدلة
+        function sortData(column, asc) {
+            currentSort = { column: column, asc: asc };
+            
+            // إغلاق كل القوائم المنسدلة بعد النقر على الترتيب
+            document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none');
+            
+            applySort();
+        }
+
+        // تنفيذ عملية الترتيب الفعلي للبيانات
+        function applySort() {
             filteredOrders.sort((a, b) => {
-                let valA = a[column];
-                let valB = b[column];
+                let valA = a[currentSort.column];
+                let valB = b[currentSort.column];
                 
                 if(valA === null) valA = '';
                 if(valB === null) valB = '';
 
-                if (column === 'id' || column === 'total_amount') {
+                if (currentSort.column === 'id' || currentSort.column === 'total_amount') {
                     valA = Number(valA) || 0;
                     valB = Number(valB) || 0;
                 } else {
@@ -287,7 +369,7 @@
             } else {
                 const orderIndex = allOrders.findIndex(o => o.id === id);
                 if(orderIndex > -1) allOrders[orderIndex].status = newStatus;
-                filterData(); 
+                runFilters(); // تحديث فوري بناءً على الفلاتر النشطة
             }
         }
 
