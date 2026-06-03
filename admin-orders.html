@@ -10,7 +10,8 @@
         :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f0f4f8; --success: #27ae60; }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 20px; margin: 0; }
         
-        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
+        /* التعديل هنا: إعطاء عرض شبه كامل للشاشة مع حد أقصى كبير جداً */
+        .admin-container { width: 98%; max-width: 1600px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         
         /* الأزرار العلوية */
@@ -28,33 +29,36 @@
 
         /* الجدول الاحترافي */
         .table-wrapper { overflow-x: auto; border-radius: 10px; border: 1px solid #eee; }
-        table { width: 100%; border-collapse: collapse; background: white; min-width: 900px; } /* لضمان عدم تداخل البيانات */
+        table { width: 100%; border-collapse: collapse; background: white; min-width: 1000px; }
         th { background-color: var(--primary-color); color: white; padding: 16px; font-weight: 600; text-align: right; cursor: pointer; position: sticky; top: 0; user-select: none; transition: 0.2s; white-space: nowrap; }
         th:hover { background-color: #2c5282; }
         th i { font-size: 12px; margin-right: 8px; color: rgba(255,255,255,0.6); }
-        td { padding: 16px; border-bottom: 1px solid #eee; white-space: nowrap; }
+        
+        /* التعديل هنا: السماح للنصوص بالالتفاف لتجنب التمدد الأفقي الزائد */
+        td { padding: 16px; border-bottom: 1px solid #eee; }
         tr:hover td { background-color: #f8fbff; }
         
-        .status-select { padding: 8px 12px; border-radius: 6px; border: none; font-family: inherit; font-weight: bold; outline: none; cursor: pointer; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* تنسيق قائمة الحالة لضمان ظهورها بشكل ممتاز */
+        .status-select { padding: 8px 12px; border-radius: 6px; border: none; font-family: inherit; font-weight: bold; outline: none; cursor: pointer; width: 100%; min-width: 120px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         /* =========================================
            تحديثات الموبايل (مرونة أفقية بدون إخفاء)
            ========================================= */
         @media (max-width: 768px) { 
             body { padding: 0 !important; background-color: #fff; }
-            .admin-container { padding: 15px !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100vh; }
+            .admin-container { width: 100% !important; padding: 15px !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100vh; }
             .admin-header { flex-direction: column; align-items: flex-start; }
             .header-buttons { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-            .btn-excel { grid-column: span 2; justify-content: center; } /* زر الإكسل يأخذ سطر كامل */
+            .btn-excel { grid-column: span 2; justify-content: center; }
             .btn { font-size: 12px; justify-content: center; padding: 10px; }
             .controls-bar { flex-direction: column; padding: 10px; }
             
-            /* إعدادات التمرير الأفقي الناعم */
             .table-wrapper { padding-bottom: 15px; } 
             .table-wrapper::-webkit-scrollbar { height: 8px; }
             .table-wrapper::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
             .table-wrapper::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
             td, th { padding: 12px 10px; font-size: 13px; }
+            td { white-space: nowrap; } /* الحفاظ على سطر واحد في الموبايل لتسهيل التمرير */
         }
     </style>
 </head>
@@ -77,14 +81,14 @@
             <table>
                 <thead>
                     <tr>
-                        <th onclick="sortData('id')">رقم <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('created_at')">التاريخ <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('customer_name')">العميل <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('customer_phone')">رقم الهاتف <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('city')">المدينة/العنوان <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('id')" style="white-space: nowrap;">رقم <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('created_at')" style="white-space: nowrap;">التاريخ <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('customer_name')" style="white-space: nowrap;">العميل <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('customer_phone')" style="white-space: nowrap;">رقم الهاتف <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('city')" style="white-space: nowrap;">المدينة/العنوان <i class="fas fa-sort"></i></th>
                         <th>تفاصيل المنتجات</th>
-                        <th onclick="sortData('total_amount')">الإجمالي <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('status')">الحالة <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('total_amount')" style="white-space: nowrap;">الإجمالي <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('status')" style="white-space: nowrap;">الحالة <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
                 <tbody id="orders-table-body">
@@ -99,24 +103,21 @@
     <script>
         const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
         
-        // المتغيرات لحفظ حالة البيانات
         let allOrders = [];
         let filteredOrders = [];
         let currentSort = { column: 'created_at', asc: false };
 
-        // 1. جلب البيانات من السيرفر
         async function fetchOrders() {
             const { data: orders, error } = await client.from('orders').select('*').order('created_at', { ascending: false });
             if (!error && orders) {
                 allOrders = orders;
-                filteredOrders = [...allOrders]; // نسخة للفلترة
+                filteredOrders = [...allOrders]; 
                 renderTable(filteredOrders);
             } else {
                 document.getElementById('orders-table-body').innerHTML = '<tr><td colspan="8" style="color:red; text-align:center;">خطأ في الاتصال بقاعدة البيانات</td></tr>';
             }
         }
 
-        // 2. دالة بناء الجدول (Rendering)
         function renderTable(dataArray) {
             const tbody = document.getElementById('orders-table-body');
             let html = '';
@@ -131,7 +132,6 @@
                 const statusColor = getStatusColor(o.status);
                 const textColor = o.status === 'قيد المراجعة' ? '#333' : '#fff';
                 
-                // معالجة المنتجات (إذا كانت مصفوفة JSON)
                 let itemsStr = '';
                 if(o.order_details && Array.isArray(o.order_details)){
                     itemsStr = o.order_details.map(i => `${i.qty}x ${i.name}`).join(' ، ');
@@ -140,14 +140,14 @@
                 }
 
                 html += `<tr>
-                    <td style="font-weight: bold; color: var(--primary-color);">#${o.id}</td>
-                    <td style="font-size: 12px; color: #666;">${date}</td>
-                    <td style="font-weight: bold;">${o.customer_name || '-'}</td>
-                    <td style="direction: ltr; text-align: right;">${o.customer_phone || '-'}</td>
-                    <td>${o.city || '-'} ${o.detailed_address ? '('+o.detailed_address+')' : ''}</td>
-                    <td style="font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis;">${itemsStr}</td>
-                    <td style="font-weight: bold; color: var(--secondary-color);">${Number(o.total_amount).toLocaleString()} ل.س</td>
-                    <td>
+                    <td style="font-weight: bold; color: var(--primary-color); white-space: nowrap;">#${o.id}</td>
+                    <td style="font-size: 12px; color: #666; white-space: nowrap;">${date}</td>
+                    <td style="font-weight: bold; white-space: nowrap;">${o.customer_name || '-'}</td>
+                    <td style="direction: ltr; text-align: right; white-space: nowrap;">${o.customer_phone || '-'}</td>
+                    <td style="white-space: nowrap;">${o.city || '-'} ${o.detailed_address ? '('+o.detailed_address+')' : ''}</td>
+                    <td style="font-size: 13px; min-width: 250px; line-height: 1.6; white-space: normal;">${itemsStr}</td>
+                    <td style="font-weight: bold; color: var(--secondary-color); white-space: nowrap;">${Number(o.total_amount).toLocaleString()} ل.س</td>
+                    <td style="white-space: nowrap;">
                         <select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background-color: ${statusColor}; color: ${textColor};">
                             <option value="قيد المراجعة" ${o.status=='قيد المراجعة'?'selected':''}>قيد المراجعة</option>
                             <option value="قيد التجهيز" ${o.status=='قيد التجهيز'?'selected':''}>قيد التجهيز</option>
@@ -161,20 +161,16 @@
             tbody.innerHTML = html;
         }
 
-        // 3. دالة الفلترة (البحث الذكي)
         function filterData() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             filteredOrders = allOrders.filter(o => {
                 const searchStr = `${o.id} ${o.customer_name} ${o.customer_phone} ${o.city} ${o.status}`.toLowerCase();
                 return searchStr.includes(term);
             });
-            // بعد الفلترة نحافظ على الترتيب الحالي
             sortData(currentSort.column, true); 
         }
 
-        // 4. دالة الترتيب (Sorting)
         function sortData(column, keepDirection = false) {
-            // عكس الاتجاه إذا تم النقر على نفس العمود
             if (!keepDirection) {
                 if (currentSort.column === column) {
                     currentSort.asc = !currentSort.asc;
@@ -188,11 +184,9 @@
                 let valA = a[column];
                 let valB = b[column];
                 
-                // معالجة القيم الفارغة
                 if(valA === null) valA = '';
                 if(valB === null) valB = '';
 
-                // معالجة الأرقام
                 if (column === 'id' || column === 'total_amount') {
                     valA = Number(valA) || 0;
                     valB = Number(valB) || 0;
@@ -208,9 +202,7 @@
             renderTable(filteredOrders);
         }
 
-        // 5. تصدير البيانات لإكسل باحترافية
         function exportToExcel() {
-            // نأخذ البيانات المفلترة حالياً ونرتبها في هيكل الإكسل
             const excelData = filteredOrders.map(o => {
                 let itemsStr = '';
                 if(o.order_details && Array.isArray(o.order_details)){
@@ -229,40 +221,33 @@
             });
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
-            
-            // تحسين اتجاه الشيت ليكون من اليمين لليسار
             worksheet['!dir'] = 'rtl';
-            
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "طلبات أركان");
             XLSX.writeFile(workbook, `Arkan_Orders_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
-        // دالة الألوان لحالة الطلب
         function getStatusColor(status) {
             switch(status) {
                 case 'تم التسليم': return '#27ae60';
                 case 'تم الشحن': return '#2980b9';
                 case 'قيد التجهيز': return '#8e44ad';
                 case 'ملغي': return '#c0392b';
-                default: return '#f1c40f'; // قيد المراجعة
+                default: return '#f1c40f'; 
             }
         }
 
-        // دالة تحديث اليحالة في قاعدة البيانات
         async function updateStatus(id, newStatus) {
             const { error } = await client.from('orders').update({ status: newStatus }).eq('id', id);
             if(error) {
                 alert("حدث خطأ أثناء التحديث");
             } else {
-                // تحديث البيانات محلياً دون إعادة تحميل الصفحة لتوفير الموارد
                 const orderIndex = allOrders.findIndex(o => o.id === id);
                 if(orderIndex > -1) allOrders[orderIndex].status = newStatus;
-                filterData(); // إعادة الرسم بناءً على التحديث
+                filterData(); 
             }
         }
 
-        // تشغيل الدالة الأولى
         fetchOrders();
     </script>
 </body>
