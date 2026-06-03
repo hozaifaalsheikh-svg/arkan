@@ -138,10 +138,16 @@
             width: 100% !important;
         }
         
-        .search-bar input {
-            padding: 8px;
-            font-size: 12px;
-        }
+      .search-bar input {
+        width: 100%;
+        /* قمنا بزيادة الفراغ من جهة اليسار (45px) كي لا يختفي النص تحت الأيقونة */
+        padding: 10px 15px 10px 45px; 
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
+        font-size: 14px;
+        transition: border 0.2s;
+    }
 
         .header-action-btn {
             padding: 6px 10px !important;
@@ -164,19 +170,21 @@
         transition: border 0.2s;
     }
 
-    .search-bar input:focus { border-color: var(--primary-color); }
-
-    .search-bar button {
+   .search-bar input:focus { border-color: var(--primary-color); }
+   .search-bar button {
         position: absolute;
-        left: 2px;
-        top: 2px;
-        bottom: 2px;
+        left: 5px; /* إزاحة الأيقونة للداخل قليلاً */
+        top: 50%; /* توسيط عامودي */
+        transform: translateY(-50%); /* توسيط عامودي دقيق 100% */
         background: transparent;
         border: none;
         color: var(--primary-color);
-        padding: 0 15px;
+        padding: 0 10px;
         cursor: pointer;
         font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .cart-icon-wrapper {
