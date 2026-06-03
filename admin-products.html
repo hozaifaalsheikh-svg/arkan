@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المنتجات | شركة أركان</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #f27a1a;
+            --bg-color: #f4f7f6;
+        }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
+        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .admin-header h1 { color: var(--primary-color); margin: 0; font-size: 24px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid #ddd; }
+        th { background-color: var(--primary-color); color: white; font-weight: 600; }
+        tr:hover { background-color: #f9f9f9; }
+        
+        .btn-edit { background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-edit:hover { background: #2980b9; }
+        .loading-text { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+        
+        /* تنسيق فورم التعديل داخل SweetAlert */
+        .swal-input-group { margin-bottom: 15px; text-align: right; }
+        .swal-input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
+        .swal-custom-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body>
+
+    <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%;">
+            <h2 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-lock"></i> إدارة المنتجات المحمية</h2>
+            <p style="color: #666; font-size: 14px;">الرجاء إدخال كلمة المرور للمتابعة</p>
+            <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; text-align: center; box-sizing: border-box; outline: none;">
+            
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="checkAdminPassword()" style="flex: 1; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">دخول</button>
+                <button onclick="window.location.href='index.html'" style="flex: 1; padding: 12px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">رجوع للموقع</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fas fa-boxes"></i> لوحة تعديل أسعار وبيانات المنتجات</h1>
+            <div style="display: flex; gap: 15px;">
+                <a href="admin.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold; padding: 10px;"><i class="fas fa-list-alt"></i> إدارة الطلبات</a>
+                <a href="index.html" style="color: var(--secondary-color); text-decoration: none; font-weight: bold; padding: 10px;"><i class="fas fa-home"></i> العودة للمتجر</a>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>رمز المنتج (SKU)</th>
+                        <th>الصورة</th>
+                        <th>اسم المنتج</th>
+                        <th>الشركة (البراند)</th>
+                        <th>السعر الحالي</th>
+                        <th>الوصف</th>
+                        <th>التحكم</th>
+                    </tr>
+                </thead>
+                <tbody id="products-table-body">
+                    <tr><td colspan="7" class="loading-text">جاري جلب المنتجات من المستودع...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // التحقق من كلمة المرور الخاصة بك
+        function checkAdminPassword() {
+            const passInput = document.getElementById('admin-pass').value;
+            if(passInput === 'arkan123') { 
+                document.getElementById('admin-login-overlay').style.display = 'none';
+            } else {
+                alert('عذراً، كلمة المرور غير صحيحة!');
+            }
+        }
+
+        document.getElementById('admin-pass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkAdminPassword();
+        });
+
+        // ربط السيرفر بـ Supabase
+        const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allProducts = [];
+
+        // جلب المنتجات وعرضها في الجدول
+        async function fetchProducts() {
+            const tableBody = document.getElementById('products-table-body');
+            try {
+                const { data: products, error } = await supabaseClient.from('inventory').select('*');
+                if (error) throw error;
+
+                allProducts = products;
+                if (products.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7" class="loading-text">المستودع فارغ تماماً.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                products.forEach(product => {
+                    html += `
+                        <tr>
+                            <td style="font-weight: bold;">${product.sku}</td>
+                            <td><img src="${product.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="object-fit: contain; border-radius:4px;"></td>
+                            <td style="font-weight: 600;">${product.name}</td>
+                            <td><span style="background: #fff1e6; color: var(--secondary-color); padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold;">${product.brand || 'Bioxcin'}</span></td>
+                            <td style="color: var(--secondary-color); font-weight: bold;">${Number(product.price).toLocaleString()} ل.س</td>
+                            <td style="font-size: 13px; color: #666; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${product.description || 'لا يوجد وصف.'}</td>
+                            <td>
+                                <button class="btn-edit" onclick="openEditModal('${product.sku}')"><i class="fas fa-edit"></i> تعديل</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                tableBody.innerHTML = '<tr><td colspan="7" class="loading-text" style="color:red;">فشل جلب البيانات.</td></tr>';
+            }
+        }
+
+        // فتح نافذة التعديل المنبثقة
+        function openEditModal(sku) {
+            const product = allProducts.find(p => p.sku === sku);
+            if (!product) return;
+
+            Swal.fire({
+                title: 'تعديل بيانات المنتج',
+                html: `
+                    <div class="swal-input-group">
+                        <label>اسم المنتج:</label>
+                        <input id="edit-name" class="swal-custom-input" value="${product.name}">
+                    </div>
+                    <div class="swal-input-group">
+                        <label>السعر (ل.س):</label>
+                        <input id="edit-price" type="number" class="swal-custom-input" value="${product.price}">
+                    </div>
+                    <div class="swal-input-group">
+                        <label>الوصف:</label>
+                        <textarea id="edit-desc" class="swal-custom-input" rows="3" style="resize:vertical;">${product.description || ''}</textarea>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'حفظ التغييرات',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#27ae60',
+                cancelButtonColor: '#d33',
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('edit-name').value,
+                        price: parseInt(document.getElementById('edit-price').value) || 0,
+                        description: document.getElementById('edit-desc').value
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateProductInSupabase(sku, result.value);
+                }
+            });
+        }
+
+        // تحديث البيانات على السيرفر مباشرة
+        async function updateProductInSupabase(sku, updatedData) {
+            Swal.fire({ title: 'جاري الحفظ والاتصال بالخادم...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('inventory')
+                    .update({
+                        name: updatedData.name,
+                        price: updatedData.price,
+                        description: updatedData.description
+                    })
+                    .eq('sku', sku);
+
+                if (error) throw error;
+
+                Swal.fire({ icon: 'success', title: 'تم التحديث بنجاح! 🎉', timer: 1500, showConfirmButton: false }).then(() => {
+                    fetchProducts(); // إعادة تحميل الجدول بالبيانات الجديدة
+                });
+            } catch (err) {
+                console.error(err);
+                Swal.fire({ icon: 'error', title: 'عذراً', text: 'فشل التحديث، تحقق من اتصال الإنترنت.' });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchProducts);
+    </script>
+</body>
+</html>
