@@ -8,70 +8,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f0f4f8; --success: #27ae60; --text-unified: #2c3e50; }
-        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 15px; margin: 0; box-sizing: border-box; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 20px; margin: 0; box-sizing: border-box; }
         
-        .admin-container { width: 100%; max-width: 100%; margin: 0 auto; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); box-sizing: border-box; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .admin-container { width: 100%; max-width: 100%; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
         
         .header-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn { padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: none; font-family: inherit; font-size: 13px; }
+        .btn { padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; font-family: inherit; font-size: 14px; }
         .btn-dash { background: var(--primary-color); color: #fff; }
         .btn-store { background: var(--secondary-color); color: #fff; }
         .btn-excel { background: var(--success); color: #fff; }
         .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        .table-wrapper { overflow-x: auto; overflow-y: visible; border-radius: 8px; border: 1px solid #eee; width: 100%; min-height: 450px; }
-        table { width: 100%; border-collapse: collapse; background: white; table-layout: auto; word-wrap: break-word; font-family: 'Cairo', sans-serif; }
+        /* الإصلاح الجذري للجدول: table-layout: fixed يمنع تداخل الأعمدة */
+        .table-wrapper { overflow-x: auto; overflow-y: visible; border-radius: 8px; border: 1px solid #eee; width: 100%; min-height: 500px; }
+        table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; word-wrap: break-word; font-family: 'Cairo', sans-serif; }
         
-        /* 
-         =========================================
-         التوحيد الشامل لجميع الخلايا 
-         =========================================
-        */
         td { 
-            padding: 12px 10px; 
-            font-size: 13px; /* توحيد حجم الخط */
-            font-weight: 600; /* توحيد سماكة الخط (Bold) */
-            color: var(--text-unified); /* توحيد لون الخط */
-            font-family: 'Cairo', sans-serif; /* توحيد نوع الخط */
+            padding: 16px 12px; 
+            font-size: 14px; /* تكبير الخط ليكون مريحاً */
+            font-weight: 600; 
+            color: var(--text-unified); 
             white-space: normal !important; 
-            word-break: break-word; 
             border-bottom: 1px solid #eee; 
             vertical-align: middle; 
             text-align: right; 
         }
         
-        th { background-color: var(--primary-color); color: #ffffff !important; font-weight: 700 !important; font-size: 13px !important; user-select: none; position: relative; padding: 12px 10px; }
+        th { 
+            background-color: var(--primary-color); 
+            color: #ffffff !important; 
+            font-weight: 700 !important; 
+            font-size: 14px !important; 
+            user-select: none; 
+            position: relative; 
+            padding: 16px 12px; 
+            text-align: right;
+        }
+        
         .th-content { display: flex; justify-content: flex-start; align-items: center; gap: 8px; cursor: pointer; }
         .th-content:hover { color: var(--secondary-color); }
         .filter-icon { font-size: 11px; color: rgba(255,255,255,0.8); transition: 0.2s; padding: 4px; border-radius: 4px; }
         .filter-icon:hover { background: rgba(255,255,255,0.2); color: #fff; }
 
-        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; padding: 10px; z-index: 999; min-width: 180px; margin-top: 5px; cursor: default; font-weight: normal; color: #333; }
+        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; padding: 12px; z-index: 999; min-width: 200px; margin-top: 5px; cursor: default; font-weight: normal; color: #333; }
         .filter-popup::before { content: ''; position: absolute; top: -6px; right: 15px; border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent #fff transparent; }
         
-        .sort-btns { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
-        .sort-btns button { background: #f8f9fa; border: 1px solid #eee; padding: 6px; border-radius: 5px; font-family: inherit; font-size: 12px; cursor: pointer; display: flex; justify-content: flex-start; align-items: center; gap: 8px; color: #333; transition: 0.2s; }
+        .sort-btns { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+        .sort-btns button { background: #f8f9fa; border: 1px solid #eee; padding: 8px; border-radius: 5px; font-family: inherit; font-size: 13px; cursor: pointer; display: flex; justify-content: flex-start; align-items: center; gap: 8px; color: #333; transition: 0.2s; }
         .sort-btns button:hover { background: #e2e8f0; border-color: #cbd5e1; color: var(--primary-color); }
         
-        .filter-divider { height: 1px; background: #eee; margin: 8px 0; }
-        .filter-input { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; font-size: 11px; outline: none; }
+        .filter-divider { height: 1px; background: #eee; margin: 10px 0; }
+        .filter-input { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; font-size: 13px; outline: none; }
         .filter-input:focus { border-color: var(--primary-color); }
         
         tr:hover td { background-color: #f8fbff; }
         
-        .status-select { padding: 8px; border-radius: 6px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 12px; transition: 0.3s; }
+        .status-select { padding: 8px; border-radius: 6px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 13px; transition: 0.3s; }
         .status-select:hover { opacity: 0.8; }
 
-        /* تحديد العروض للحفاظ على الترتيب دون التلاعب بالخطوط */
+        /* توزيع منطقي وعادل للأعمدة يتوافق مع table-layout: fixed */
         .col-id { width: 6%; }
         .col-date { width: 10%; }
-        .col-name { width: 14%; }
+        .col-name { width: 15%; }
         .col-phone { width: 12%; direction: ltr; text-align: right; }
-        .col-city { width: 16%; }
-        .col-items { width: 22%; line-height: 1.6; }
-        /* استثناءات الإجمالي فقط */
-        .col-total { width: 10%; color: var(--secondary-color); font-weight: 700; font-size: 14px; }
+        .col-city { width: 14%; }
+        .col-items { width: 23%; line-height: 1.6; }
+        .col-total { width: 10%; color: var(--secondary-color); font-weight: 700; font-size: 15px; }
         .col-status { width: 10%; }
 
         @media (max-width: 768px) { 
@@ -80,14 +83,17 @@
             .admin-header { flex-direction: column; align-items: flex-start; }
             .header-buttons { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
             .btn-excel { grid-column: span 2; justify-content: center; }
-            .btn { font-size: 11px; justify-content: center; padding: 8px; }
+            
+            table { table-layout: auto; } /* نعود للوضع المرن في الموبايل ليتمكن من التمرير */
+            .col-id, .col-date, .col-name, .col-phone, .col-city, .col-items, .col-total, .col-status { width: auto; }
+            td { white-space: nowrap !important; font-size: 13px; }
         }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1 style="margin: 0; font-size: 22px;"><i class="fas fa-clipboard-list"></i> إدارة الطلبات المتقدمة</h1>
+            <h1 style="margin: 0; font-size: 24px;"><i class="fas fa-clipboard-list"></i> إدارة الطلبات المتقدمة</h1>
             <div class="header-buttons">
                 <a href="admin.html" class="btn btn-dash"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
                 <a href="index.html" class="btn btn-store"><i class="fas fa-store"></i> المتجر</a>
@@ -251,7 +257,7 @@
             let html = '';
             
             if (dataArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px;">لا توجد بيانات مطابقة للفلتر المحدد</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 40px;">لا توجد بيانات مطابقة للبحث</td></tr>';
                 return;
             }
 
@@ -266,7 +272,6 @@
                     itemsStr = 'غير متوفر';
                 }
 
-                // تم إزالة كافة الأنماط المدمجة (Inline Styles) لتوحيد الخطوط بشكل كامل
                 html += `<tr>
                     <td class="col-id">#${o.id}</td>
                     <td class="col-date">${date}</td>
