@@ -3,130 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الطلبات | شركة أركان</title>
+    <title>إدارة الطلبات المتقدمة | شركة أركان</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f8f9fa; }
+        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f0f4f8; --success: #27ae60; }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 20px; margin: 0; }
         
-        /* تنسيقات الكمبيوتر (الأساسية) */
-        .admin-container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         
-        /* حاوية الأزرار العلوية */
-        .header-buttons { display: flex; gap: 10px; }
-        
-        .btn-store { background: var(--secondary-color); color: #fff; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
-        .btn-dash { background: var(--primary-color); color: #fff; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
-        
-        .btn-store:hover, .btn-dash:hover { opacity: 0.9; }
+        /* الأزرار العلوية */
+        .header-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; font-family: inherit; font-size: 14px; }
+        .btn-dash { background: var(--primary-color); color: #fff; }
+        .btn-store { background: var(--secondary-color); color: #fff; }
+        .btn-excel { background: var(--success); color: #fff; }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        th { background-color: var(--primary-color); color: white; padding: 15px; font-weight: 600; }
-        th:first-child { border-radius: 0 10px 0 0; }
-        th:last-child { border-radius: 10px 0 0 0; }
-        td { padding: 15px; border-bottom: 1px solid #eee; }
+        /* شريط البحث والفلترة */
+        .controls-bar { display: flex; gap: 15px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; }
+        .search-input { flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Cairo'; outline: none; transition: 0.3s; }
+        .search-input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1); }
+
+        /* الجدول الاحترافي */
+        .table-wrapper { overflow-x: auto; border-radius: 10px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; background: white; min-width: 900px; } /* لضمان عدم تداخل البيانات */
+        th { background-color: var(--primary-color); color: white; padding: 16px; font-weight: 600; text-align: right; cursor: pointer; position: sticky; top: 0; user-select: none; transition: 0.2s; white-space: nowrap; }
+        th:hover { background-color: #2c5282; }
+        th i { font-size: 12px; margin-right: 8px; color: rgba(255,255,255,0.6); }
+        td { padding: 16px; border-bottom: 1px solid #eee; white-space: nowrap; }
+        tr:hover td { background-color: #f8fbff; }
         
-        .status-select { padding: 6px 10px; border-radius: 6px; border: none; font-family: 'Cairo', sans-serif; font-weight: bold; outline: none; cursor: pointer; transition: 0.3s; }
+        .status-select { padding: 8px 12px; border-radius: 6px; border: none; font-family: inherit; font-weight: bold; outline: none; cursor: pointer; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         /* =========================================
-           تحديثات الموبايل فقط
+           تحديثات الموبايل (مرونة أفقية بدون إخفاء)
            ========================================= */
         @media (max-width: 768px) { 
-            .hide-on-mobile { display: none !important; } 
-            
             body { padding: 0 !important; background-color: #fff; }
-            .admin-container { max-width: 100% !important; padding: 15px !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100vh; }
-
-            /* ترتيب الهيدر والأزرار في الموبايل */
-            .admin-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .header-buttons { width: 100%; display: flex; gap: 8px; }
+            .admin-container { padding: 15px !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100vh; }
+            .admin-header { flex-direction: column; align-items: flex-start; }
+            .header-buttons { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .btn-excel { grid-column: span 2; justify-content: center; } /* زر الإكسل يأخذ سطر كامل */
+            .btn { font-size: 12px; justify-content: center; padding: 10px; }
+            .controls-bar { flex-direction: column; padding: 10px; }
             
-            /* تصغير الأزرار وجعلها متجاورة */
-            .btn-store, .btn-dash { 
-                font-size: 11px !important; 
-                padding: 6px 8px !important; 
-                flex: 1; 
-                justify-content: center; 
-            }
-
-            .admin-header h1 { font-size: 18px !important; margin: 0; }
-            table { font-size: 12px !important; }
-            th, td { padding: 10px 5px !important; }
-            .status-select { font-size: 11px !important; padding: 4px !important; width: 100%; }
+            /* إعدادات التمرير الأفقي الناعم */
+            .table-wrapper { padding-bottom: 15px; } 
+            .table-wrapper::-webkit-scrollbar { height: 8px; }
+            .table-wrapper::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+            .table-wrapper::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+            td, th { padding: 12px 10px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1>إدارة الطلبات</h1>
+            <h1 style="margin: 0; font-size: 24px;"><i class="fas fa-clipboard-list"></i> إدارة الطلبات المتقدمة</h1>
             <div class="header-buttons">
-                <a href="admin.html" class="btn-dash"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
-                <a href="index.html" class="btn-store"><i class="fas fa-store"></i> المتجر</a>
+                <a href="admin.html" class="btn btn-dash"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                <a href="index.html" class="btn btn-store"><i class="fas fa-store"></i> المتجر</a>
+                <button onclick="exportToExcel()" class="btn btn-excel"><i class="fas fa-file-excel"></i> تصدير إكسل</button>
             </div>
         </div>
-        <div style="overflow-x: auto;">
+
+        <div class="controls-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 بحث عن عميل، رقم هاتف، مدينة، أو رقم طلب..." oninput="filterData()">
+        </div>
+
+        <div class="table-wrapper">
             <table>
                 <thead>
-                    <tr><th>رقم</th><th>العميل</th><th class="hide-on-mobile">العنوان</th><th>الإجمالي</th><th>الحالة</th></tr>
+                    <tr>
+                        <th onclick="sortData('id')">رقم <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('created_at')">التاريخ <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('customer_name')">العميل <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('customer_phone')">رقم الهاتف <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('city')">المدينة/العنوان <i class="fas fa-sort"></i></th>
+                        <th>تفاصيل المنتجات</th>
+                        <th onclick="sortData('total_amount')">الإجمالي <i class="fas fa-sort"></i></th>
+                        <th onclick="sortData('status')">الحالة <i class="fas fa-sort"></i></th>
+                    </tr>
                 </thead>
-                <tbody id="orders-table-body"><tr><td colspan="5" style="text-align:center;">جاري التحميل...</td></tr></tbody>
+                <tbody id="orders-table-body">
+                    <tr><td colspan="8" style="text-align:center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px; color: var(--primary-color);"></i><br>جاري جلب الطلبات من السيرفر...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
         
+        // المتغيرات لحفظ حالة البيانات
+        let allOrders = [];
+        let filteredOrders = [];
+        let currentSort = { column: 'created_at', asc: false };
+
+        // 1. جلب البيانات من السيرفر
         async function fetchOrders() {
             const { data: orders, error } = await client.from('orders').select('*').order('created_at', { ascending: false });
+            if (!error && orders) {
+                allOrders = orders;
+                filteredOrders = [...allOrders]; // نسخة للفلترة
+                renderTable(filteredOrders);
+            } else {
+                document.getElementById('orders-table-body').innerHTML = '<tr><td colspan="8" style="color:red; text-align:center;">خطأ في الاتصال بقاعدة البيانات</td></tr>';
+            }
+        }
+
+        // 2. دالة بناء الجدول (Rendering)
+        function renderTable(dataArray) {
+            const tbody = document.getElementById('orders-table-body');
             let html = '';
             
-            if (orders && orders.length > 0) {
-                orders.forEach(o => {
-                    const statusColor = getStatusColor(o.status);
-                    const textColor = o.status === 'قيد المراجعة' ? '#333' : '#fff';
-                    
-                    html += `<tr>
-                        <td><strong>#${o.id}</strong></td>
-                        <td>${o.customer_name}</td>
-                        <td class="hide-on-mobile">${o.city || '-'}</td>
-                        <td style="font-weight: bold; color: var(--secondary-color);">${Number(o.total_amount).toLocaleString()} ل.س</td>
-                        <td>
-                            <select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background-color: ${statusColor}; color: ${textColor};">
-                                <option value="قيد المراجعة" ${o.status=='قيد المراجعة'?'selected':''}>قيد المراجعة</option>
-                                <option value="تم الشحن" ${o.status=='تم الشحن'?'selected':''}>تم الشحن</option>
-                                <option value="تم التسليم" ${o.status=='تم التسليم'?'selected':''}>تم التسليم</option>
-                                <option value="ملغي" ${o.status=='ملغي'?'selected':''}>ملغي</option>
-                            </select>
-                        </td>
-                    </tr>`;
-                });
-            } else {
-                html = '<tr><td colspan="5" style="text-align:center;">لا توجد طلبات حالياً</td></tr>';
+            if (dataArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px;">لا توجد بيانات مطابقة للبحث</td></tr>';
+                return;
             }
-            
-            document.getElementById('orders-table-body').innerHTML = html;
+
+            dataArray.forEach(o => {
+                const date = new Date(o.created_at).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
+                const statusColor = getStatusColor(o.status);
+                const textColor = o.status === 'قيد المراجعة' ? '#333' : '#fff';
+                
+                // معالجة المنتجات (إذا كانت مصفوفة JSON)
+                let itemsStr = '';
+                if(o.order_details && Array.isArray(o.order_details)){
+                    itemsStr = o.order_details.map(i => `${i.qty}x ${i.name}`).join(' ، ');
+                } else {
+                    itemsStr = 'غير متوفر';
+                }
+
+                html += `<tr>
+                    <td style="font-weight: bold; color: var(--primary-color);">#${o.id}</td>
+                    <td style="font-size: 12px; color: #666;">${date}</td>
+                    <td style="font-weight: bold;">${o.customer_name || '-'}</td>
+                    <td style="direction: ltr; text-align: right;">${o.customer_phone || '-'}</td>
+                    <td>${o.city || '-'} ${o.detailed_address ? '('+o.detailed_address+')' : ''}</td>
+                    <td style="font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis;">${itemsStr}</td>
+                    <td style="font-weight: bold; color: var(--secondary-color);">${Number(o.total_amount).toLocaleString()} ل.س</td>
+                    <td>
+                        <select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background-color: ${statusColor}; color: ${textColor};">
+                            <option value="قيد المراجعة" ${o.status=='قيد المراجعة'?'selected':''}>قيد المراجعة</option>
+                            <option value="قيد التجهيز" ${o.status=='قيد التجهيز'?'selected':''}>قيد التجهيز</option>
+                            <option value="تم الشحن" ${o.status=='تم الشحن'?'selected':''}>تم الشحن</option>
+                            <option value="تم التسليم" ${o.status=='تم التسليم'?'selected':''}>تم التسليم</option>
+                            <option value="ملغي" ${o.status=='ملغي'?'selected':''}>ملغي</option>
+                        </select>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
         }
 
-        // دالة لتحديد لون الخلفية بناءً على حالة الطلب
+        // 3. دالة الفلترة (البحث الذكي)
+        function filterData() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            filteredOrders = allOrders.filter(o => {
+                const searchStr = `${o.id} ${o.customer_name} ${o.customer_phone} ${o.city} ${o.status}`.toLowerCase();
+                return searchStr.includes(term);
+            });
+            // بعد الفلترة نحافظ على الترتيب الحالي
+            sortData(currentSort.column, true); 
+        }
+
+        // 4. دالة الترتيب (Sorting)
+        function sortData(column, keepDirection = false) {
+            // عكس الاتجاه إذا تم النقر على نفس العمود
+            if (!keepDirection) {
+                if (currentSort.column === column) {
+                    currentSort.asc = !currentSort.asc;
+                } else {
+                    currentSort.column = column;
+                    currentSort.asc = true;
+                }
+            }
+
+            filteredOrders.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+                
+                // معالجة القيم الفارغة
+                if(valA === null) valA = '';
+                if(valB === null) valB = '';
+
+                // معالجة الأرقام
+                if (column === 'id' || column === 'total_amount') {
+                    valA = Number(valA) || 0;
+                    valB = Number(valB) || 0;
+                } else {
+                    valA = valA.toString().toLowerCase();
+                    valB = valB.toString().toLowerCase();
+                }
+
+                if (valA < valB) return currentSort.asc ? -1 : 1;
+                if (valA > valB) return currentSort.asc ? 1 : -1;
+                return 0;
+            });
+            renderTable(filteredOrders);
+        }
+
+        // 5. تصدير البيانات لإكسل باحترافية
+        function exportToExcel() {
+            // نأخذ البيانات المفلترة حالياً ونرتبها في هيكل الإكسل
+            const excelData = filteredOrders.map(o => {
+                let itemsStr = '';
+                if(o.order_details && Array.isArray(o.order_details)){
+                    itemsStr = o.order_details.map(i => `${i.qty}x ${i.name}`).join(' , ');
+                }
+                return {
+                    "رقم الطلب": o.id,
+                    "التاريخ": new Date(o.created_at).toLocaleDateString('ar-EG'),
+                    "العميل": o.customer_name,
+                    "رقم الهاتف": o.customer_phone,
+                    "المدينة/العنوان": `${o.city || ''} - ${o.detailed_address || ''}`,
+                    "المنتجات": itemsStr,
+                    "الإجمالي (ل.س)": Number(o.total_amount),
+                    "حالة الطلب": o.status
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            
+            // تحسين اتجاه الشيت ليكون من اليمين لليسار
+            worksheet['!dir'] = 'rtl';
+            
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "طلبات أركان");
+            XLSX.writeFile(workbook, `Arkan_Orders_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        // دالة الألوان لحالة الطلب
         function getStatusColor(status) {
             switch(status) {
-                case 'تم التسليم': return '#27ae60'; // أخضر
-                case 'تم الشحن': return '#2980b9'; // أزرق
-                case 'ملغي': return '#c0392b'; // أحمر
-                default: return '#f1c40f'; // أصفر (قيد المراجعة)
+                case 'تم التسليم': return '#27ae60';
+                case 'تم الشحن': return '#2980b9';
+                case 'قيد التجهيز': return '#8e44ad';
+                case 'ملغي': return '#c0392b';
+                default: return '#f1c40f'; // قيد المراجعة
             }
         }
 
+        // دالة تحديث اليحالة في قاعدة البيانات
         async function updateStatus(id, newStatus) {
-            await client.from('orders').update({ status: newStatus }).eq('id', id);
-            fetchOrders(); // إعادة جلب البيانات لتحديث الألوان
+            const { error } = await client.from('orders').update({ status: newStatus }).eq('id', id);
+            if(error) {
+                alert("حدث خطأ أثناء التحديث");
+            } else {
+                // تحديث البيانات محلياً دون إعادة تحميل الصفحة لتوفير الموارد
+                const orderIndex = allOrders.findIndex(o => o.id === id);
+                if(orderIndex > -1) allOrders[orderIndex].status = newStatus;
+                filterData(); // إعادة الرسم بناءً على التحديث
+            }
         }
 
+        // تشغيل الدالة الأولى
         fetchOrders();
     </script>
 </body>
