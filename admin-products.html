@@ -31,6 +31,77 @@
         .swal-input-group { margin-bottom: 15px; text-align: right; }
         .swal-input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
         .swal-custom-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    /* =========================================
+           تنسيقات مخصصة لاحترافية لوحة الإدارة على الموبايل
+        ========================================= */
+        @media (max-width: 768px) {
+            /* تقليل الفراغات الجانبية للشاشة */
+            body { 
+                padding: 10px !important; 
+            }
+            .admin-container { 
+                padding: 15px 10px !important; 
+            }
+
+            /* ترتيب الهيدر (العنوان والأزرار) ليصبح بشكل طولي وأنيق */
+            .admin-header { 
+                flex-direction: column; 
+                gap: 12px; 
+                text-align: center; 
+                padding-bottom: 10px;
+            }
+            .admin-header h1 { 
+                font-size: 18px !important; /* تصغير عنوان الصفحة */
+            }
+            .admin-header div { 
+                width: 100%; 
+                justify-content: center; 
+                flex-wrap: wrap; 
+            }
+            .admin-header a, .admin-header button { 
+                font-size: 12px !important; 
+                padding: 8px 12px !important; 
+                flex: 1; /* جعل الأزرار تأخذ عرضاً متساوياً */
+                text-align: center;
+                justify-content: center;
+                display: flex;
+            }
+
+            /* تصغير وتنسيق شريط البحث الجديد */
+            #table-search {
+                font-size: 12px !important;
+                padding: 10px 35px 10px 10px !important;
+            }
+            .fa-search {
+                font-size: 14px !important;
+            }
+
+            /* -------------------------------------
+               تصغير وتنسيق الجدول الاحترافي للموبايل
+            ---------------------------------------- */
+            th, td { 
+                padding: 8px 10px !important; /* تقليل الفراغات داخل الخلايا */
+                font-size: 12px !important; /* تصغير الخط بشكل مريح للعين */
+                white-space: nowrap; /* منع انكسار الكلمات لسطرين لتصغير الارتفاع */
+            }
+            
+            /* تصغير صور المنتجات داخل الجدول */
+            td img {
+                width: 30px !important;
+                height: 30px !important;
+            }
+
+            /* تصغير زر التعديل وحالة الطلب */
+            .btn-edit, select { 
+                font-size: 11px !important; 
+                padding: 5px 8px !important; 
+            }
+
+            /* تعديل عرض عمود الوصف كي لا يخرب الجدول */
+            td:nth-child(6) {
+                max-width: 150px !important; /* تقليص عرض الوصف في الموبايل */
+            }
+        }
     </style>
 </head>
 <body>
@@ -56,7 +127,11 @@
                 <a href="index.html" style="color: var(--secondary-color); text-decoration: none; font-weight: bold; padding: 10px;"><i class="fas fa-home"></i> العودة للمتجر</a>
             </div>
         </div>
-
+<!-- شريط البحث للجدول -->
+<div style="margin-bottom: 20px; position: relative;">
+    <i class="fas fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
+    <input type="text" id="table-search" placeholder="ابحث في جميع الأسطر (الاسم، الرمز، البراند، السعر...)" style="width: 100%; padding: 12px 40px 12px 15px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-family: 'Cairo', sans-serif; font-size: 14px; box-sizing: border-box;">
+</div>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
@@ -204,6 +279,34 @@
         }
 
         document.addEventListener('DOMContentLoaded', fetchProducts);
+        // ==========================================
+// فلترة أسطر الجدول فورياً
+// ==========================================
+const tableSearchInput = document.getElementById('table-search');
+
+if (tableSearchInput) {
+    tableSearchInput.addEventListener('keyup', function() {
+        let searchValue = this.value.toLowerCase(); 
+        
+        // جلب جميع الأسطر داخل جسم الجدول
+        let tableRows = document.querySelectorAll('tbody tr');
+
+        tableRows.forEach(row => {
+            // تجاهل سطر "جاري التحميل" إن وجد
+            if (row.querySelector('.loading-text')) return;
+
+            // قراءة كل النص الموجود داخل السطر
+            let rowText = row.textContent.toLowerCase();
+
+            // إظهار أو إخفاء السطر بناءً على المطابقة
+            if (rowText.includes(searchValue)) {
+                row.style.display = ''; 
+            } else {
+                row.style.display = 'none'; 
+            }
+        });
+    });
+}
     </script>
 </body>
 </html>
