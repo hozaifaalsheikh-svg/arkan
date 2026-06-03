@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary-color: #1a365d;
-            --secondary-color: #f27a1a;
-            --bg-color: #f4f7f6;
-        }
+        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f4f7f6; }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
         .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
@@ -27,154 +23,47 @@
         .btn-edit:hover { background: #2980b9; }
         .loading-text { text-align: center; padding: 40px; font-size: 18px; color: #666; }
         
-        /* تنسيق فورم التعديل داخل SweetAlert */
         .swal-input-group { margin-bottom: 15px; text-align: right; }
         .swal-input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
         .swal-custom-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-    /* =========================================
-           تنسيقات مخصصة لاحترافية لوحة الإدارة على الموبايل
-        ========================================= */
+
         @media (max-width: 768px) {
-            /* تقليل الفراغات الجانبية للشاشة */
-            body { 
-                padding: 10px !important; 
-            }
-            .admin-container { 
-                padding: 15px 10px !important; 
-            }
-
-            /* ترتيب الهيدر (العنوان والأزرار) ليصبح بشكل طولي وأنيق */
-            .admin-header { 
-                flex-direction: column; 
-                gap: 12px; 
-                text-align: center; 
-                padding-bottom: 10px;
-            }
-            .admin-header h1 { 
-                font-size: 18px !important; /* تصغير عنوان الصفحة */
-            }
-            .admin-header div { 
-                width: 100%; 
-                justify-content: center; 
-                flex-wrap: wrap; 
-            }
-            .admin-header a, .admin-header button { 
-                font-size: 12px !important; 
-                padding: 8px 12px !important; 
-                flex: 1; /* جعل الأزرار تأخذ عرضاً متساوياً */
-                text-align: center;
-                justify-content: center;
-                display: flex;
-            }
-
-            /* تصغير وتنسيق شريط البحث الجديد */
-            #table-search {
-                font-size: 12px !important;
-                padding: 10px 35px 10px 10px !important;
-            }
-            .fa-search {
-                font-size: 14px !important;
-            }
-
-            /* -------------------------------------
-               تصغير وتنسيق الجدول الاحترافي للموبايل
-            ---------------------------------------- */
-            th, td { 
-                padding: 8px 10px !important; /* تقليل الفراغات داخل الخلايا */
-                font-size: 12px !important; /* تصغير الخط بشكل مريح للعين */
-                white-space: nowrap; /* منع انكسار الكلمات لسطرين لتصغير الارتفاع */
-            }
-            
-            /* تصغير صور المنتجات داخل الجدول */
-            td img {
-                width: 30px !important;
-                height: 30px !important;
-            }
-
-            /* تصغير زر التعديل وحالة الطلب */
-            .btn-edit, select { 
-                font-size: 11px !important; 
-                padding: 5px 8px !important; 
-            }
-
-            /* تعديل عرض عمود الوصف كي لا يخرب الجدول */
-            td:nth-child(6) {
-                max-width: 150px !important; /* تقليص عرض الوصف في الموبايل */
-            }
+            body { padding: 10px; }
+            .admin-container { padding: 15px 10px; }
+            .admin-header { flex-direction: column; gap: 12px; text-align: center; }
+            th, td { padding: 8px 10px; font-size: 12px; white-space: nowrap; }
+            td img { width: 30px; height: 30px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%;">
-            <h2 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-lock"></i> إدارة المنتجات المحمية</h2>
-            <p style="color: #666; font-size: 14px;">الرجاء إدخال كلمة المرور للمتابعة</p>
-            <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; text-align: center; box-sizing: border-box; outline: none;">
-            
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button onclick="checkAdminPassword()" style="flex: 1; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">دخول</button>
-                <button onclick="window.location.href='index.html'" style="flex: 1; padding: 12px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">رجوع للموقع</button>
-            </div>
-        </div>
-    </div>
-
     <div class="admin-container">
         <div class="admin-header">
-            <h1><i class="fas fa-boxes"></i> لوحة تعديل أسعار وبيانات المنتجات</h1>
-            <div style="display: flex; gap: 15px;">
-                <a href="admin.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold; padding: 10px;"><i class="fas fa-list-alt"></i> إدارة الطلبات</a>
-                <a href="index.html" style="color: var(--secondary-color); text-decoration: none; font-weight: bold; padding: 10px;"><i class="fas fa-home"></i> العودة للمتجر</a>
-            </div>
+            <h1><i class="fas fa-boxes"></i> إدارة المنتجات</h1>
+            <a href="admin.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold;"><i class="fas fa-arrow-left"></i> العودة للوحة الرئيسية</a>
         </div>
-        <!-- بطاقات لوحة التحكم السريعة -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
-            
-            <div style="background: linear-gradient(135deg, #1a365d, #2c5282); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                <i class="fas fa-shopping-cart" style="font-size: 28px; margin-bottom: 10px; color: #f27a1a;"></i>
-                <h3 style="margin: 0; font-size: 16px;">إدارة الطلبات</h3>
-                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">متابعة الطلبات الجديدة</p>
-            </div>
 
-            <div style="background: linear-gradient(135deg, #f27a1a, #e66a00); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                <i class="fas fa-box-open" style="font-size: 28px; margin-bottom: 10px; color: #1a365d;"></i>
-                <h3 style="margin: 0; font-size: 16px;">المنتجات والمخزون</h3>
-                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">تعديل الأسعار وتصفية الكميات</p>
-            </div>
-
-            <div style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                <i class="fas fa-chart-line" style="font-size: 28px; margin-bottom: 10px; color: #fff;"></i>
-                <h3 style="margin: 0; font-size: 16px;">التقارير والصندوق</h3>
-                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">تسوية الحسابات المالية</p>
-            </div>
-
-            <div style="background: linear-gradient(135deg, #8e44ad, #9b59b6); color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                <i class="fas fa-bullhorn" style="font-size: 28px; margin-bottom: 10px; color: #fff;"></i>
-                <h3 style="margin: 0; font-size: 16px;">البنرات والوكالات</h3>
-                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">تحديث إعلانات الواجهة</p>
-            </div>
-
+        <div style="margin-bottom: 20px; position: relative;">
+            <i class="fas fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
+            <input type="text" id="table-search" placeholder="ابحث في المنتجات..." style="width: 100%; padding: 12px 40px 12px 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
         </div>
-<!-- شريط البحث للجدول -->
-<div style="margin-bottom: 20px; position: relative;">
-    <i class="fas fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
-    <input type="text" id="table-search" placeholder="ابحث في جميع الأسطر (الاسم، الرمز، البراند، السعر...)" style="width: 100%; padding: 12px 40px 12px 15px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-family: 'Cairo', sans-serif; font-size: 14px; box-sizing: border-box;">
-</div>
+
         <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
-                        <th>رمز المنتج (SKU)</th>
+                        <th>SKU</th>
                         <th>الصورة</th>
-                        <th>اسم المنتج</th>
-                        <th>الشركة (البراند)</th>
-                        <th>السعر الحالي</th>
+                        <th>الاسم</th>
+                        <th>البراند</th>
+                        <th>السعر</th>
                         <th>الوصف</th>
                         <th>التحكم</th>
                     </tr>
                 </thead>
                 <tbody id="products-table-body">
-                    <tr><td colspan="7" class="loading-text">جاري جلب المنتجات من المستودع...</td></tr>
+                    <tr><td colspan="7" class="loading-text">جاري جلب البيانات...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -184,157 +73,59 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // التحقق من كلمة المرور الخاصة بك
-        function checkAdminPassword() {
-            const passInput = document.getElementById('admin-pass').value;
-            if(passInput === 'arkan123') { 
-                document.getElementById('admin-login-overlay').style.display = 'none';
-            } else {
-                alert('عذراً، كلمة المرور غير صحيحة!');
-            }
-        }
-
-        document.getElementById('admin-pass').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') checkAdminPassword();
-        });
-
-        // ربط السيرفر بـ Supabase
         const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         let allProducts = [];
 
-        // جلب المنتجات وعرضها في الجدول
         async function fetchProducts() {
             const tableBody = document.getElementById('products-table-body');
-            try {
-                const { data: products, error } = await supabaseClient.from('inventory').select('*');
-                if (error) throw error;
-
-                allProducts = products;
-                if (products.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="7" class="loading-text">المستودع فارغ تماماً.</td></tr>';
-                    return;
-                }
-
-                let html = '';
-                products.forEach(product => {
-                    html += `
-                        <tr>
-                            <td style="font-weight: bold;">${product.sku}</td>
-                            <td><img src="${product.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="object-fit: contain; border-radius:4px;"></td>
-                            <td style="font-weight: 600;">${product.name}</td>
-                            <td><span style="background: #fff1e6; color: var(--secondary-color); padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold;">${product.brand || 'Bioxcin'}</span></td>
-                            <td style="color: var(--secondary-color); font-weight: bold;">${Number(product.price).toLocaleString()} ل.س</td>
-                            <td style="font-size: 13px; color: #666; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${product.description || 'لا يوجد وصف.'}</td>
-                            <td>
-                                <button class="btn-edit" onclick="openEditModal('${product.sku}')"><i class="fas fa-edit"></i> تعديل</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tableBody.innerHTML = html;
-            } catch (err) {
-                console.error(err);
-                tableBody.innerHTML = '<tr><td colspan="7" class="loading-text" style="color:red;">فشل جلب البيانات.</td></tr>';
-            }
+            const { data: products, error } = await supabaseClient.from('inventory').select('*');
+            if (error) { tableBody.innerHTML = '<tr><td colspan="7" style="color:red; text-align:center;">خطأ في الاتصال</td></tr>'; return; }
+            allProducts = products;
+            
+            let html = '';
+            products.forEach(p => {
+                html += `<tr>
+                    <td>${p.sku}</td>
+                    <td><img src="${p.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:4px;"></td>
+                    <td>${p.name}</td>
+                    <td>${p.brand || '-'}</td>
+                    <td>${Number(p.price).toLocaleString()}</td>
+                    <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.description || ''}</td>
+                    <td><button class="btn-edit" onclick="openEditModal('${p.sku}')">تعديل</button></td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html;
         }
 
-        // فتح نافذة التعديل المنبثقة
         function openEditModal(sku) {
-            const product = allProducts.find(p => p.sku === sku);
-            if (!product) return;
-
+            const p = allProducts.find(x => x.sku === sku);
             Swal.fire({
-                title: 'تعديل بيانات المنتج',
-                html: `
-                    <div class="swal-input-group">
-                        <label>اسم المنتج:</label>
-                        <input id="edit-name" class="swal-custom-input" value="${product.name}">
-                    </div>
-                    <div class="swal-input-group">
-                        <label>السعر (ل.س):</label>
-                        <input id="edit-price" type="number" class="swal-custom-input" value="${product.price}">
-                    </div>
-                    <div class="swal-input-group">
-                        <label>الوصف:</label>
-                        <textarea id="edit-desc" class="swal-custom-input" rows="3" style="resize:vertical;">${product.description || ''}</textarea>
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'حفظ التغييرات',
-                cancelButtonText: 'إلغاء',
-                confirmButtonColor: '#27ae60',
-                cancelButtonColor: '#d33',
-                preConfirm: () => {
-                    return {
-                        name: document.getElementById('edit-name').value,
-                        price: parseInt(document.getElementById('edit-price').value) || 0,
-                        description: document.getElementById('edit-desc').value
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    updateProductInSupabase(sku, result.value);
-                }
+                title: 'تعديل المنتج',
+                html: `<input id="name" class="swal-custom-input" value="${p.name}">
+                       <input id="price" type="number" class="swal-custom-input" value="${p.price}">
+                       <textarea id="desc" class="swal-custom-input">${p.description}</textarea>`,
+                preConfirm: () => ({ name: document.getElementById('name').value, price: document.getElementById('price').value, description: document.getElementById('desc').value })
+            }).then((res) => {
+                if (res.isConfirmed) updateProduct(sku, res.value);
             });
         }
 
-        // تحديث البيانات على السيرفر مباشرة
-        async function updateProductInSupabase(sku, updatedData) {
-            Swal.fire({ title: 'جاري الحفظ والاتصال بالخادم...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('inventory')
-                    .update({
-                        name: updatedData.name,
-                        price: updatedData.price,
-                        description: updatedData.description
-                    })
-                    .eq('sku', sku);
-
-                if (error) throw error;
-
-                Swal.fire({ icon: 'success', title: 'تم التحديث بنجاح! 🎉', timer: 1500, showConfirmButton: false }).then(() => {
-                    fetchProducts(); // إعادة تحميل الجدول بالبيانات الجديدة
-                });
-            } catch (err) {
-                console.error(err);
-                Swal.fire({ icon: 'error', title: 'عذراً', text: 'فشل التحديث، تحقق من اتصال الإنترنت.' });
-            }
+        async function updateProduct(sku, data) {
+            await supabaseClient.from('inventory').update(data).eq('sku', sku);
+            fetchProducts();
         }
 
-        document.addEventListener('DOMContentLoaded', fetchProducts);
-        // ==========================================
-// فلترة أسطر الجدول فورياً
-// ==========================================
-const tableSearchInput = document.getElementById('table-search');
-
-if (tableSearchInput) {
-    tableSearchInput.addEventListener('keyup', function() {
-        let searchValue = this.value.toLowerCase(); 
-        
-        // جلب جميع الأسطر داخل جسم الجدول
-        let tableRows = document.querySelectorAll('tbody tr');
-
-        tableRows.forEach(row => {
-            // تجاهل سطر "جاري التحميل" إن وجد
-            if (row.querySelector('.loading-text')) return;
-
-            // قراءة كل النص الموجود داخل السطر
-            let rowText = row.textContent.toLowerCase();
-
-            // إظهار أو إخفاء السطر بناءً على المطابقة
-            if (rowText.includes(searchValue)) {
-                row.style.display = ''; 
-            } else {
-                row.style.display = 'none'; 
-            }
+        // تفعيل البحث
+        document.getElementById('table-search').addEventListener('keyup', function() {
+            let val = this.value.toLowerCase();
+            document.querySelectorAll('tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
+            });
         });
-    });
-}
+
+        fetchProducts();
     </script>
 </body>
 </html>
