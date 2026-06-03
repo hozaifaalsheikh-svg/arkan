@@ -7,11 +7,16 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary-color: #1a365d; --bg-color: #f8f9fa; }
-        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 20px; }
+        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f8f9fa; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 20px; margin: 0; }
+        
+        /* تنسيقات الكمبيوتر (الأساسية) */
         .admin-container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         
+        .btn-back { background: var(--primary-color); color: #fff; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; }
+        .btn-back:hover { opacity: 0.9; }
+
         table { width: 100%; border-collapse: separate; border-spacing: 0; }
         th { background-color: var(--primary-color); color: white; padding: 15px; font-weight: 600; }
         th:first-child { border-radius: 0 10px 0 0; }
@@ -21,10 +26,34 @@
         .btn-edit { background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
         .btn-edit:hover { background: #2980b9; }
 
-        @media (max-width: 600px) { 
+        /* =========================================
+           تحديثات الموبايل فقط
+           ========================================= */
+        @media (max-width: 768px) { 
             .hide-on-mobile { display: none !important; } 
-            body { font-size: 13px; }
-            th, td { padding: 10px; }
+            
+            /* إزالة الحواف والهوامش ليأخذ العرض بالكامل */
+            body { padding: 0 !important; background-color: #fff; }
+            .admin-container { 
+                max-width: 100% !important; 
+                padding: 15px !important; 
+                border-radius: 0 !important; 
+                box-shadow: none !important; 
+                min-height: 100vh;
+            }
+
+            /* تغيير لون زر العودة للبرتقالي وتصغيره */
+            .btn-back { 
+                background: var(--secondary-color) !important; 
+                font-size: 12px !important; 
+                padding: 8px 12px !important; 
+            }
+
+            /* تصغير الخطوط في الموبايل */
+            .admin-header h1 { font-size: 18px !important; }
+            table { font-size: 12px !important; }
+            th, td { padding: 10px 5px !important; }
+            .btn-edit { font-size: 11px !important; padding: 6px 10px !important; }
         }
     </style>
 </head>
@@ -32,7 +61,7 @@
     <div class="admin-container">
         <div class="admin-header">
             <h1>إدارة المنتجات</h1>
-            <a href="admin.html" style="background:#1a365d; color:#fff; padding:10px 15px; border-radius:8px; text-decoration:none;"><i class="fas fa-arrow-right"></i> عودة</a>
+            <a href="index.html" class="btn-back"><i class="fas fa-store"></i> العودة الى المتجر</a>
         </div>
         <div style="overflow-x: auto;">
             <table>
