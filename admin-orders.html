@@ -3,82 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الطلبات المتقدمة | شركة أركان</title>
+    <title>إدارة الطلبات | شركة أركان</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f4f7f6; --border-color: #cbd5e1; }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 20px; margin: 0; box-sizing: border-box; }
         
-        .admin-container { width: 100%; max-width: 100%; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        
-        /* شريط الإحصائيات الجديد */
-        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .stat-card h4 { margin: 0; font-size: 11px; color: #64748b; text-transform: uppercase; margin-bottom: 8px; }
-        .stat-card p { margin: 0; font-size: 20px; font-weight: 700; color: var(--primary-color); }
+        .admin-container { width: 100%; max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
 
-        .header-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        /* شريط الإحصائيات (مدمج وأنيق) */
+        .stats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: #fff; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); text-align: center; transition: all 0.3s ease; }
+        .stat-card:hover { border-color: var(--secondary-color); background: #fffaf7; }
+        .stat-card h4 { margin: 0; font-size: 10px; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-card p { margin: 0; font-size: 16px; font-weight: 700; color: var(--primary-color); }
+
         .btn { padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: none; font-family: inherit; font-size: 13px; }
         .btn-dash { background: var(--primary-color); color: #fff; }
         .btn-store { background: var(--secondary-color); color: #fff; }
         .btn-excel { background: #27ae60; color: #fff; }
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        .table-wrapper { overflow-x: auto; overflow-y: visible; border: 1px solid var(--border-color); width: 100%; min-height: 400px; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; background: white; table-layout: auto; word-wrap: break-word; font-family: 'Cairo', sans-serif; }
-        th, td { border: 1px solid var(--border-color); padding: 12px 10px; font-size: 13px; color: #334155; vertical-align: middle; text-align: right; font-weight: 600; }
+        .table-wrapper { overflow-x: auto; border: 1px solid var(--border-color); width: 100%; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid var(--border-color); padding: 12px 10px; font-size: 13px; color: #334155; text-align: right; font-weight: 600; /* الخط عريض كما طلبت */ }
         tr:nth-child(even) td { background-color: #f8fafc; }
-        tr:hover td { background-color: #e2e8f0; }
-        th { background-color: var(--primary-color); color: #ffffff !important; font-weight: 700 !important; font-size: 13px !important; user-select: none; position: relative; }
+        th { background-color: var(--primary-color); color: #ffffff !important; }
         
-        .th-content { display: flex; justify-content: flex-start; align-items: center; gap: 8px; cursor: pointer; }
-        .th-content:hover { color: var(--secondary-color); }
-        .filter-icon { font-size: 11px; color: rgba(255,255,255,0.8); padding: 4px; border-radius: 4px; background: rgba(0,0,0,0.15); transition: 0.2s; }
+        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 6px; padding: 10px; z-index: 999; min-width: 150px; }
+        .filter-input { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+
+        .status-select { padding: 6px; border-radius: 4px; font-weight: 700; cursor: pointer; width: 100%; border: 1px solid transparent; }
         
-        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 6px; padding: 10px; z-index: 999; min-width: 180px; margin-top: 5px; cursor: default; font-weight: normal; color: #333; text-align: right; }
-        .filter-input { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-family: inherit; font-size: 12px; outline: none; }
-        
-        .total-col { font-weight: 700; color: var(--secondary-color); white-space: nowrap !important; }
-        .status-select { padding: 6px 8px; border-radius: 4px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 12px; transition: 0.3s; border: 1px solid transparent; }
+        /* تحسينات الموبايل */
+        @media (max-width: 768px) {
+            .stats-container { grid-template-columns: repeat(3, 1fr); }
+            th, td { font-size: 12px; padding: 8px 5px; }
+            .status-select { min-width: 100px; }
+        }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1 style="margin: 0; font-size: 22px;"><i class="fas fa-clipboard-list"></i> إدارة الطلبات المتقدمة</h1>
-            <div class="header-buttons">
-                <a href="admin.html" class="btn btn-dash"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
-                <a href="index.html" class="btn btn-store"><i class="fas fa-store"></i> المتجر</a>
-                <button onclick="exportToExcel()" class="btn btn-excel"><i class="fas fa-file-excel"></i> تصدير إكسل</button>
+            <h1 style="margin: 0; font-size: 20px;"><i class="fas fa-clipboard-list"></i> إدارة الطلبات</h1>
+            <div style="display:flex; gap:10px;">
+                <a href="admin.html" class="btn btn-dash"><i class="fas fa-tachometer-alt"></i></a>
+                <button onclick="exportToExcel()" class="btn btn-excel"><i class="fas fa-file-excel"></i></button>
             </div>
         </div>
 
-        <div class="stats-container" id="stats-bar">
-            </div>
+        <div class="stats-container" id="stats-bar"></div>
 
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th><div class="th-content" onclick="togglePopup('popup-id', event)"><span>رقم</span> <i class="fas fa-filter filter-icon"></i></div>
-                            <div id="popup-id" class="filter-popup" onclick="event.stopPropagation()">
-                                <input type="text" class="filter-input" placeholder="بحث بالرقم..." oninput="applyFilter('id', this.value)">
-                            </div>
+                        <th style="position:relative;">رقم <i class="fas fa-filter" onclick="togglePopup('pop-id', event)" style="cursor:pointer; font-size:10px;"></i>
+                            <div id="pop-id" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث..." oninput="applyFilter('id', this.value)"></div>
                         </th>
-                        <th><div class="th-content" onclick="togglePopup('popup-date', event)"><span>التاريخ</span> <i class="fas fa-filter filter-icon"></i></div></th>
-                        <th><div class="th-content" onclick="togglePopup('popup-name', event)"><span>العميل</span> <i class="fas fa-filter filter-icon"></i></div>
-                            <div id="popup-name" class="filter-popup" onclick="event.stopPropagation()">
-                                <input type="text" class="filter-input" placeholder="بحث بالاسم..." oninput="applyFilter('customer_name', this.value)">
-                            </div>
+                        <th>التاريخ</th>
+                        <th style="position:relative;">العميل <i class="fas fa-filter" onclick="togglePopup('pop-name', event)" style="cursor:pointer; font-size:10px;"></i>
+                            <div id="pop-name" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث..." oninput="applyFilter('customer_name', this.value)"></div>
                         </th>
-                        <th><span>رقم الهاتف</span></th>
-                        <th><span>العنوان</span></th>
-                        <th><span>تفاصيل المنتجات</span></th>
-                        <th><span>الإجمالي</span></th>
-                        <th><div class="th-content" onclick="togglePopup('popup-status', event)"><span>الحالة</span> <i class="fas fa-filter filter-icon"></i></div>
-                            <div id="popup-status" class="filter-popup" onclick="event.stopPropagation()">
+                        <th>الهاتف</th>
+                        <th>العنوان</th>
+                        <th>المنتجات</th>
+                        <th>الإجمالي</th>
+                        <th style="position:relative;">الحالة <i class="fas fa-filter" onclick="togglePopup('pop-stat', event)" style="cursor:pointer; font-size:10px;"></i>
+                             <div id="pop-stat" class="filter-popup" onclick="event.stopPropagation()">
                                 <select class="filter-input" onchange="applyFilter('status', this.value)">
                                     <option value="all">الكل</option>
                                     <option value="قيد المراجعة">قيد المراجعة</option>
@@ -91,9 +85,7 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody id="orders-table-body">
-                    <tr><td colspan="8" style="text-align:center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</td></tr>
-                </tbody>
+                <tbody id="orders-table-body"></tbody>
             </table>
         </div>
     </div>
@@ -102,69 +94,53 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
-        let allOrders = [];
-        let filteredOrders = [];
-        let columnFilters = { id: '', customer_name: '', status: 'all' };
+        let allOrders = [], filteredOrders = [], filters = { id: '', customer_name: '', status: 'all' };
 
         document.addEventListener('click', () => document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'));
         function togglePopup(id, e) { e.stopPropagation(); document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
 
         async function fetchOrders() {
-            const { data: orders } = await client.from('orders').select('*').order('created_at', { ascending: false });
-            allOrders = orders || [];
+            const { data } = await client.from('orders').select('*').order('created_at', { ascending: false });
+            allOrders = data || [];
             filteredOrders = [...allOrders];
             updateStats();
             renderTable(filteredOrders);
         }
 
-        // تحديث شريط الإحصائيات
         function updateStats() {
-            const statsBar = document.getElementById('stats-bar');
             const statuses = ['قيد المراجعة', 'قيد التجهيز', 'تم الشحن', 'تم التسليم', 'ملغي'];
-            statsBar.innerHTML = statuses.map(s => {
-                const count = allOrders.filter(o => o.status === s).length;
-                return `<div class="stat-card"><h4>${s}</h4><p>${count}</p></div>`;
-            }).join('');
+            document.getElementById('stats-bar').innerHTML = statuses.map(s => `
+                <div class="stat-card"><h4>${s}</h4><p>${allOrders.filter(o => o.status === s).length}</p></div>
+            `).join('');
         }
 
         function renderTable(data) {
-            const tbody = document.getElementById('orders-table-body');
-            tbody.innerHTML = data.map(o => {
-                const style = getStatusStyle(o.status);
-                return `<tr>
+            document.getElementById('orders-table-body').innerHTML = data.map(o => `
+                <tr>
                     <td>#${o.id}</td>
-                    <td>${new Date(o.created_at).toLocaleString('ar-EG')}</td>
-                    <td>${o.customer_name || '-'}</td>
-                    <td>${o.customer_phone || '-'}</td>
-                    <td>${o.city || '-'}</td>
+                    <td>${new Date(o.created_at).toLocaleDateString('ar-EG')}</td>
+                    <td>${o.customer_name}</td>
+                    <td>${o.customer_phone}</td>
+                    <td>${o.city}</td>
                     <td>${(o.order_details || []).map(i => i.name).join('، ')}</td>
-                    <td class="total-col">${Number(o.total_amount).toLocaleString()} ل.س</td>
-                    <td><select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background:${style.bg}; color:${style.text}; border-color:${style.border}">${['قيد المراجعة', 'قيد التجهيز', 'تم الشحن', 'تم التسليم', 'ملغي'].map(s => `<option value="${s}" ${o.status==s?'selected':''}>${s}</option>`).join('')}</select></td>
-                </tr>`;
-            }).join('');
+                    <td style="color:var(--secondary-color)">${Number(o.total_amount).toLocaleString()}</td>
+                    <td><select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background:${getStatusColor(o.status).bg}; color:${getStatusColor(o.status).text}">${['قيد المراجعة', 'قيد التجهيز', 'تم الشحن', 'تم التسليم', 'ملغي'].map(s => `<option value="${s}" ${o.status==s?'selected':''}>${s}</option>`).join('')}</select></td>
+                </tr>
+            `).join('');
         }
 
-        function applyFilter(col, val) { columnFilters[col] = val.toLowerCase(); runFilters(); }
-        function runFilters() {
-            filteredOrders = allOrders.filter(o => (columnFilters.id === '' || String(o.id).includes(columnFilters.id)) && (columnFilters.customer_name === '' || (o.customer_name || '').toLowerCase().includes(columnFilters.customer_name)) && (columnFilters.status === 'all' || o.status === columnFilters.status));
-            renderTable(filteredOrders);
-        }
-
-        function getStatusStyle(s) {
+        function getStatusColor(s) {
             switch(s) {
-                case 'تم التسليم': return { bg: '#d1fae5', text: '#065f46', border: '#34d399' };
-                case 'تم الشحن': return { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd' };
-                case 'قيد التجهيز': return { bg: '#f3e8ff', text: '#6b21a8', border: '#d8b4fe' };
-                case 'ملغي': return { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' };
-                default: return { bg: '#fef3c7', text: '#92400e', border: '#fcd34d' };
+                case 'تم التسليم': return { bg: '#d1fae5', text: '#065f46' };
+                case 'ملغي': return { bg: '#fee2e2', text: '#991b1b' };
+                default: return { bg: '#fff', text: '#334155' };
             }
         }
 
-        async function updateStatus(id, val) {
-            await client.from('orders').update({ status: val }).eq('id', id);
-            fetchOrders();
-        }
-
+        async function updateStatus(id, val) { await client.from('orders').update({ status: val }).eq('id', id); fetchOrders(); }
+        function applyFilter(col, val) { filters[col] = val.toLowerCase(); filteredOrders = allOrders.filter(o => (filters.id === '' || String(o.id).includes(filters.id)) && (filters.customer_name === '' || (o.customer_name || '').toLowerCase().includes(filters.customer_name)) && (filters.status === 'all' || o.status === filters.status)); renderTable(filteredOrders); }
+        function exportToExcel() { const ws = XLSX.utils.json_to_sheet(filteredOrders); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Orders"); XLSX.writeFile(wb, "Orders.xlsx"); }
+        
         fetchOrders();
     </script>
 </body>
