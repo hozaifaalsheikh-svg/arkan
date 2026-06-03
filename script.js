@@ -273,22 +273,19 @@ function updateAuthUI(session) {
     if (!headerLinks) return;
 
     if (session) {
-        // إذا كان المستخدم مسجل الدخول: يظهر اسمه داخل الزر الأنيق جهة اليسار
+        // المستخدم مسجل الدخول: نعرض اسمه مع أيقونة المستخدم كزر أنيق
         const userName = session.user.user_metadata.full_name || "صديق أركان";
         headerLinks.innerHTML = `
-            <a href="about.html" class="mobile-about-btn"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول</a>
-            
             <a href="#" onclick="askToLogout(event)" class="header-action-btn" style="text-decoration: none; cursor: pointer;" title="اضغط لتسجيل الخروج">
                 <i class="fas fa-user"></i> 
-                <span>${userName}</span>
+                <span class="hide-on-mobile">${userName}</span>
             </a>
         `;
     } else {
-        // إذا كان المستخدم غير مسجل: يظهر زر تسجيل الدخول المعتاد جهة اليسار
+        // المستخدم غير مسجل: نعرض زر تسجيل الدخول
         headerLinks.innerHTML = `
-            <a href="about.html" class="mobile-about-btn"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول</a>
             <a href="login.html" class="header-action-btn" style="text-decoration: none;">
-                <i class="fas fa-user-plus"></i> <span class="desktop-only-text">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span>
+                <i class="fas fa-user-plus"></i> <span class="hide-on-mobile">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span>
             </a>
         `;
     }

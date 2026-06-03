@@ -11,31 +11,32 @@
 <body> 
     </div>
     <div class="sticky-wrapper">
-    <header class="main-header">
+<header class="main-header">
             <div class="header-container">
                 
                 <div class="brand-group">
                     <a href="index.html" style="text-decoration: none;">
                         <div class="logo">Arkan<span>COMPANY</span></div>
                     </a>
-                    
-                    <a href="about.html" class="header-action-btn desktop-about-btn" style="text-decoration: none; margin-right: 15px;">
-                        <i class="fas fa-info-circle"></i> <span>حول الشركة</span>
-                    </a>
                 </div>
 
                 <div class="search-bar">
-                    <input type="text" id="search-input" placeholder=" ابحث عن مكملات غذائية.. كريم تبييض.. سيروم">
+                    <input type="text" id="search-input" placeholder="ابحث عن متمم غذائي..">
                     <button><i class="fas fa-search"></i></button>
                 </div>
                 
-                <div class="header-actions">
+                <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+                    
+                    <a href="about.html" class="header-action-btn" style="text-decoration: none;">
+                        <i class="fas fa-info-circle"></i> <span class="hide-on-mobile">حول الشركة</span><span class="mobile-only-text">حول</span>
+                    </a>
+
                     <div class="header-links" style="display: flex; align-items: center; gap: 10px;">
-                        <a href="about.html" class="mobile-about-btn"><i class="fas fa-info-circle" style="margin-left: 5px;"></i> حول</a>
                         <a href="login.html" class="header-action-btn" style="text-decoration: none;">
-                            <i class="fas fa-user-plus"></i> <span class="desktop-only-text">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span>
+                            <i class="fas fa-user-plus"></i> <span class="hide-on-mobile">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span>
                         </a>
                     </div>
+
                 </div>
 
             </div>
