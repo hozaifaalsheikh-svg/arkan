@@ -16,22 +16,26 @@
         .stat-card h4 { margin: 0; font-size: 11px; color: #64748b; margin-bottom: 5px; }
         .stat-card p { margin: 0; font-size: 20px; font-weight: 800; color: var(--primary); }
 
-        .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
+        .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: visible; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f1f5f9; padding: 14px; text-align: right; color: #475569; font-weight: 700; border-bottom: 2px solid var(--border); vertical-align: middle; }
+        th { background: #f1f5f9; padding: 14px; text-align: right; color: #475569; font-weight: 700; border-bottom: 2px solid var(--border); position: relative; }
         td { padding: 14px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 600; }
         
-        /* Icons style */
-        .header-action { cursor: pointer; color: var(--primary); margin-right: 5px; font-size: 13px; vertical-align: middle; }
+        /* Filter/Sort Icons & Popups */
+        .header-action { cursor: pointer; color: var(--secondary); margin-right: 5px; font-size: 12px; }
+        .filter-popup { display: none; position: absolute; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 6px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 5px; }
+        .filter-input { width: 120px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
+
         .status-select { padding: 5px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; }
-        .action-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        .action-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
             <h1 style="font-size: 20px; color: var(--primary);"><i class="fas fa-clipboard-list"></i> إدارة الطلبات</h1>
-            <div style="display:flex; gap:10px;">
+            <div style="display: flex; gap: 10px;">
                 <a href="admin.html" class="action-btn" style="background: var(--primary); color: white; text-decoration: none;"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
                 <button onclick="exportToExcel()" class="action-btn" style="background: #27ae60; color: white;"><i class="fas fa-file-excel"></i></button>
             </div>
@@ -46,12 +50,27 @@
                         <tr>
                             <th>رقم <i class="fas fa-sort header-action" onclick="sortData('id')"></i></th>
                             <th>التاريخ <i class="fas fa-sort header-action" onclick="sortData('created_at')"></i></th>
-                            <th>العميل <i class="fas fa-filter header-action" onclick="filterPrompt('customer_name')"></i></th>
+                            <th>العميل <i class="fas fa-filter header-action" onclick="togglePopup('pop-name', event)"></i>
+                                <div id="pop-name" class="filter-popup" onclick="event.stopPropagation()">
+                                    <input type="text" class="filter-input" placeholder="بحث بالاسم..." oninput="applyFilter('customer_name', this.value)">
+                                </div>
+                            </th>
                             <th>الهاتف</th>
                             <th>العنوان</th>
                             <th>المنتجات</th>
                             <th>الإجمالي</th>
-                            <th>الحالة</th>
+                            <th>الحالة <i class="fas fa-filter header-action" onclick="togglePopup('pop-stat', event)"></i>
+                                <div id="pop-stat" class="filter-popup" onclick="event.stopPropagation()">
+                                    <select class="filter-input" onchange="applyFilter('status', this.value)">
+                                        <option value="all">الكل</option>
+                                        <option value="قيد المراجعة">قيد المراجعة</option>
+                                        <option value="قيد التجهيز">قيد التجهيز</option>
+                                        <option value="تم الشحن">تم الشحن</option>
+                                        <option value="تم التسليم">تم التسليم</option>
+                                        <option value="ملغي">ملغي</option>
+                                    </select>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="orders-table-body"></tbody>
@@ -66,6 +85,9 @@
         const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
         let allOrders = [], filteredOrders = [], sortAsc = true;
 
+        document.addEventListener('click', () => document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'));
+        function togglePopup(id, e) { e.stopPropagation(); document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
+
         async function fetchOrders() {
             const { data } = await client.from('orders').select('*');
             allOrders = data || [];
@@ -79,15 +101,12 @@
             renderTable(filteredOrders);
         }
 
-        function filterPrompt(col) {
-            const val = prompt("ابحث عن اسم العميل:");
-            if(val) {
-                filteredOrders = allOrders.filter(o => (o[col] || '').toLowerCase().includes(val.toLowerCase()));
-                renderTable(filteredOrders);
-            } else {
-                filteredOrders = [...allOrders];
-                renderTable(filteredOrders);
-            }
+        function applyFilter(col, val) {
+            filteredOrders = allOrders.filter(o => {
+                if (col === 'status' && val === 'all') return true;
+                return (o[col] || '').toLowerCase().includes(val.toLowerCase());
+            });
+            renderTable(filteredOrders);
         }
 
         function updateUI() {
