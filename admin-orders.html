@@ -11,7 +11,6 @@
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 15px; margin: 0; box-sizing: border-box; }
         
         .admin-container { width: 100%; max-width: 100%; margin: 0 auto; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); box-sizing: border-box; }
-        
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         
         .header-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -21,24 +20,28 @@
         .btn-excel { background: var(--success); color: #fff; }
         .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* شريط البحث والفلترة المزدوج */
+        /* البحث الشامل والفلترة */
         .controls-bar { display: flex; gap: 15px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; }
         .search-input { flex: 2; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Cairo'; outline: none; transition: 0.3s; font-size: 14px; }
-        .search-input:focus, .filter-select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1); }
-        
-        /* القائمة المنسدلة للفلترة */
+        .search-input:focus, .filter-select:focus, .col-filter:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1); }
         .filter-select { flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Cairo', sans-serif; outline: none; transition: 0.3s; background-color: #fff; font-weight: bold; color: var(--primary-color); font-size: 14px; cursor: pointer; }
 
+        /* إعدادات الجدول وعناوين الأعمدة */
         .table-wrapper { overflow-x: auto; border-radius: 10px; border: 1px solid #eee; width: 100%; }
         table { width: 100%; border-collapse: collapse; background: white; table-layout: auto; }
-        th { background-color: var(--primary-color); color: white; padding: 16px; font-weight: 600; text-align: right; cursor: pointer; position: sticky; top: 0; user-select: none; transition: 0.2s; white-space: nowrap; }
-        th:hover { background-color: #2c5282; }
+        th { background-color: var(--primary-color); color: white; padding: 12px; font-weight: 600; text-align: right; user-select: none; white-space: nowrap; }
+        .sortable { cursor: pointer; transition: 0.2s; }
+        .sortable:hover { background-color: #2c5282; }
         th i { font-size: 12px; margin-right: 8px; color: rgba(255,255,255,0.6); }
         
-        td { padding: 16px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        td { padding: 16px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
         tr:hover td { background-color: #f8fbff; }
-        
         .status-select { padding: 8px 12px; border-radius: 6px; border: none; font-family: inherit; font-weight: bold; outline: none; cursor: pointer; width: 100%; min-width: 120px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* مربعات البحث الخاصة بكل عمود (الجديد) */
+        .col-filter-row th { background-color: #2c5282; padding: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .col-filter { width: 100%; padding: 6px; font-size: 12px; border: none; border-radius: 4px; box-sizing: border-box; font-family: 'Cairo'; outline: none; text-align: right; }
+        .col-filter::placeholder { color: #aaa; }
 
         @media (max-width: 768px) { 
             body { padding: 0 !important; background-color: #fff; }
@@ -47,8 +50,6 @@
             .header-buttons { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
             .btn-excel { grid-column: span 2; justify-content: center; }
             .btn { font-size: 12px; justify-content: center; padding: 10px; }
-            
-            /* ترتيب الفلتر والبحث عمودياً في الموبايل */
             .controls-bar { flex-direction: column; padding: 10px; gap: 10px; }
             .search-input, .filter-select { width: 100%; box-sizing: border-box; }
             
@@ -58,6 +59,9 @@
             .table-wrapper::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
             td, th { padding: 12px 10px; font-size: 13px; }
             td { white-space: nowrap; } 
+            
+            /* إخفاء فلاتر الأعمدة في الموبايل لمنع التشويه، والاعتماد على البحث الشامل */
+            .col-filter-row { display: none; }
         }
     </style>
 </head>
@@ -72,10 +76,8 @@
             </div>
         </div>
 
-        <!-- شريط البحث والفلترة المزدوج -->
         <div class="controls-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 بحث عن عميل، رقم هاتف، مدينة، أو رقم طلب..." oninput="filterData()">
-            
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 بحث شامل وسريع..." oninput="filterData()">
             <select id="statusFilter" class="filter-select" onchange="filterData()">
                 <option value="all">كافة الحالات (عرض الكل)</option>
                 <option value="قيد المراجعة">قيد المراجعة</option>
@@ -90,15 +92,22 @@
             <table>
                 <thead>
                     <tr>
-                        <th onclick="sortData('id')">رقم <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('created_at')">التاريخ <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('customer_name')">العميل <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('customer_phone')">رقم الهاتف <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('city')">المدينة/العنوان <i class="fas fa-sort"></i></th>
+                        <th class="sortable" onclick="sortData('id')">رقم <i class="fas fa-sort"></i></th>
+                        <th class="sortable" onclick="sortData('created_at')">التاريخ <i class="fas fa-sort"></i></th>
+                        <th class="sortable" onclick="sortData('customer_name')">العميل <i class="fas fa-sort"></i></th>
+                        <th class="sortable" onclick="sortData('customer_phone')">رقم الهاتف <i class="fas fa-sort"></i></th>
+                        <th class="sortable" onclick="sortData('city')">المدينة/العنوان <i class="fas fa-sort"></i></th>
                         <th>تفاصيل المنتجات</th>
-                        <th onclick="sortData('total_amount')">الإجمالي <i class="fas fa-sort"></i></th>
-                        <th onclick="sortData('status')">الحالة <i class="fas fa-sort"></i></th>
+                        <th class="sortable" onclick="sortData('total_amount')">الإجمالي <i class="fas fa-sort"></i></th>
+                        <th class="sortable" onclick="sortData('status')">الحالة <i class="fas fa-sort"></i></th>
                     </tr>
+                    <tr class="col-filter-row">
+                        <th><input type="text" id="col-id" class="col-filter" placeholder="بحث رقم..." oninput="filterData()"></th>
+                        <th></th> <th><input type="text" id="col-name" class="col-filter" placeholder="بحث اسم..." oninput="filterData()"></th>
+                        <th><input type="text" id="col-phone" class="col-filter" placeholder="بحث هاتف..." oninput="filterData()"></th>
+                        <th><input type="text" id="col-city" class="col-filter" placeholder="بحث مدينة..." oninput="filterData()"></th>
+                        <th><input type="text" id="col-items" class="col-filter" placeholder="بحث منتج..." oninput="filterData()"></th>
+                        <th></th> <th></th> </tr>
                 </thead>
                 <tbody id="orders-table-body">
                     <tr><td colspan="8" style="text-align:center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px; color: var(--primary-color);"></i><br>جاري جلب الطلبات من السيرفر...</td></tr>
@@ -170,21 +179,35 @@
             tbody.innerHTML = html;
         }
 
-        // محرك الفلترة المزدوج (نص + حالة)
+        // محرك الفلترة المتطور (شامل + حالة + أعمدة فردية)
         function filterData() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const globalTerm = document.getElementById('searchInput').value.toLowerCase();
             const statusTerm = document.getElementById('statusFilter').value;
+            
+            const idTerm = document.getElementById('col-id').value.toLowerCase();
+            const nameTerm = document.getElementById('col-name').value.toLowerCase();
+            const phoneTerm = document.getElementById('col-phone').value.toLowerCase();
+            const cityTerm = document.getElementById('col-city').value.toLowerCase();
+            const itemsTerm = document.getElementById('col-items').value.toLowerCase();
 
             filteredOrders = allOrders.filter(o => {
-                // 1. فحص النص
+                // 1. الفلتر الشامل
                 const searchStr = `${o.id} ${o.customer_name} ${o.customer_phone} ${o.city}`.toLowerCase();
-                const matchesText = searchStr.includes(searchTerm);
+                const matchesGlobal = globalTerm === '' || searchStr.includes(globalTerm);
                 
-                // 2. فحص الحالة
+                // 2. فلتر الحالة
                 const matchesStatus = (statusTerm === 'all') ? true : (o.status === statusTerm);
                 
-                // إرجاع النتيجة إذا تطابقت مع الشرطين
-                return matchesText && matchesStatus;
+                // 3. فلاتر الأعمدة الفردية (AND Logic)
+                const matchesId = idTerm === '' || String(o.id).includes(idTerm);
+                const matchesName = nameTerm === '' || (o.customer_name || '').toLowerCase().includes(nameTerm);
+                const matchesPhone = phoneTerm === '' || (o.customer_phone || '').toLowerCase().includes(phoneTerm);
+                const matchesCity = cityTerm === '' || (`${o.city} ${o.detailed_address}`).toLowerCase().includes(cityTerm);
+                
+                let itemsStr = o.order_details && Array.isArray(o.order_details) ? o.order_details.map(i => i.name).join(' ').toLowerCase() : '';
+                const matchesItems = itemsTerm === '' || itemsStr.includes(itemsTerm);
+
+                return matchesGlobal && matchesStatus && matchesId && matchesName && matchesPhone && matchesCity && matchesItems;
             });
             
             sortData(currentSort.column, true); 
@@ -264,7 +287,7 @@
             } else {
                 const orderIndex = allOrders.findIndex(o => o.id === id);
                 if(orderIndex > -1) allOrders[orderIndex].status = newStatus;
-                filterData(); // تحديث فوري بناءً على الفلاتر النشطة
+                filterData(); 
             }
         }
 
