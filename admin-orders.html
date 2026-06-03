@@ -6,115 +6,48 @@
     <title>إدارة الطلبات | شركة أركان</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f4f7f6; }
-        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
+        :root { --primary-color: #1a365d; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f4f7f6; padding: 20px; }
         .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .admin-header h1 { color: var(--primary-color); margin: 0; font-size: 24px; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .btn-nav { background: #1a365d; color: #fff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+        
+        table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px; text-align: right; border-bottom: 1px solid #ddd; }
-        th { background-color: var(--primary-color); color: white; }
+        th { background-color: #1a365d; color: white; }
         
-        /* تنسيق الموبايل - تحويل الجدول لبطاقات */
-        @media (max-width: 768px) {
-            thead { display: none; }
-            tbody, tr, td { display: block; width: 100%; }
-            tr { background: #fff; margin-bottom: 15px; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-right: 5px solid var(--primary-color); }
-            td { text-align: right; padding: 8px 0 !important; border: none !important; display: flex; justify-content: space-between; }
-            td::before { content: attr(data-label); font-weight: bold; color: #555; }
-        }
+        @media (max-width: 600px) { .hide-on-mobile { display: none !important; } }
     </style>
 </head>
 <body>
     <div class="admin-container">
-<a href="admin.html" style="
-    background: #1a365d; 
-    color: #fff; 
-    text-decoration: none; 
-    padding: 10px 18px; 
-    border-radius: 8px; 
-    font-size: 14px; 
-    display: inline-flex; 
-    align-items: center; 
-    gap: 8px; 
-    transition: background 0.3s;">
-    <i class="fas fa-arrow-right"></i> العودة إلى لوحة التحكم
-</a>
-
+        <div class="admin-header">
+            <h1>إدارة الطلبات</h1>
+            <a href="admin.html" class="btn-nav"><i class="fas fa-arrow-right"></i> العودة للوحة التحكم</a>
+        </div>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
-                    <tr><th>رقم</th><th>التاريخ</th><th>العميل</th><th>الهاتف</th><th>العنوان</th><th>المنتجات</th><th>الإجمالي</th><th>الحالة</th></tr>
+                    <tr><th>رقم</th><th>العميل</th><th class="hide-on-mobile">العنوان</th><th>الإجمالي</th><th>الحالة</th></tr>
                 </thead>
-                <tbody id="orders-table-body">
-                    <tr><td colspan="8" style="text-align:center;">جاري جلب الطلبات...</td></tr>
-                </tbody>
+                <tbody id="orders-table-body"><tr><td colspan="5">جاري التحميل...</td></tr></tbody>
             </table>
         </div>
     </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    // تعريف العميل باسم مختلف لتجنب أي تعارض
-    const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
-
-    async function fetchOrders() {
-        const tbody = document.getElementById('orders-table-body');
-        
-        // جلب البيانات من جدول الطلبات
-        const { data: orders, error } = await client
-            .from('orders')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            tbody.innerHTML = '<tr><td colspan="8" style="color:red; text-align:center;">خطأ في الاتصال بقاعدة البيانات</td></tr>';
-            console.error(error);
-            return;
+    <script>
+        const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
+        async function fetchOrders() {
+            const { data: orders } = await client.from('orders').select('*');
+            let html = '';
+            orders.forEach(o => {
+                html += `<tr><td>#${o.id}</td><td>${o.customer_name}</td><td class="hide-on-mobile">${o.city}</td><td>${Number(o.total_amount).toLocaleString()}</td><td>${o.status}</td></tr>`;
+            });
+            document.getElementById('orders-table-body').innerHTML = html;
         }
-
-        if (!orders || orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد طلبات حالياً.</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = '';
-        orders.forEach(o => {
-            let items = (o.order_details && Array.isArray(o.order_details)) 
-                        ? o.order_details.map(i => `${i.qty}x ${i.name}`).join(', ') 
-                        : 'لا توجد تفاصيل';
-            
-            tbody.innerHTML += `<tr>
-                <td data-label="رقم:">#${o.id}</td>
-                <td data-label="التاريخ:">${new Date(o.created_at).toLocaleDateString('ar-EG')}</td>
-                <td data-label="العميل:">${o.customer_name || 'غير معروف'}</td>
-                <td data-label="الهاتف:">${o.customer_phone || '-'}</td>
-                <td data-label="العنوان:">${o.city || '-'}</td>
-                <td data-label="المنتجات:">${items}</td>
-                <td data-label="الإجمالي:">${Number(o.total_amount).toLocaleString()} ل.س</td>
-                <td data-label="الحالة:">
-                    <select onchange="updateStatus(${o.id}, this.value)">
-                        <option value="قيد المراجعة" ${o.status=='قيد المراجعة'?'selected':''}>قيد المراجعة</option>
-                        <option value="تم الشحن" ${o.status=='تم الشحن'?'selected':''}>تم الشحن</option>
-                        <option value="تم التسليم" ${o.status=='تم التسليم'?'selected':''}>تم التسليم</option>
-                    </select>
-                </td>
-            </tr>`;
-        });
-    }
-
-    async function updateStatus(id, status) {
-        const { error } = await client.from('orders').update({ status }).eq('id', id);
-        if (error) alert("خطأ في تحديث الحالة!");
-        else fetchOrders();
-    }
-
-    // تشغيل الدالة عند تحميل الصفحة
-    fetchOrders();
-</script>
+        fetchOrders();
+    </script>
 </body>
 </html>
