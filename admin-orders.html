@@ -59,11 +59,33 @@ th, td { border: 1px solid var(--border-color); padding: 12px 10px; font-size: 1
         .status-select { padding: 6px 8px; border-radius: 4px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 12px; transition: 0.3s; border: 1px solid transparent; }
         .status-select:hover { opacity: 0.8; }
 
-        @media (max-width: 768px) { 
+@media (max-width: 768px) { 
             body { padding: 0 !important; }
             .admin-container { padding: 10px !important; border-radius: 0; min-height: 100vh; }
             .header-buttons { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
             .btn-excel { grid-column: span 2; justify-content: center; }
+
+            /* =========================================
+               إصلاح عمود الحالة والجدول على الموبايل
+               ========================================= */
+            .table-wrapper { 
+                overflow-x: auto; /* السماح بالتمرير إذا لزم الأمر */
+                -webkit-overflow-scrolling: touch; /* تمرير سلس جداً على شاشات اللمس */
+                padding-bottom: 10px;
+            }
+            
+            /* إجبار عمود الحالة على أخذ مساحة كافية لظهور الكلمة كاملة */
+            .col-status { 
+                min-width: 115px !important; 
+            }
+            
+            /* تنسيق مربع الحالة ليتناسب مع الموبايل */
+            .status-select { 
+                padding: 6px 4px; 
+                font-size: 11px; 
+                width: 100%;
+                min-width: 105px;
+            }
         }
     </style>
 </head>
