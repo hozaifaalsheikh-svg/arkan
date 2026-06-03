@@ -1,4 +1,4 @@
-    :root {
+:root {
         --primary-color: #f27a1a; 
         --secondary-color: #1a365d;
         --text-color: #333;
@@ -99,10 +99,14 @@
     .mobile-only-text { display: none; }
     .hide-on-mobile { display: inline; }
 
+    /* --- تصميم الهيدر للموبايل (تم تعديله بناءً على طلبك) --- */
     @media (max-width: 600px) {
         .header-container {
-            flex-direction: column; 
-            padding: 10px;
+            flex-direction: row !important; 
+            flex-wrap: wrap !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 10px 15px !important;
         }
         
         .hide-on-mobile { display: none !important; }
@@ -110,30 +114,43 @@
         .mobile-only-text { display: inline !important; }
 
         .brand-group {
-            width: 100%;
+            order: 1 !important;
+            width: auto !important;
+            margin-bottom: 10px !important;
+        }
+
+        .header-actions {
+            order: 2 !important;
+            margin-bottom: 10px !important;
             display: flex;
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 10px;
+            gap: 5px !important;
         }
 
         .header-links {
             display: flex !important;
-            justify-content: space-around;
-            width: 100%;
-            font-size: 11px; 
-            margin-top: 5px;
+            gap: 5px !important;
         }
 
         .search-bar {
+            order: 3 !important;
             display: flex !important; 
-            margin: 10px 0;
-            width: 100%;
+            margin: 0 !important;
+            width: 100% !important;
         }
         
         .search-bar input {
             padding: 8px;
             font-size: 12px;
+        }
+
+        .header-action-btn {
+            padding: 6px 10px !important;
+            font-size: 11px !important;
+        }
+
+        .header-action-btn i {
+            font-size: 13px !important;
+            margin-left: 3px !important;
         }
     }
 
@@ -298,6 +315,7 @@
         display: block;
         width: 100%;
     }
+    
     .product-brand {
         font-size: 10px;
         color: var(--primary-color);
@@ -310,6 +328,7 @@
         display: inline-block;
         letter-spacing: 0.5px;
     }
+
     /* --- تغليف الوصف والزر معاً --- */
     .desc-wrapper {
         display: flex;
@@ -324,7 +343,7 @@
         color: #777;
         line-height: 1.5;
         display: -webkit-box;
-        -webkit-line-clamp: 2 !important; /* الإجبار على سطرين فقط */
+        -webkit-line-clamp: 2 !important; 
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -368,10 +387,9 @@
 
     .btn-add-to-cart:hover { background-color: var(--primary-color); }
 
-    /* --- تصميم الموبايل --- */
+    /* --- تصميم الموبايل لشبكة المنتجات --- */
     @media (max-width: 768px) {
-        html, body { overflow-x: hidden !important;
-        }
+        html, body { overflow-x: hidden !important; }
 
         .products-grid {
             grid-template-columns: repeat(2, 1fr) !important;
@@ -400,8 +418,8 @@
         .product-description {
             font-size: 9px !important; 
             margin-bottom: 3px !important;
-            min-height: 27px; /* حجز مساحة مناسبة لسطرين بخط الموبايل الصغير */
-            -webkit-line-clamp: 2 !important; /* ضمان بقائه سطرين أيضاً على الموبايل */
+            min-height: 27px; 
+            -webkit-line-clamp: 2 !important; 
         }
 
         .price-row {
@@ -537,7 +555,7 @@
         text-decoration: underline;
     }
 
-    /* --- النوافذ والإشعارات --- */
+    /* --- النوافذ المنبثقة (Modals) --- */
     .modal-overlay {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
@@ -614,30 +632,49 @@
     .btn-cancel { background: #eee; color: #333; }
     .btn-cancel:hover { background: #ddd; }
 
-#toast-container {
+    /* --- الإشعارات (Toasts) --- */
+    #toast-container {
         position: fixed;
-        bottom: 40px;   /* محاذاة الارتفاع ليكون في منتصف مستوى السلة تقريباً */
-        left: 110px;    /* يبدأ الإشعار بعد مسافة السلة على الكمبيوتر */
+        bottom: 40px;   
+        left: 110px;    
         z-index: 10000;
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
 
-/* --- ضبط مخصص ومضمون لشاشات الموبايل --- */
+    /* التنسيق الأساسي لكرت الإشعار (تم استعادته) */
+    .toast-message {
+        background: white;
+        color: #333;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        border-right: 5px solid #25D366; 
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        animation: slideIn 0.4s ease forwards;
+    }
+
+    /* --- ضبط مخصص ومضمون لشاشات الموبايل (مع إصلاح الأقواس) --- */
     @media (max-width: 768px) {
         #toast-container {
-            bottom: 28px; /* موازنة الارتفاع ليكون متناسقاً مع سنتر السلة الصغير */
-            left: 85px;   /* يبدأ فوراً بعد السلة عالموبايل (20px مسافة + 55px عرض السلة + 10px فراغ) */
-            max-width: calc(100vw - 100px); /* حماية حتمية تمنع الإشعار من الخروج عن حافة الشاشة اليمنى */
-.toast-message {
-            padding: 8px 12px !important; /* تقليص الحواف الداخلية ليوفر مساحة للنص */
-            font-size: 11px !important;   /* تصغير الخط قليلاً ليناسب شاشات الموبايل الصغيرة */
-            gap: 6px !important;          /* تقليل الفراغ بين الأيقونة والنص */
-            white-space: nowrap;          /* إجبار النص أن يبقى على سطر واحد أنيق */
+            bottom: 28px; 
+            left: 85px;   
+            max-width: calc(100vw - 100px); 
+        }
+
+        .toast-message {
+            padding: 8px 12px !important; 
+            font-size: 11px !important;   
+            gap: 6px !important;          
+            white-space: nowrap;          
             display: flex;
             align-items: center;
-            width: max-content;           /* جعل الكرت يحتضن النص تماماً دون زيادة */
+            width: max-content;           
         }
     }
 
@@ -656,139 +693,127 @@
     .toast-message.fade-out {
         animation: slideOut 0.4s ease forwards;
     }
-    /* =========================================
+
     /* --- السلة العائمة (Floating Cart) --- */
-.floating-cart-btn {
-    position: fixed;
-    bottom: 30px; /* الارتفاع من أسفل الشاشة */
-    left: 30px;   /* البعد عن يسار الشاشة */
-    background-color: #f27a1a; /* لون أركان البرتقالي */
-    color: white;
-    width: 65px;
-    height: 65px;
-    border-radius: 50%; /* لجعلها دائرية بالكامل */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 15px rgba(242, 122, 26, 0.4); /* ظل ناعم يبرزها عن الخلفية */
-    z-index: 9999; /* لضمان بقائها فوق جميع الصور والمنتجات */
-    text-decoration: none;
-    font-size: 26px;
-    transition: transform 0.3s ease, background-color 0.3s;
-}
-
-/* تأثير عند تمرير الماوس */
-.floating-cart-btn:hover {
-    transform: scale(1.1);
-    background-color: #e06912;
-    color: white;
-}
-
-/* الدائرة الصغيرة التي تعرض عدد المنتجات داخل السلة */
-.floating-cart-count {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: #1a365d; /* لون أركان الكحلي */
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid white; /* إطار أبيض ليفصلها عن السلة */
-}
-
-/* تصغير حجم السلة قليلاً على شاشات الموبايل كي لا تزعج الرؤية */
-@media (max-width: 768px) {
     .floating-cart-btn {
-        bottom: 20px;
-        left: 20px;
-        width: 55px;
-        height: 55px;
-        font-size: 22px;
-    }
-    .floating-cart-count {
-        width: 22px;
-        height: 22px;
-        font-size: 12px;
-    }
-}
-/* --- تنسيق زر حول الشركة في الهيدر --- */
-.header-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 8px 15px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    color: var(--secondary-color);
-    font-weight: bold;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.header-action-btn i {
-    font-size: 18px;
-    color: var(--primary-color);
-}
-
-.header-action-btn:hover {
-    border-color: var(--primary-color);
-    background-color: #fff1e6;
-    color: var(--primary-color);
-}
-/* --- التحكم المزدوج بزر حول الشركة --- */
-
-/* الوضع الافتراضي (شاشات اللابتوب): إخفاء زر الموبايل وإظهار زر اللابتوب */
-.mobile-about-btn {
-    display: none !important;
-}
-.desktop-about-btn {
-    display: flex !important;
-}
-
-/* شاشات الموبايل: إخفاء زر اللابتوب وإظهار زر الموبايل في مكانه الطبيعي */
-@media (max-width: 600px) {
-    .mobile-about-btn {
-        display: flex !important;
+        position: fixed;
+        bottom: 30px; 
+        left: 30px;   
+        background-color: #f27a1a; 
+        color: white;
+        width: 65px;
+        height: 65px;
+        border-radius: 50%; 
+        display: flex;
+        justify-content: center;
         align-items: center;
+        box-shadow: 0 4px 15px rgba(242, 122, 26, 0.4); 
+        z-index: 9999; 
+        text-decoration: none;
+        font-size: 26px;
+        transition: transform 0.3s ease, background-color 0.3s;
     }
-    .desktop-about-btn {
-        display: none !important;
+
+    .floating-cart-btn:hover {
+        transform: scale(1.1);
+        background-color: #e06912;
+        color: white;
     }
-}
-/* --- تخصيص نافذة SweetAlert لتصبح احترافية وأصغر --- */
-.swal2-popup.my-swal-popup {
-    width: 300px !important; /* تصغير العرض للموبايل */
-    padding: 15px !important;
-    border-radius: 15px !important;
-}
 
-.swal2-title.my-swal-title {
-    font-size: 18px !important;
-    color: #1a365d !important;
-    margin-bottom: 5px !important;
-}
+    .floating-cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #1a365d; 
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid white; 
+    }
 
-.swal2-html-container {
-    font-size: 14px !important;
-    color: #555 !important;
-}
+    @media (max-width: 768px) {
+        .floating-cart-btn {
+            bottom: 20px;
+            left: 20px;
+            width: 55px;
+            height: 55px;
+            font-size: 22px;
+        }
+        .floating-cart-count {
+            width: 22px;
+            height: 22px;
+            font-size: 12px;
+        }
+    }
 
-/* تصغير الأزرار وجعلها متناسقة */
-.swal2-actions {
-    margin-top: 15px !important;
-}
+    /* --- تنسيق زر حول الشركة في الهيدر --- */
+    .header-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 8px 15px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        color: var(--secondary-color);
+        font-weight: bold;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: white;
+    }
 
-.swal2-styled.swal2-confirm, 
-.swal2-styled.swal2-cancel {
-    padding: 8px 20px !important;
-    font-size: 13px !important;
-    border-radius: 8px !important;
-}
+    .header-action-btn i {
+        font-size: 18px;
+        color: var(--primary-color);
+    }
+
+    .header-action-btn:hover {
+        border-color: var(--primary-color);
+        background-color: #fff1e6;
+        color: var(--primary-color);
+    }
+
+    /* --- التحكم المزدوج بزر حول الشركة --- */
+    .mobile-about-btn { display: none !important; }
+    .desktop-about-btn { display: flex !important; }
+
+    @media (max-width: 600px) {
+        .mobile-about-btn {
+            display: flex !important;
+            align-items: center;
+        }
+        .desktop-about-btn { display: none !important; }
+    }
+
+    /* --- تخصيص نافذة SweetAlert --- */
+    .swal2-popup.my-swal-popup {
+        width: 300px !important; 
+        padding: 15px !important;
+        border-radius: 15px !important;
+    }
+
+    .swal2-title.my-swal-title {
+        font-size: 18px !important;
+        color: #1a365d !important;
+        margin-bottom: 5px !important;
+    }
+
+    .swal2-html-container {
+        font-size: 14px !important;
+        color: #555 !important;
+    }
+
+    .swal2-actions { margin-top: 15px !important; }
+
+    .swal2-styled.swal2-confirm, 
+    .swal2-styled.swal2-cancel {
+        padding: 8px 20px !important;
+        font-size: 13px !important;
+        border-radius: 8px !important;
+    }
