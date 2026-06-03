@@ -14,8 +14,13 @@
         .admin-container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         
-        .btn-back { background: var(--primary-color); color: #fff; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; }
-        .btn-back:hover { opacity: 0.9; }
+        /* حاوية الأزرار العلوية */
+        .header-buttons { display: flex; gap: 10px; }
+        
+        .btn-store { background: var(--secondary-color); color: #fff; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
+        .btn-dash { background: var(--primary-color); color: #fff; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
+        
+        .btn-store:hover, .btn-dash:hover { opacity: 0.9; }
 
         table { width: 100%; border-collapse: separate; border-spacing: 0; }
         th { background-color: var(--primary-color); color: white; padding: 15px; font-weight: 600; }
@@ -32,25 +37,22 @@
         @media (max-width: 768px) { 
             .hide-on-mobile { display: none !important; } 
             
-            /* إزالة الحواف والهوامش ليأخذ العرض بالكامل */
             body { padding: 0 !important; background-color: #fff; }
-            .admin-container { 
-                max-width: 100% !important; 
-                padding: 15px !important; 
-                border-radius: 0 !important; 
-                box-shadow: none !important; 
-                min-height: 100vh;
+            .admin-container { max-width: 100% !important; padding: 15px !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100vh; }
+
+            /* ترتيب الهيدر والأزرار في الموبايل */
+            .admin-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-buttons { width: 100%; display: flex; gap: 8px; }
+            
+            /* تصغير الأزرار وجعلها متجاورة */
+            .btn-store, .btn-dash { 
+                font-size: 11px !important; 
+                padding: 6px 8px !important; 
+                flex: 1; /* يأخذ كل زر نصف المساحة */
+                justify-content: center; /* توسيط النص داخل الزر */
             }
 
-            /* تغيير لون زر العودة للبرتقالي وتصغيره */
-            .btn-back { 
-                background: var(--secondary-color) !important; 
-                font-size: 12px !important; 
-                padding: 8px 12px !important; 
-            }
-
-            /* تصغير الخطوط في الموبايل */
-            .admin-header h1 { font-size: 18px !important; }
+            .admin-header h1 { font-size: 18px !important; margin: 0; }
             table { font-size: 12px !important; }
             th, td { padding: 10px 5px !important; }
             .btn-edit { font-size: 11px !important; padding: 6px 10px !important; }
@@ -61,7 +63,10 @@
     <div class="admin-container">
         <div class="admin-header">
             <h1>إدارة المنتجات</h1>
-            <a href="index.html" class="btn-back"><i class="fas fa-store"></i> العودة الى المتجر</a>
+            <div class="header-buttons">
+                <a href="admin.html" class="btn-dash"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                <a href="index.html" class="btn-store"><i class="fas fa-store"></i> المتجر</a>
+            </div>
         </div>
         <div style="overflow-x: auto;">
             <table>
