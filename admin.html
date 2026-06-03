@@ -12,14 +12,20 @@
             --primary-color: #1a365d;
             --secondary-color: #f27a1a;
             --bg-color: #f4f7f6;
+            --danger-color: #e74c3c;
         }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
         .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
         .admin-header h1 { color: var(--primary-color); margin: 0; font-size: 28px; }
-        .admin-header .home-link { color: var(--secondary-color); text-decoration: none; font-weight: bold; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        .admin-header .home-link:hover { opacity: 0.8; }
+        
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .home-link { color: var(--primary-color); text-decoration: none; font-weight: bold; padding: 8px 12px; background: #f0f4f8; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .home-link:hover { background: #e2e8f0; }
+        
+        .logout-btn { color: var(--danger-color); background: none; border: 1px solid var(--danger-color); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .logout-btn:hover { background: var(--danger-color); color: #fff; }
 
         /* تنسيق بطاقات لوحة التحكم */
         .dashboard-grid {
@@ -37,60 +43,58 @@
             display: block;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .dash-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-        }
+        .dash-card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
         .dash-card i { font-size: 40px; margin-bottom: 15px; }
         .dash-card h3 { margin: 0 0 10px 0; font-size: 20px; }
         .dash-card p { margin: 0; font-size: 14px; opacity: 0.9; }
 
-        /* ألوان البطاقات */
         .card-orders { background: linear-gradient(135deg, #1a365d, #2c5282); }
         .card-orders i { color: #f27a1a; }
-        
         .card-products { background: linear-gradient(135deg, #f27a1a, #e66a00); }
         .card-products i { color: #1a365d; }
-        
         .card-reports { background: linear-gradient(135deg, #27ae60, #2ecc71); }
-        
         .card-settings { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
 
-        /* الموبايل */
+        /* تنسيقات شاشة الدخول المتقدمة */
+        #admin-login-overlay { transition: opacity 0.4s ease, visibility 0.4s; }
+        #admin-pass:focus { border-color: var(--secondary-color) !important; box-shadow: 0 0 8px rgba(242, 122, 26, 0.2); }
+
         @media (max-width: 768px) {
             body { padding: 10px; }
             .admin-container { padding: 20px 15px; }
             .admin-header { flex-direction: column; text-align: center; gap: 15px; }
+            .header-actions { flex-direction: column; width: 100%; }
+            .header-actions a, .header-actions button { width: 100%; justify-content: center; }
             .dash-card { padding: 20px 15px; }
-            .dash-card i { font-size: 30px; }
-            .dash-card h3 { font-size: 18px; }
         }
     </style>
 </head>
 <body>
 
     <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%;">
-            <div style="font-size: 24px; font-weight: bold; color: var(--primary-color); margin-bottom: 20px; letter-spacing: 1px;">Arkan<span style="color: var(--secondary-color); font-size: 14px;">COMPANY</span></div>
-            <h2 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-lock"></i> الإدارة </h2>
-            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">الرجاء إدخال كلمة المرور للمتابعة</p>
-            <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #eee; border-radius: 8px; text-align: center; box-sizing: border-box; outline: none; font-size: 16px;">
+        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%;">
+            <div style="font-size: 26px; font-weight: bold; color: var(--primary-color); margin-bottom: 15px; letter-spacing: 1px;">Arkan<span style="color: var(--secondary-color); font-size: 16px;">COMPANY</span></div>
+            <h2 style="color: var(--primary-color); margin-top: 0; font-size: 20px;"><i class="fas fa-shield-alt"></i> الإدارة الآمنة </h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">الرجاء إدخال بيانات الاعتماد للمتابعة</p>
             
-            <div style="display: flex; gap: 10px;">
-                <button onclick="checkAdminPassword()" style="flex: 1; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">تسجيل الدخول</button>
-            </div>  
-            <a href="index.html" style="display: block; margin-top: 20px; color: #888; text-decoration: none; font-size: 14px;"><i class="fas fa-arrow-right"></i> العودة للمتجر</a>
+            <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; text-align: center; box-sizing: border-box; outline: none; font-size: 16px; transition: 0.3s;">
+            
+            <button onclick="checkAdminPassword()" style="width: 100%; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s;">دخول آمن</button>
+            
+            <a href="index.html" style="display: block; margin-top: 20px; color: #888; text-decoration: none; font-size: 14px; transition: color 0.3s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='#888'"><i class="fas fa-arrow-right"></i> العودة للمتجر</a>
         </div>
     </div>
 
     <div class="admin-container">
         <div class="admin-header">
             <h1><i class="fas fa-tachometer-alt"></i> لوحة تحكم أركان</h1>
-            <a href="index.html" class="home-link"><i class="fas fa-home"></i> معاينة المتجر</a>
+            <div class="header-actions">
+                <a href="index.html" class="home-link"><i class="fas fa-store"></i> المتجر</a>
+                <button onclick="logoutAdmin()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
+            </div>
         </div>
 
         <div class="dashboard-grid">
-            
             <a href="admin-orders.html" class="dash-card card-orders">
                 <i class="fas fa-shopping-cart"></i>
                 <h3>إدارة الطلبات</h3>
@@ -114,21 +118,52 @@
                 <h3>البنرات والوكالات</h3>
                 <p>تحديث الإعلانات وصور الواجهة الرئيسية</p>
             </a>
-
         </div>
     </div>
 
     <script>
-        // نظام الحماية
-        function checkAdminPassword() {
-            const passInput = document.getElementById('admin-pass').value;
-            if(passInput === 'arkan123') { 
-                document.getElementById('admin-login-overlay').style.display = 'none';
+        const overlay = document.getElementById('admin-login-overlay');
+        const passInput = document.getElementById('admin-pass');
+
+        // 1. فحص الجلسة عند تحميل الصفحة مباشرة
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('arkanAdminAuth') === 'true') {
+                overlay.style.display = 'none';
             } else {
-                alert('عذراً، كلمة المرور غير صحيحة!');
+                passInput.focus(); // وضع المؤشر تلقائياً في مربع كلمة السر
+            }
+        });
+
+        // 2. دالة تسجيل الدخول
+        function checkAdminPassword() {
+            if (passInput.value === 'arkan123') { 
+                sessionStorage.setItem('arkanAdminAuth', 'true'); // حفظ الجلسة
+                
+                // تأثير تلاشي ناعم
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 400);
+            } else {
+                // تأثير اهتزاز بسيط عند الخطأ (اختياري احترافي)
+                passInput.style.transform = 'translateX(-5px)';
+                setTimeout(() => passInput.style.transform = 'translateX(5px)', 100);
+                setTimeout(() => passInput.style.transform = 'translateX(0)', 200);
+                
+                passInput.value = '';
+                passInput.placeholder = 'كلمة المرور غير صحيحة!';
+                passInput.style.borderColor = 'var(--danger-color)';
             }
         }
-        document.getElementById('admin-pass').addEventListener('keypress', function (e) {
+
+        // 3. دالة تسجيل الخروج
+        function logoutAdmin() {
+            sessionStorage.removeItem('arkanAdminAuth');
+            location.reload(); // إعادة تحميل الصفحة لإظهار جدار الحماية
+        }
+
+        // 4. دعم زر Enter
+        passInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') checkAdminPassword();
         });
     </script>
