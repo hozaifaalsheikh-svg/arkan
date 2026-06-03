@@ -11,16 +11,20 @@
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg); padding: 20px; margin: 0; }
         .container { width: 90%; margin: 0 auto; }
         
-        /* Stats Grid - Compact */
+        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .stat-card { 
             background: white; padding: 12px; border-radius: 8px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; 
             border-top: 3px solid var(--primary); transition: all 0.3s ease;
+            cursor: pointer; /* أضفنا هذا ليدل المستخدم أنه قابل للضغط */
         }
         .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-color: var(--secondary); }
         .stat-card h4 { margin: 0; font-size: 10px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
         .stat-card p { margin: 0; font-size: 18px; font-weight: 800; color: var(--primary); }
+
+        /* View Control */
+        .view-header { background: #e2e8f0; padding: 10px 20px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; display: none; }
 
         /* Table UI */
         .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: visible; }
@@ -28,18 +32,15 @@
         th { background: #f1f5f9; padding: 12px; text-align: right; color: #475569; font-weight: 700; border-bottom: 2px solid var(--border); position: relative; }
         td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 600; }
         
-        /* Filters */
-        .header-action { cursor: pointer; color: var(--secondary); margin-right: 5px; font-size: 12px; vertical-align: middle; }
-        .filter-popup { display: none; position: absolute; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 6px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 8px; right: 0; }
-        .filter-input { width: 130px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
-
+        .header-action { cursor: pointer; color: var(--secondary); margin-right: 5px; font-size: 12px; }
+        .filter-popup { display: none; position: absolute; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 6px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 5px; right: 0; }
+        .filter-input { width: 120px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
         .status-select { padding: 4px 10px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; font-size: 12px; }
         .action-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
             <h1 style="font-size: 20px; color: var(--primary); margin:0;"><i class="fas fa-clipboard-list"></i> إدارة الطلبات</h1>
             <div style="display: flex; gap: 10px;">
@@ -50,36 +51,27 @@
 
         <div class="stats-grid" id="stats-bar"></div>
 
+        <!-- رسالة الحالة المخصصة -->
+        <div id="view-header" class="view-header">
+            <span id="view-title"></span>
+            <button onclick="resetView()" style="border:none; background:#cbd5e1; padding:5px 15px; border-radius:5px; cursor:pointer;">إغلاق التصفية ✖</button>
+        </div>
+
         <div class="table-card">
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>رقم <i class="fas fa-filter header-action" onclick="togglePopup('pop-id', event)"></i>
-                                <div id="pop-id" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث بالرقم..." oninput="applyFilters()"></div>
-                            </th>
-                            <th>التاريخ <i class="fas fa-filter header-action" onclick="togglePopup('pop-date', event)"></i>
-                                <div id="pop-date" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث بالتاريخ..." oninput="applyFilters()"></div>
-                            </th>
+                            <th>رقم <i class="fas fa-sort header-action" onclick="sortData('id')"></i></th>
+                            <th>التاريخ <i class="fas fa-sort header-action" onclick="sortData('created_at')"></i></th>
                             <th>العميل <i class="fas fa-filter header-action" onclick="togglePopup('pop-name', event)"></i>
-                                <div id="pop-name" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث بالاسم..." oninput="applyFilters()"></div>
+                                <div id="pop-name" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث..." oninput="applyFilters()"></div>
                             </th>
                             <th>الهاتف</th>
                             <th>العنوان</th>
                             <th>المنتجات</th>
                             <th>الإجمالي</th>
-                            <th>الحالة <i class="fas fa-filter header-action" onclick="togglePopup('pop-stat', event)"></i>
-                                <div id="pop-stat" class="filter-popup" onclick="event.stopPropagation()">
-                                    <select class="filter-input" onchange="applyFilters()">
-                                        <option value="all">الكل</option>
-                                        <option value="قيد المراجعة">قيد المراجعة</option>
-                                        <option value="قيد التجهيز">قيد التجهيز</option>
-                                        <option value="تم الشحن">تم الشحن</option>
-                                        <option value="تم التسليم">تم التسليم</option>
-                                        <option value="ملغي">ملغي</option>
-                                    </select>
-                                </div>
-                            </th>
+                            <th>الحالة</th>
                         </tr>
                     </thead>
                     <tbody id="orders-table-body"></tbody>
@@ -94,36 +86,34 @@
         const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
         let allOrders = [];
 
-        document.addEventListener('click', () => document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'));
-        function togglePopup(id, e) { e.stopPropagation(); document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
-
         async function fetchOrders() {
             const { data } = await client.from('orders').select('*');
             allOrders = data || [];
-            applyFilters();
             updateStats();
+            renderTable(allOrders);
         }
 
-        function applyFilters() {
-            const idVal = document.querySelector('#pop-id input')?.value.toLowerCase() || '';
-            const dateVal = document.querySelector('#pop-date input')?.value.toLowerCase() || '';
-            const nameVal = document.querySelector('#pop-name input')?.value.toLowerCase() || '';
-            const statusVal = document.querySelector('#pop-stat select')?.value || 'all';
-
-            const filtered = allOrders.filter(o => {
-                const dateMatch = new Date(o.created_at).toLocaleDateString('ar-EG').toLowerCase().includes(dateVal);
-                return String(o.id).includes(idVal) && 
-                       dateMatch && 
-                       (o.customer_name || '').toLowerCase().includes(nameVal) && 
-                       (statusVal === 'all' || o.status === statusVal);
-            });
+        // دالة الفلترة عند الضغط على البطاقة
+        function filterByStatus(status) {
+            const filtered = allOrders.filter(o => o.status === status);
             renderTable(filtered);
+            document.getElementById('view-header').style.display = 'flex';
+            document.getElementById('view-title').innerText = "عرض طلبات: " + status;
+        }
+
+        // دالة العودة للكل
+        function resetView() {
+            renderTable(allOrders);
+            document.getElementById('view-header').style.display = 'none';
         }
 
         function updateStats() {
             const stats = ['قيد المراجعة', 'قيد التجهيز', 'تم الشحن', 'تم التسليم', 'ملغي'];
             document.getElementById('stats-bar').innerHTML = stats.map(s => `
-                <div class="stat-card"><h4>${s}</h4><p>${allOrders.filter(o => o.status === s).length}</p></div>
+                <div class="stat-card" onclick="filterByStatus('${s}')">
+                    <h4>${s}</h4>
+                    <p>${allOrders.filter(o => o.status === s).length}</p>
+                </div>
             `).join('');
         }
 
@@ -153,6 +143,9 @@
             }
         }
 
+        // Functions (Toggle, Apply, Export)
+        document.addEventListener('click', () => document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'));
+        function togglePopup(id, e) { e.stopPropagation(); document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
         async function updateStatus(id, val) { await client.from('orders').update({ status: val }).eq('id', id); fetchOrders(); }
         function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allOrders); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Orders"); XLSX.writeFile(wb, "Arkan_Orders.xlsx"); }
         
