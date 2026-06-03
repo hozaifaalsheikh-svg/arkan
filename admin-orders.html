@@ -7,93 +7,71 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f0f4f8; --success: #27ae60; --text-unified: #2c3e50; }
+        :root { --primary-color: #1a365d; --secondary-color: #f27a1a; --bg-color: #f4f7f6; --border-color: #cbd5e1; }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); padding: 20px; margin: 0; box-sizing: border-box; }
         
-        .admin-container { width: 100%; max-width: 100%; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); box-sizing: border-box; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .admin-container { width: 100%; max-width: 100%; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         
         .header-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn { padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; font-family: inherit; font-size: 14px; }
+        .btn { padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: none; font-family: inherit; font-size: 13px; }
         .btn-dash { background: var(--primary-color); color: #fff; }
         .btn-store { background: var(--secondary-color); color: #fff; }
-        .btn-excel { background: var(--success); color: #fff; }
+        .btn-excel { background: #27ae60; color: #fff; }
         .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* الإصلاح الجذري للجدول: table-layout: fixed يمنع تداخل الأعمدة */
-        .table-wrapper { overflow-x: auto; overflow-y: visible; border-radius: 8px; border: 1px solid #eee; width: 100%; min-height: 500px; }
-        table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; word-wrap: break-word; font-family: 'Cairo', sans-serif; }
+        /* تنسيق الجدول النظامي (Classic Grid) */
+        .table-wrapper { overflow-x: auto; overflow-y: visible; border: 1px solid var(--border-color); width: 100%; min-height: 500px; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; background: white; font-family: 'Cairo', sans-serif; }
         
-        td { 
-            padding: 16px 12px; 
-            font-size: 14px; /* تكبير الخط ليكون مريحاً */
-            font-weight: 600; 
-            color: var(--text-unified); 
-            white-space: normal !important; 
-            border-bottom: 1px solid #eee; 
-            vertical-align: middle; 
-            text-align: right; 
-        }
+        /* إضافة حدود واضحة لجميع الخلايا */
+        th, td { border: 1px solid var(--border-color); padding: 12px 10px; font-size: 13px; color: #334155; vertical-align: middle; text-align: right; }
         
-        th { 
-            background-color: var(--primary-color); 
-            color: #ffffff !important; 
-            font-weight: 700 !important; 
-            font-size: 14px !important; 
-            user-select: none; 
-            position: relative; 
-            padding: 16px 12px; 
-            text-align: right;
-        }
-        
-        .th-content { display: flex; justify-content: flex-start; align-items: center; gap: 8px; cursor: pointer; }
-        .th-content:hover { color: var(--secondary-color); }
-        .filter-icon { font-size: 11px; color: rgba(255,255,255,0.8); transition: 0.2s; padding: 4px; border-radius: 4px; }
-        .filter-icon:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        /* تلوين الأسطر بشكل متناوب لراحة العين (Zebra Striping) */
+        tr:nth-child(even) td { background-color: #f8fafc; }
+        tr:hover td { background-color: #e2e8f0; }
 
-        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; padding: 12px; z-index: 999; min-width: 200px; margin-top: 5px; cursor: default; font-weight: normal; color: #333; }
-        .filter-popup::before { content: ''; position: absolute; top: -6px; right: 15px; border-width: 0 6px 6px 6px; border-style: solid; border-color: transparent transparent #fff transparent; }
+        /* تنسيق الهيدر ليكون بارزاً ومقسماً */
+        th { background-color: var(--primary-color); color: #ffffff !important; font-weight: 700; border-color: #0f2442; user-select: none; position: relative; }
         
-        .sort-btns { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
-        .sort-btns button { background: #f8f9fa; border: 1px solid #eee; padding: 8px; border-radius: 5px; font-family: inherit; font-size: 13px; cursor: pointer; display: flex; justify-content: flex-start; align-items: center; gap: 8px; color: #333; transition: 0.2s; }
+        .th-content { display: flex; justify-content: space-between; align-items: center; gap: 8px; cursor: pointer; }
+        .th-content:hover { color: var(--secondary-color); }
+        .filter-icon { font-size: 11px; color: rgba(255,255,255,0.7); padding: 4px; border-radius: 4px; background: rgba(0,0,0,0.15); transition: 0.2s; }
+        .filter-icon:hover { background: rgba(255,255,255,0.3); color: #fff; }
+
+        /* القوائم المنسدلة */
+        .filter-popup { display: none; position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 6px; padding: 10px; z-index: 999; min-width: 180px; margin-top: 5px; cursor: default; font-weight: normal; color: #333; text-align: right; }
+        .sort-btns { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
+        .sort-btns button { background: #f8f9fa; border: 1px solid #eee; padding: 6px; border-radius: 4px; font-family: inherit; font-size: 12px; cursor: pointer; display: flex; justify-content: flex-start; align-items: center; gap: 8px; color: #333; transition: 0.2s; }
         .sort-btns button:hover { background: #e2e8f0; border-color: #cbd5e1; color: var(--primary-color); }
-        
-        .filter-divider { height: 1px; background: #eee; margin: 10px 0; }
-        .filter-input { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; font-size: 13px; outline: none; }
+        .filter-divider { height: 1px; background: #eee; margin: 8px 0; }
+        .filter-input { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-family: inherit; font-size: 12px; outline: none; }
         .filter-input:focus { border-color: var(--primary-color); }
-        
-        tr:hover td { background-color: #f8fbff; }
-        
-        .status-select { padding: 8px; border-radius: 6px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 13px; transition: 0.3s; }
+
+        /* التحكم الذكي بالنصوص لمنع التخبيص */
+        .nowrap-col { white-space: nowrap !important; } /* تمنع كسر السطر للأرقام والتواريخ */
+        .wrap-col { white-space: normal; min-width: 120px; line-height: 1.6; } /* تسمح بالتمدد للأسماء والعناوين */
+        .items-col { white-space: normal; min-width: 200px; line-height: 1.6; }
+
+        /* الإجمالي */
+        .total-col { font-weight: 700; color: var(--secondary-color); white-space: nowrap !important; }
+
+        /* الحالة */
+        .status-select { padding: 6px 8px; border-radius: 4px; font-family: inherit; font-weight: 700; outline: none; cursor: pointer; width: 100%; font-size: 12px; transition: 0.3s; border: 1px solid transparent; }
         .status-select:hover { opacity: 0.8; }
 
-        /* توزيع منطقي وعادل للأعمدة يتوافق مع table-layout: fixed */
-        .col-id { width: 6%; }
-        .col-date { width: 10%; }
-        .col-name { width: 15%; }
-        .col-phone { width: 12%; direction: ltr; text-align: right; }
-        .col-city { width: 14%; }
-        .col-items { width: 23%; line-height: 1.6; }
-        .col-total { width: 10%; color: var(--secondary-color); font-weight: 700; font-size: 15px; }
-        .col-status { width: 10%; }
-
         @media (max-width: 768px) { 
-            body { padding: 0 !important; background-color: #fff; }
-            .admin-container { padding: 15px !important; border-radius: 0 !important; box-shadow: none !important; min-height: 100vh; }
-            .admin-header { flex-direction: column; align-items: flex-start; }
+            body { padding: 0 !important; }
+            .admin-container { padding: 10px !important; border-radius: 0; min-height: 100vh; }
             .header-buttons { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
             .btn-excel { grid-column: span 2; justify-content: center; }
-            
-            table { table-layout: auto; } /* نعود للوضع المرن في الموبايل ليتمكن من التمرير */
-            .col-id, .col-date, .col-name, .col-phone, .col-city, .col-items, .col-total, .col-status { width: auto; }
-            td { white-space: nowrap !important; font-size: 13px; }
         }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1 style="margin: 0; font-size: 24px;"><i class="fas fa-clipboard-list"></i> إدارة الطلبات المتقدمة</h1>
+            <h1 style="margin: 0; font-size: 22px;"><i class="fas fa-clipboard-list"></i> إدارة الطلبات المتقدمة</h1>
             <div class="header-buttons">
                 <a href="admin.html" class="btn btn-dash"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
                 <a href="index.html" class="btn btn-store"><i class="fas fa-store"></i> المتجر</a>
@@ -105,21 +83,21 @@
             <table>
                 <thead>
                     <tr>
-                        <th class="col-id">
+                        <th class="nowrap-col">
                             <div class="th-content" onclick="togglePopup('popup-id', event)">
                                 <span>رقم</span> <i class="fas fa-filter filter-icon"></i>
                             </div>
                             <div id="popup-id" class="filter-popup" onclick="event.stopPropagation()">
                                 <div class="sort-btns">
-                                    <button onclick="sortData('id', true)"><i class="fas fa-sort-numeric-up"></i> من الأقدم للأحدث</button>
-                                    <button onclick="sortData('id', false)"><i class="fas fa-sort-numeric-down"></i> من الأحدث للأقدم</button>
+                                    <button onclick="sortData('id', true)"><i class="fas fa-sort-numeric-up"></i> الأقدم للأحدث</button>
+                                    <button onclick="sortData('id', false)"><i class="fas fa-sort-numeric-down"></i> الأحدث للأقدم</button>
                                 </div>
                                 <div class="filter-divider"></div>
                                 <input type="text" class="filter-input" placeholder="بحث بالرقم..." oninput="applyFilter('id', this.value)">
                             </div>
                         </th>
                         
-                        <th class="col-date">
+                        <th class="nowrap-col">
                             <div class="th-content" onclick="togglePopup('popup-date', event)">
                                 <span>التاريخ</span> <i class="fas fa-filter filter-icon"></i>
                             </div>
@@ -131,7 +109,7 @@
                             </div>
                         </th>
 
-                        <th class="col-name">
+                        <th class="wrap-col">
                             <div class="th-content" onclick="togglePopup('popup-name', event)">
                                 <span>العميل</span> <i class="fas fa-filter filter-icon"></i>
                             </div>
@@ -145,7 +123,7 @@
                             </div>
                         </th>
 
-                        <th class="col-phone">
+                        <th class="nowrap-col">
                             <div class="th-content" onclick="togglePopup('popup-phone', event)">
                                 <span>رقم الهاتف</span> <i class="fas fa-filter filter-icon"></i>
                             </div>
@@ -154,7 +132,7 @@
                             </div>
                         </th>
 
-                        <th class="col-city">
+                        <th class="wrap-col">
                             <div class="th-content" onclick="togglePopup('popup-city', event)">
                                 <span>العنوان</span> <i class="fas fa-filter filter-icon"></i>
                             </div>
@@ -168,9 +146,9 @@
                             </div>
                         </th>
 
-                        <th class="col-items">تفاصيل المنتجات</th>
+                        <th class="items-col">تفاصيل المنتجات</th>
 
-                        <th class="col-total">
+                        <th class="nowrap-col">
                             <div class="th-content" onclick="togglePopup('popup-total', event)">
                                 <span>الإجمالي</span> <i class="fas fa-filter filter-icon"></i>
                             </div>
@@ -182,7 +160,7 @@
                             </div>
                         </th>
 
-                        <th class="col-status">
+                        <th class="nowrap-col">
                             <div class="th-content" onclick="togglePopup('popup-status', event)">
                                 <span>الحالة</span> <i class="fas fa-filter filter-icon"></i>
                             </div>
@@ -267,21 +245,21 @@
                 
                 let itemsStr = '';
                 if(o.order_details && Array.isArray(o.order_details)){
-                    itemsStr = o.order_details.map(i => `${i.qty}x ${i.name}`).join(' ، ');
+                    itemsStr = o.order_details.map(i => `<span style="display:inline-block; margin-left:8px;"><b style="color:var(--primary-color)">${i.qty}x</b> ${i.name}</span>`).join('');
                 } else {
                     itemsStr = 'غير متوفر';
                 }
 
                 html += `<tr>
-                    <td class="col-id">#${o.id}</td>
-                    <td class="col-date">${date}</td>
-                    <td class="col-name">${o.customer_name || '-'}</td>
-                    <td class="col-phone">${o.customer_phone || '-'}</td>
-                    <td class="col-city">${o.city || '-'} ${o.detailed_address ? '('+o.detailed_address+')' : ''}</td>
-                    <td class="col-items">${itemsStr}</td>
-                    <td class="col-total">${Number(o.total_amount).toLocaleString()} ل.س</td>
-                    <td class="col-status">
-                        <select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background-color: ${style.bg}; color: ${style.text}; border: 1px solid ${style.border};">
+                    <td class="nowrap-col" style="font-weight: 700; color: var(--primary-color);">#${o.id}</td>
+                    <td class="nowrap-col" style="font-size: 12px; color: #64748b;">${date}</td>
+                    <td class="wrap-col" style="font-weight: 600;">${o.customer_name || '-'}</td>
+                    <td class="nowrap-col" style="direction: ltr; text-align: right;">${o.customer_phone || '-'}</td>
+                    <td class="wrap-col">${o.city || '-'} ${o.detailed_address ? '('+o.detailed_address+')' : ''}</td>
+                    <td class="items-col">${itemsStr}</td>
+                    <td class="total-col">${Number(o.total_amount).toLocaleString()} ل.س</td>
+                    <td class="nowrap-col">
+                        <select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background-color: ${style.bg}; color: ${style.text}; border-color: ${style.border};">
                             <option value="قيد المراجعة" ${o.status=='قيد المراجعة'?'selected':''}>قيد المراجعة</option>
                             <option value="قيد التجهيز" ${o.status=='قيد التجهيز'?'selected':''}>قيد التجهيز</option>
                             <option value="تم الشحن" ${o.status=='تم الشحن'?'selected':''}>تم الشحن</option>
