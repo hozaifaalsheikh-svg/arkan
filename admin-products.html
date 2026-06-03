@@ -16,51 +16,17 @@
         
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid #ddd; }
-        th { background-color: var(--primary-color); color: white; font-weight: 600; }
-        tr:hover { background-color: #f9f9f9; }
+        th { background-color: var(--primary-color); color: white; }
         
-        .btn-edit { background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-edit:hover { background: #2980b9; }
-        .loading-text { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+        .btn-edit { background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
         
-        .swal-input-group { margin-bottom: 15px; text-align: right; }
-        .swal-input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
-        .swal-custom-input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-
+        /* تنسيق الموبايل - تحويل الجدول لبطاقات */
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .admin-container { padding: 15px 10px; }
-            .admin-header { flex-direction: column; gap: 12px; text-align: center; }
-            th, td { padding: 8px 10px; font-size: 12px; white-space: nowrap; }
-            td img { width: 30px; height: 30px; }
-        }
-        @media (max-width: 768px) {
-            /* إخفاء رأس الجدول العادي في الموبايل */
             thead { display: none; }
-
-            /* تحويل كل صف إلى بطاقة */
             tbody, tr, td { display: block; width: 100%; }
-            tr { 
-                background: #fff; 
-                margin-bottom: 15px; 
-                padding: 15px; 
-                border-radius: 10px; 
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                border-bottom: 3px solid var(--primary-color);
-            }
-            td { 
-                text-align: right; 
-                padding: 5px 0 !important; 
-                border: none !important;
-                display: flex;
-                justify-content: space-between;
-            }
-            /* إضافة اسم الخانة قبل القيمة */
-            td::before { 
-                content: attr(data-label); 
-                font-weight: bold; 
-                color: #555; 
-            }
+            tr { background: #fff; margin-bottom: 15px; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-right: 5px solid var(--primary-color); }
+            td { text-align: right; padding: 8px 0 !important; border: none !important; display: flex; justify-content: space-between; }
+            td::before { content: attr(data-label); font-weight: bold; color: #555; }
         }
     </style>
 </head>
@@ -69,82 +35,60 @@
     <div class="admin-container">
         <div class="admin-header">
             <h1><i class="fas fa-boxes"></i> إدارة المنتجات</h1>
-            <a href="admin.html" style="color: var(--primary-color); text-decoration: none; font-weight: bold;"><i class="fas fa-arrow-left"></i> العودة للوحة الرئيسية</a>
+            <a href="admin.html" style="color: var(--primary-color); font-weight: bold;"><i class="fas fa-arrow-left"></i> عودة</a>
         </div>
 
-        <div style="margin-bottom: 20px; position: relative;">
-            <i class="fas fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
-            <input type="text" id="table-search" placeholder="ابحث في المنتجات..." style="width: 100%; padding: 12px 40px 12px 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
-        </div>
+        <input type="text" id="table-search" placeholder="ابحث في المنتجات..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px;">
 
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>SKU</th>
-                        <th>الصورة</th>
-                        <th>الاسم</th>
-                        <th>البراند</th>
-                        <th>السعر</th>
-                        <th>الوصف</th>
-                        <th>التحكم</th>
-                    </tr>
-                </thead>
-                <tbody id="products-table-body">
-                    <tr><td colspan="7" class="loading-text">جاري جلب البيانات...</td></tr>
-                </tbody>
-            </table>
-        </div>
+        <table id="products-table">
+            <thead>
+                <tr><th>SKU</th><th>الصورة</th><th>الاسم</th><th>البراند</th><th>السعر</th><th>الوصف</th><th>التحكم</th></tr>
+            </thead>
+            <tbody id="products-table-body">
+                <tr><td colspan="7" style="text-align:center;">جاري الجلب...</td></tr>
+            </tbody>
+        </table>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
-        const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
         let allProducts = [];
 
         async function fetchProducts() {
-            const tableBody = document.getElementById('products-table-body');
-            const { data: products, error } = await supabaseClient.from('inventory').select('*');
-            if (error) { tableBody.innerHTML = '<tr><td colspan="7" style="color:red; text-align:center;">خطأ في الاتصال</td></tr>'; return; }
+            const { data: products } = await supabase.from('inventory').select('*');
             allProducts = products;
-            
-             products.forEach(p => {
-                    html += `<tr>
-                        <td data-label="الرمز:">${p.sku}</td>
-                        <td data-label="الصورة:"><img src="${p.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:4px;"></td>
-                        <td data-label="الاسم:">${p.name}</td>
-                        <td data-label="البراند:">${p.brand || '-'}</td>
-                        <td data-label="السعر:">${Number(p.price).toLocaleString()} ل.س</td>
-                        <td data-label="الوصف:">${p.description ? p.description.substring(0, 20) + '...' : '-'}</td>
-                        <td data-label="التحكم:"><button class="btn-edit" onclick="openEditModal('${p.sku}')">تعديل</button></td>
-                    </tr>`;
-                });
-            tableBody.innerHTML = html;
+            let html = '';
+            products.forEach(p => {
+                html += `<tr>
+                    <td data-label="الرمز:">${p.sku}</td>
+                    <td data-label="الصورة:"><img src="${p.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:4px;"></td>
+                    <td data-label="الاسم:">${p.name}</td>
+                    <td data-label="البراند:">${p.brand || '-'}</td>
+                    <td data-label="السعر:">${Number(p.price).toLocaleString()} ل.س</td>
+                    <td data-label="الوصف:">${p.description ? p.description.substring(0, 20) : '-'}</td>
+                    <td data-label="التحكم:"><button class="btn-edit" onclick="openEditModal('${p.sku}')">تعديل</button></td>
+                </tr>`;
+            });
+            document.getElementById('products-table-body').innerHTML = html;
         }
 
         function openEditModal(sku) {
             const p = allProducts.find(x => x.sku === sku);
             Swal.fire({
-                title: 'تعديل المنتج',
-                html: `<input id="name" class="swal-custom-input" value="${p.name}">
-                       <input id="price" type="number" class="swal-custom-input" value="${p.price}">
-                       <textarea id="desc" class="swal-custom-input">${p.description}</textarea>`,
-                preConfirm: () => ({ name: document.getElementById('name').value, price: document.getElementById('price').value, description: document.getElementById('desc').value })
-            }).then((res) => {
-                if (res.isConfirmed) updateProduct(sku, res.value);
+                title: 'تعديل',
+                html: `<input id="name" value="${p.name}" style="width:100%; padding:10px; margin-bottom:10px;">
+                       <input id="price" type="number" value="${p.price}" style="width:100%; padding:10px;">`,
+                preConfirm: () => ({ name: document.getElementById('name').value, price: document.getElementById('price').value })
+            }).then(res => {
+                if (res.isConfirmed) {
+                    supabase.from('inventory').update(res.value).eq('sku', sku).then(fetchProducts);
+                }
             });
         }
 
-        async function updateProduct(sku, data) {
-            await supabaseClient.from('inventory').update(data).eq('sku', sku);
-            fetchProducts();
-        }
-
-        // تفعيل البحث
         document.getElementById('table-search').addEventListener('keyup', function() {
             let val = this.value.toLowerCase();
             document.querySelectorAll('tbody tr').forEach(row => {
