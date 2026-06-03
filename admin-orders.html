@@ -18,13 +18,13 @@
 
         .table-card { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: visible; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f1f5f9; padding: 14px; text-align: right; color: #475569; font-weight: 700; border-bottom: 2px solid var(--border); position: relative; }
+        th { background: #f1f5f9; padding: 14px; text-align: right; color: #475569; font-weight: 700; border-bottom: 2px solid var(--border); position: relative; vertical-align: middle; }
         td { padding: 14px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 600; }
         
-        /* Filter/Sort Icons & Popups */
-        .header-action { cursor: pointer; color: var(--secondary); margin-right: 5px; font-size: 12px; }
-        .filter-popup { display: none; position: absolute; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 6px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 5px; }
-        .filter-input { width: 120px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        /* Filter Icons & Popups */
+        .header-action { cursor: pointer; color: var(--secondary); margin-right: 5px; font-size: 13px; }
+        .filter-popup { display: none; position: absolute; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 6px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 5px; right: 0; }
+        .filter-input { width: 130px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
 
         .status-select { padding: 5px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; }
         .action-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
@@ -48,20 +48,26 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>رقم <i class="fas fa-sort header-action" onclick="sortData('id')"></i></th>
-                            <th>التاريخ <i class="fas fa-sort header-action" onclick="sortData('created_at')"></i></th>
+                            <!-- Column 1: ID -->
+                            <th>رقم <i class="fas fa-filter header-action" onclick="togglePopup('pop-id', event)"></i>
+                                <div id="pop-id" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث بالرقم..." oninput="applyFilters()"></div>
+                            </th>
+                            <!-- Column 2: Date -->
+                            <th>التاريخ <i class="fas fa-filter header-action" onclick="togglePopup('pop-date', event)"></i>
+                                <div id="pop-date" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث بالتاريخ..." oninput="applyFilters()"></div>
+                            </th>
+                            <!-- Column 3: Name -->
                             <th>العميل <i class="fas fa-filter header-action" onclick="togglePopup('pop-name', event)"></i>
-                                <div id="pop-name" class="filter-popup" onclick="event.stopPropagation()">
-                                    <input type="text" class="filter-input" placeholder="بحث بالاسم..." oninput="applyFilter('customer_name', this.value)">
-                                </div>
+                                <div id="pop-name" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث بالاسم..." oninput="applyFilters()"></div>
                             </th>
                             <th>الهاتف</th>
                             <th>العنوان</th>
                             <th>المنتجات</th>
                             <th>الإجمالي</th>
+                            <!-- Column 8: Status -->
                             <th>الحالة <i class="fas fa-filter header-action" onclick="togglePopup('pop-stat', event)"></i>
                                 <div id="pop-stat" class="filter-popup" onclick="event.stopPropagation()">
-                                    <select class="filter-input" onchange="applyFilter('status', this.value)">
+                                    <select class="filter-input" onchange="applyFilters()">
                                         <option value="all">الكل</option>
                                         <option value="قيد المراجعة">قيد المراجعة</option>
                                         <option value="قيد التجهيز">قيد التجهيز</option>
@@ -83,7 +89,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
-        let allOrders = [], filteredOrders = [], sortAsc = true;
+        let allOrders = [];
 
         document.addEventListener('click', () => document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'));
         function togglePopup(id, e) { e.stopPropagation(); document.querySelectorAll('.filter-popup').forEach(p => p.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
@@ -91,35 +97,29 @@
         async function fetchOrders() {
             const { data } = await client.from('orders').select('*');
             allOrders = data || [];
-            filteredOrders = [...allOrders];
-            updateUI();
+            renderTable(allOrders);
+            updateStats();
         }
 
-        function sortData(col) {
-            sortAsc = !sortAsc;
-            filteredOrders.sort((a, b) => sortAsc ? (a[col] > b[col] ? 1 : -1) : (a[col] < b[col] ? 1 : -1));
-            renderTable(filteredOrders);
-        }
+        function applyFilters() {
+            const idVal = document.querySelector('#pop-id input').value.toLowerCase();
+            const dateVal = document.querySelector('#pop-date input').value.toLowerCase();
+            const nameVal = document.querySelector('#pop-name input').value.toLowerCase();
+            const statusVal = document.querySelector('#pop-stat select').value;
 
-        function applyFilter(col, val) {
-            filteredOrders = allOrders.filter(o => {
-                if (col === 'status' && val === 'all') return true;
-                return (o[col] || '').toLowerCase().includes(val.toLowerCase());
+            const filtered = allOrders.filter(o => {
+                const dateMatch = new Date(o.created_at).toLocaleDateString('ar-EG').toLowerCase().includes(dateVal);
+                return String(o.id).includes(idVal) && 
+                       dateMatch && 
+                       (o.customer_name || '').toLowerCase().includes(nameVal) && 
+                       (statusVal === 'all' || o.status === statusVal);
             });
-            renderTable(filteredOrders);
-        }
-
-        function updateUI() {
-            const stats = ['قيد المراجعة', 'قيد التجهيز', 'تم الشحن', 'تم التسليم', 'ملغي'];
-            document.getElementById('stats-bar').innerHTML = stats.map(s => `
-                <div class="stat-card"><h4>${s}</h4><p>${allOrders.filter(o => o.status === s).length}</p></div>
-            `).join('');
-            renderTable(filteredOrders);
+            renderTable(filtered);
         }
 
         function renderTable(data) {
             document.getElementById('orders-table-body').innerHTML = data.map(o => {
-                const color = getStatusColor(o.status);
+                const col = getStatusColor(o.status);
                 return `<tr>
                     <td>#${o.id}</td>
                     <td>${new Date(o.created_at).toLocaleDateString('ar-EG')}</td>
@@ -128,7 +128,7 @@
                     <td>${o.city || '-'}</td>
                     <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${(o.order_details || []).map(i => i.name).join('، ')}</td>
                     <td style="color:var(--secondary); font-weight:800;">${Number(o.total_amount).toLocaleString()}</td>
-                    <td><select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background:${color.bg}; color:${color.text}">${['قيد المراجعة', 'قيد التجهيز', 'تم الشحن', 'تم التسليم', 'ملغي'].map(s => `<option value="${s}" ${o.status==s?'selected':''}>${s}</option>`).join('')}</select></td>
+                    <td><select class="status-select" onchange="updateStatus(${o.id}, this.value)" style="background:${col.bg}; color:${col.text}">${['قيد المراجعة', 'قيد التجهيز', 'تم الشحن', 'تم التسليم', 'ملغي'].map(s => `<option value="${s}" ${o.status==s?'selected':''}>${s}</option>`).join('')}</select></td>
                 </tr>`;
             }).join('');
         }
@@ -143,8 +143,15 @@
             }
         }
 
+        function updateStats() {
+            const stats = ['قيد المراجعة', 'قيد التجهيز', 'تم الشحن', 'تم التسليم', 'ملغي'];
+            document.getElementById('stats-bar').innerHTML = stats.map(s => `
+                <div class="stat-card"><h4>${s}</h4><p>${allOrders.filter(o => o.status === s).length}</p></div>
+            `).join('');
+        }
+
         async function updateStatus(id, val) { await client.from('orders').update({ status: val }).eq('id', id); fetchOrders(); }
-        function exportToExcel() { const ws = XLSX.utils.json_to_sheet(filteredOrders); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Orders"); XLSX.writeFile(wb, "Arkan_Orders.xlsx"); }
+        function exportToExcel() { const ws = XLSX.utils.json_to_sheet(allOrders); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Orders"); XLSX.writeFile(wb, "Arkan_Orders.xlsx"); }
         
         fetchOrders();
     </script>
