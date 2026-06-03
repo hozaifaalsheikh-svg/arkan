@@ -53,50 +53,58 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <script>
-        const supabase = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
-        let allProducts = [];
+<script>
+    // تعريف العميل بمتغير جديد لتجنب التعارض
+    const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
+    let allProducts = [];
 
-        async function fetchProducts() {
-            const { data: products } = await supabase.from('inventory').select('*');
-            allProducts = products;
-            let html = '';
-            products.forEach(p => {
-                html += `<tr>
-                    <td data-label="الرمز:">${p.sku}</td>
-                    <td data-label="الصورة:"><img src="${p.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:4px;"></td>
-                    <td data-label="الاسم:">${p.name}</td>
-                    <td data-label="البراند:">${p.brand || '-'}</td>
-                    <td data-label="السعر:">${Number(p.price).toLocaleString()} ل.س</td>
-                    <td data-label="الوصف:">${p.description ? p.description.substring(0, 20) : '-'}</td>
-                    <td data-label="التحكم:"><button class="btn-edit" onclick="openEditModal('${p.sku}')">تعديل</button></td>
-                </tr>`;
-            });
-            document.getElementById('products-table-body').innerHTML = html;
+    async function fetchProducts() {
+        const tableBody = document.getElementById('products-table-body');
+        const { data: products, error } = await client.from('inventory').select('*');
+        
+        if (error) { 
+            tableBody.innerHTML = '<tr><td colspan="7" style="color:red; text-align:center;">خطأ في الاتصال</td></tr>'; 
+            return; 
         }
-
-        function openEditModal(sku) {
-            const p = allProducts.find(x => x.sku === sku);
-            Swal.fire({
-                title: 'تعديل',
-                html: `<input id="name" value="${p.name}" style="width:100%; padding:10px; margin-bottom:10px;">
-                       <input id="price" type="number" value="${p.price}" style="width:100%; padding:10px;">`,
-                preConfirm: () => ({ name: document.getElementById('name').value, price: document.getElementById('price').value })
-            }).then(res => {
-                if (res.isConfirmed) {
-                    supabase.from('inventory').update(res.value).eq('sku', sku).then(fetchProducts);
-                }
-            });
-        }
-
-        document.getElementById('table-search').addEventListener('keyup', function() {
-            let val = this.value.toLowerCase();
-            document.querySelectorAll('tbody tr').forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
-            });
+        
+        allProducts = products;
+        let html = '';
+        products.forEach(p => {
+            html += `<tr>
+                <td data-label="الرمز:">${p.sku}</td>
+                <td data-label="الصورة:"><img src="${p.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:4px;"></td>
+                <td data-label="الاسم:">${p.name}</td>
+                <td data-label="البراند:">${p.brand || '-'}</td>
+                <td data-label="السعر:">${Number(p.price).toLocaleString()} ل.س</td>
+                <td data-label="الوصف:">${p.description ? p.description.substring(0, 20) : '-'}</td>
+                <td data-label="التحكم:"><button class="btn-edit" onclick="openEditModal('${p.sku}')">تعديل</button></td>
+            </tr>`;
         });
+        tableBody.innerHTML = html;
+    }
 
-        fetchProducts();
-    </script>
+    function openEditModal(sku) {
+        const p = allProducts.find(x => x.sku === sku);
+        Swal.fire({
+            title: 'تعديل',
+            html: `<input id="name" value="${p.name}" style="width:100%; padding:10px; margin-bottom:10px;">
+                   <input id="price" type="number" value="${p.price}" style="width:100%; padding:10px;">`,
+            preConfirm: () => ({ name: document.getElementById('name').value, price: document.getElementById('price').value })
+        }).then(res => {
+            if (res.isConfirmed) {
+                client.from('inventory').update(res.value).eq('sku', sku).then(fetchProducts);
+            }
+        });
+    }
+
+    document.getElementById('table-search').addEventListener('keyup', function() {
+        let val = this.value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
+        });
+    });
+
+    fetchProducts();
+</script>
 </body>
 </html>
