@@ -49,41 +49,63 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const supabase = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
+<script>
+    // تعريف العميل باسم مختلف لتجنب أي تعارض
+    const client = window.supabase.createClient("https://aalpziidoobrqeppsvmi.supabase.co", "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w");
 
-        async function fetchOrders() {
-            const { data: orders } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-            const tbody = document.getElementById('orders-table-body');
-            tbody.innerHTML = '';
+    async function fetchOrders() {
+        const tbody = document.getElementById('orders-table-body');
+        
+        // جلب البيانات من جدول الطلبات
+        const { data: orders, error } = await client
+            .from('orders')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            tbody.innerHTML = '<tr><td colspan="8" style="color:red; text-align:center;">خطأ في الاتصال بقاعدة البيانات</td></tr>';
+            console.error(error);
+            return;
+        }
+
+        if (!orders || orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد طلبات حالياً.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        orders.forEach(o => {
+            let items = (o.order_details && Array.isArray(o.order_details)) 
+                        ? o.order_details.map(i => `${i.qty}x ${i.name}`).join(', ') 
+                        : 'لا توجد تفاصيل';
             
-            orders.forEach(o => {
-                let items = (o.order_details || []).map(i => `${i.qty}x ${i.name}`).join(', ');
-                tbody.innerHTML += `<tr>
-                    <td data-label="رقم:">#${o.id}</td>
-                    <td data-label="التاريخ:">${new Date(o.created_at).toLocaleDateString('ar-EG')}</td>
-                    <td data-label="العميل:">${o.customer_name}</td>
-                    <td data-label="الهاتف:">${o.customer_phone}</td>
-                    <td data-label="العنوان:">${o.city}</td>
-                    <td data-label="المنتجات:">${items}</td>
-                    <td data-label="الإجمالي:">${Number(o.total_amount).toLocaleString()} ل.س</td>
-                    <td data-label="الحالة:">
-                        <select onchange="updateStatus(${o.id}, this.value)">
-                            <option ${o.status=='قيد المراجعة'?'selected':''}>قيد المراجعة</option>
-                            <option ${o.status=='تم الشحن'?'selected':''}>تم الشحن</option>
-                            <option ${o.status=='تم التسليم'?'selected':''}>تم التسليم</option>
-                        </select>
-                    </td>
-                </tr>`;
-            });
-        }
+            tbody.innerHTML += `<tr>
+                <td data-label="رقم:">#${o.id}</td>
+                <td data-label="التاريخ:">${new Date(o.created_at).toLocaleDateString('ar-EG')}</td>
+                <td data-label="العميل:">${o.customer_name || 'غير معروف'}</td>
+                <td data-label="الهاتف:">${o.customer_phone || '-'}</td>
+                <td data-label="العنوان:">${o.city || '-'}</td>
+                <td data-label="المنتجات:">${items}</td>
+                <td data-label="الإجمالي:">${Number(o.total_amount).toLocaleString()} ل.س</td>
+                <td data-label="الحالة:">
+                    <select onchange="updateStatus(${o.id}, this.value)">
+                        <option value="قيد المراجعة" ${o.status=='قيد المراجعة'?'selected':''}>قيد المراجعة</option>
+                        <option value="تم الشحن" ${o.status=='تم الشحن'?'selected':''}>تم الشحن</option>
+                        <option value="تم التسليم" ${o.status=='تم التسليم'?'selected':''}>تم التسليم</option>
+                    </select>
+                </td>
+            </tr>`;
+        });
+    }
 
-        async function updateStatus(id, status) {
-            await supabase.from('orders').update({ status }).eq('id', id);
-            fetchOrders();
-        }
+    async function updateStatus(id, status) {
+        const { error } = await client.from('orders').update({ status }).eq('id', id);
+        if (error) alert("خطأ في تحديث الحالة!");
+        else fetchOrders();
+    }
 
-        fetchOrders();
-    </script>
+    // تشغيل الدالة عند تحميل الصفحة
+    fetchOrders();
+</script>
 </body>
 </html>
