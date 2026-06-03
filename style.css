@@ -52,13 +52,13 @@
     }
     .logo span { color: var(--primary-color); font-size: 14px; margin-right: 5px;}
 
+ /* التعديل الجذري هنا لإصلاح شريط البحث */
     .search-bar {
-        flex: 1;
-        max-width: 100%; 
-        margin: 0 20px;
-        display: flex;
-        position: relative;
-        width: 100%; 
+            order: 3 !important;
+            display: flex !important; 
+            width: 100% !important;
+            flex: 0 0 100% !important; /* هذا السطر يجبر البحث على أخذ العرض كاملاً والنزول لسطر جديد */
+            margin: 15px 0 5px 0 !important; /* مسافة علوية أنيقة تفصله عن الشعار والأزرار */
     }
 
     .brand-group {
