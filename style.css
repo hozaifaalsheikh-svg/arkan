@@ -614,14 +614,27 @@
     .btn-cancel { background: #eee; color: #333; }
     .btn-cancel:hover { background: #ddd; }
 
-    #toast-container {
+   #toast-container {
         position: fixed;
-        bottom: 20px;
-        left: 20px;
+        bottom: 40px;   /* محاذاة الارتفاع ليكون في منتصف مستوى السلة تقريباً */
+        left: 110px;    /* يبدأ الإشعار بعد مسافة 110 بكسل من اليسار (أي بعد السلة مباشرة) */
         z-index: 10000;
         display: flex;
         flex-direction: column;
         gap: 10px;
+    }
+
+    /* --- تعديل مكان الإشعار على يمين السلة في شاشات الموبايل --- */
+    @media (max-width: 768px) {
+        #toast-container {
+            bottom: 30px; /* ملاءمة الارتفاع مع حجم السلة الأصغر على الموبايل */
+            left: 85px;   /* يبدأ بعد 85 بكسل لأن السلة على الموبايل أصغر وتقترب أكثر من الحافة */
+        }
+        
+        .toast-message {
+            padding: 10px 15px; /* تصغير حشوة الإشعار قليلاً ليناسب المساحة المتاحة على الموبايل */
+            font-size: 12px;
+        }
     }
 
     .toast-message {
