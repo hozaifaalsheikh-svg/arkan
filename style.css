@@ -614,42 +614,31 @@
     .btn-cancel { background: #eee; color: #333; }
     .btn-cancel:hover { background: #ddd; }
 
-   #toast-container {
+#toast-container {
         position: fixed;
         bottom: 40px;   /* محاذاة الارتفاع ليكون في منتصف مستوى السلة تقريباً */
-        left: 110px;    /* يبدأ الإشعار بعد مسافة 110 بكسل من اليسار (أي بعد السلة مباشرة) */
+        left: 110px;    /* يبدأ الإشعار بعد مسافة السلة على الكمبيوتر */
         z-index: 10000;
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
 
-    /* --- تعديل مكان الإشعار على يمين السلة في شاشات الموبايل --- */
+/* --- ضبط مخصص ومضمون لشاشات الموبايل --- */
     @media (max-width: 768px) {
         #toast-container {
-            bottom: 30px; /* ملاءمة الارتفاع مع حجم السلة الأصغر على الموبايل */
-            left: 85px;   /* يبدأ بعد 85 بكسل لأن السلة على الموبايل أصغر وتقترب أكثر من الحافة */
+            bottom: 28px; /* موازنة الارتفاع ليكون متناسقاً مع سنتر السلة الصغير */
+            left: 85px;   /* يبدأ فوراً بعد السلة عالموبايل (20px مسافة + 55px عرض السلة + 10px فراغ) */
+            max-width: calc(100vw - 100px); /* حماية حتمية تمنع الإشعار من الخروج عن حافة الشاشة اليمنى */
+.toast-message {
+            padding: 8px 12px !important; /* تقليص الحواف الداخلية ليوفر مساحة للنص */
+            font-size: 11px !important;   /* تصغير الخط قليلاً ليناسب شاشات الموبايل الصغيرة */
+            gap: 6px !important;          /* تقليل الفراغ بين الأيقونة والنص */
+            white-space: nowrap;          /* إجبار النص أن يبقى على سطر واحد أنيق */
+            display: flex;
+            align-items: center;
+            width: max-content;           /* جعل الكرت يحتضن النص تماماً دون زيادة */
         }
-        
-        .toast-message {
-            padding: 10px 15px; /* تصغير حشوة الإشعار قليلاً ليناسب المساحة المتاحة على الموبايل */
-            font-size: 12px;
-        }
-    }
-
-    .toast-message {
-        background: white;
-        color: #333;
-        padding: 15px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        border-right: 5px solid #25D366; 
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 600;
-        font-size: 14px;
-        animation: slideIn 0.4s ease forwards;
     }
 
     .toast-message i { color: #25D366; font-size: 20px; }
