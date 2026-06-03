@@ -11,13 +11,12 @@
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg); padding: 20px; margin: 0; }
         .container { width: 90%; margin: 0 auto; }
         
-        /* Stats Grid - Compact & Hover Effect */
+        /* Stats Grid - Compact */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .stat-card { 
             background: white; padding: 12px; border-radius: 8px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; 
-            border-top: 3px solid var(--primary); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+            border-top: 3px solid var(--primary); transition: all 0.3s ease;
         }
         .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-color: var(--secondary); }
         .stat-card h4 { margin: 0; font-size: 10px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
@@ -30,9 +29,9 @@
         td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 600; }
         
         /* Filters */
-        .header-action { cursor: pointer; color: var(--secondary); margin-right: 5px; font-size: 12px; }
-        .filter-popup { display: none; position: absolute; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 6px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 5px; right: 0; }
-        .filter-input { width: 120px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+        .header-action { cursor: pointer; color: var(--secondary); margin-right: 5px; font-size: 12px; vertical-align: middle; }
+        .filter-popup { display: none; position: absolute; background: white; border: 1px solid #ddd; padding: 10px; border-radius: 6px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 8px; right: 0; }
+        .filter-input { width: 130px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
 
         .status-select { padding: 4px 10px; border-radius: 20px; font-weight: 600; cursor: pointer; border: none; font-size: 12px; }
         .action-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
@@ -56,10 +55,10 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>رقم <i class="fas fa-sort header-action" onclick="togglePopup('pop-id', event)"></i>
+                            <th>رقم <i class="fas fa-filter header-action" onclick="togglePopup('pop-id', event)"></i>
                                 <div id="pop-id" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث بالرقم..." oninput="applyFilters()"></div>
                             </th>
-                            <th>التاريخ <i class="fas fa-sort header-action" onclick="togglePopup('pop-date', event)"></i>
+                            <th>التاريخ <i class="fas fa-filter header-action" onclick="togglePopup('pop-date', event)"></i>
                                 <div id="pop-date" class="filter-popup" onclick="event.stopPropagation()"><input type="text" class="filter-input" placeholder="بحث بالتاريخ..." oninput="applyFilters()"></div>
                             </th>
                             <th>العميل <i class="fas fa-filter header-action" onclick="togglePopup('pop-name', event)"></i>
