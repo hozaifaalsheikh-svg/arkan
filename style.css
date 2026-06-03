@@ -1,4 +1,7 @@
-:root {
+/* =========================================
+       1. المتغيرات والأساسيات
+    ========================================= */
+    :root {
         --primary-color: #f27a1a; 
         --secondary-color: #1a365d;
         --text-color: #333;
@@ -20,6 +23,9 @@
         color: var(--text-color);
     }
 
+    /* =========================================
+       2. الهيدر (Header) الأساسي
+    ========================================= */
     .sticky-wrapper {
         position: sticky;
         top: 0;
@@ -42,6 +48,12 @@
         align-items: center;
         padding: 15px 20px;
         width: 100%; 
+        gap: 15px; /* مسافة آمنة بين العناصر */
+    }
+
+    .brand-group {
+        display: flex;
+        align-items: center;
     }
 
     .logo {
@@ -52,61 +64,100 @@
     }
     .logo span { color: var(--primary-color); font-size: 14px; margin-right: 5px;}
 
- /* التعديل الجذري هنا لإصلاح شريط البحث */
+    /* =========================================
+       3. شريط البحث (Search Bar) - تم الإصلاح
+    ========================================= */
     .search-bar {
-            order: 3 !important;
-            display: flex !important; 
-            width: 100% !important;
-            flex: 0 0 100% !important; /* هذا السطر يجبر البحث على أخذ العرض كاملاً والنزول لسطر جديد */
-            margin: 15px 0 5px 0 !important; /* مسافة علوية أنيقة تفصله عن الشعار والأزرار */
-    }
-
-    .brand-group {
+        flex: 1;
+        width: 100%; 
+        margin: 0 20px;
         display: flex;
+        position: relative; /* ضروري جداً لتثبيت الأيقونة داخله */
         align-items: center;
-        gap: 30px; 
     }
 
-    .header-links {
-        display: flex;
-        gap: 20px;
-    }
-
-    .header-links a {
-        text-decoration: none;
-        color: var(--secondary-color);
+    .search-bar input {
+        width: 100%;
+        padding: 10px 15px 10px 45px !important; /* 45px لليسار لحجز مكان الأيقونة */
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        outline: none;
         font-size: 14px;
-        font-weight: 700;
+        transition: border 0.2s;
+        box-sizing: border-box; /* يمنع الحقل من الخروج عن الإطار */
+    }
+
+    .search-bar input:focus { border-color: var(--primary-color); }
+
+    .search-bar button {
+        position: absolute;
+        left: 12px; /* تثبيت الأيقونة على بعد 12 بكسل من يسار الحقل */
+        top: 50%;
+        transform: translateY(-50%); /* توسيط عامودي دقيق */
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        padding: 0;
+        cursor: pointer;
+        font-size: 18px;
         display: flex;
         align-items: center;
-        gap: 6px; 
-        transition: color 0.2s ease;
+        justify-content: center;
+        z-index: 2;
     }
 
-    .header-links a i {
-        display: inline-block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
+    /* =========================================
+       4. أزرار الهيدر (حسابي وحول) - تم الإصلاح وتوحيد الحجم
+    ========================================= */
+    .header-actions, .header-links {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-action-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important; /* المسافة بين الأيقونة والنص */
+        cursor: pointer;
+        padding: 0 15px !important;
+        border-radius: 6px !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--secondary-color) !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        transition: all 0.3s ease !important;
+        background: white !important;
+        height: 42px !important; /* الارتفاع الموحد للكمبيوتر */
+        white-space: nowrap !important; /* يمنع نزول النص لسطرين */
+        text-decoration: none !important;
+        box-sizing: border-box;
+    }
+
+    .header-action-btn i {
         font-size: 16px !important;
-        margin-left: 8px !important;
-        color: var(--primary-color) !important; 
+        color: var(--primary-color) !important;
+        margin: 0 !important;
     }
 
-    .header-links a:hover {
-        color: var(--primary-color);
+    .header-action-btn:hover {
+        border-color: var(--primary-color) !important;
+        background-color: #fff1e6 !important;
     }
 
-    .mobile-only-text { display: none; }
-    .hide-on-mobile { display: inline; }
+    /* قواعد الإخفاء حسب نوع الشاشة */
+    .mobile-only-text { display: none !important; }
+    .hide-on-mobile { display: inline !important; }
 
-    /* --- تصميم الهيدر للموبايل (تم تعديله بناءً على طلبك) --- */
-    @media (max-width: 600px) {
+    /* =========================================
+       5. التجاوب للموبايل (Mobile Responsive)
+    ========================================= */
+    @media (max-width: 768px) {
         .header-container {
-            flex-direction: row !important; 
-            flex-wrap: wrap !important;
-            justify-content: space-between !important;
-            align-items: center !important;
+            flex-wrap: wrap !important; /* يسمح بنزول البحث لسطر جديد */
             padding: 10px 15px !important;
+            gap: 10px !important;
         }
         
         .hide-on-mobile { display: none !important; }
@@ -115,104 +166,37 @@
 
         .brand-group {
             order: 1 !important;
-            width: auto !important;
-            margin-bottom: 10px !important;
+            flex: 1; /* يدفع الأزرار لليسار */
         }
 
         .header-actions {
             order: 2 !important;
-            margin-bottom: 10px !important;
-            display: flex;
-            gap: 5px !important;
-        }
-
-        .header-links {
-            display: flex !important;
-            gap: 5px !important;
+            gap: 6px !important; /* تقريب الأزرار من بعضها في الموبايل */
         }
 
         .search-bar {
             order: 3 !important;
-            display: flex !important; 
-            margin: 0 !important;
-            width: 100% !important;
+            flex: 0 0 100% !important; /* إجبار البحث على أخذ العرض بالكامل */
+            margin: 5px 0 0 0 !important; /* مسافة علوية أنيقة */
         }
-        
-      .search-bar input {
-        width: 100%;
-        /* قمنا بزيادة الفراغ من جهة اليسار (45px) كي لا يختفي النص تحت الأيقونة */
-        padding: 10px 15px 10px 45px; 
-        border: 2px solid var(--border-color);
-        border-radius: 6px;
-        outline: none;
-        font-size: 14px;
-        transition: border 0.2s;
-    }
 
+        /* توحيد الأزرار في الموبايل */
         .header-action-btn {
-            padding: 6px 10px !important;
-            font-size: 11px !important;
+            padding: 0 10px !important;
+            font-size: 12px !important;
+            height: 36px !important; /* الارتفاع الموحد للموبايل */
+            gap: 4px !important;
         }
 
         .header-action-btn i {
-            font-size: 13px !important;
-            margin-left: 3px !important;
+            font-size: 14px !important;
         }
     }
 
-    .search-bar input {
-        width: 100%;
-        padding: 10px 15px;
-        border: 2px solid var(--border-color);
-        border-radius: 6px;
-        outline: none;
-        font-size: 14px;
-        transition: border 0.2s;
-    }
 
-   .search-bar input:focus { border-color: var(--primary-color); }
-   .search-bar button {
-        position: absolute;
-        left: 5px; /* إزاحة الأيقونة للداخل قليلاً */
-        top: 50%; /* توسيط عامودي */
-        transform: translateY(-50%); /* توسيط عامودي دقيق 100% */
-        background: transparent;
-        border: none;
-        color: var(--primary-color);
-        padding: 0 10px;
-        cursor: pointer;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .cart-icon-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        position: relative;
-        padding: 8px 15px;
-        border-radius: 6px;
-        border: 1px solid var(--border-color);
-    }
-
-    .cart-icon-wrapper i { font-size: 20px; color: #555; }
-    .cart-icon-wrapper:hover i { color: var(--primary-color); }
-
-    #cart-count {
-        background: var(--primary-color);
-        color: white;
-        font-size: 11px;
-        font-weight: bold;
-        padding: 2px 6px;
-        border-radius: 50%;
-        position: absolute;
-        top: -5px;
-        right: -5px;
-    }
-
+    /* =========================================
+       6. شريط التصنيفات (Categories)
+    ========================================= */
     .categories-nav {
         display: flex !important;
         flex-wrap: nowrap !important; 
@@ -243,6 +227,9 @@
         color: var(--primary-color);
     }
 
+    /* =========================================
+       7. شبكة المنتجات (Products Grid)
+    ========================================= */
     .shop-container {
         max-width: 98%; 
         margin: 30px auto;
@@ -255,7 +242,6 @@
         gap: 20px;
     }
 
-    /* --- كرت المنتج --- */
     .product-card {
         background: white;
         border-radius: 8px;
@@ -337,15 +323,8 @@
         letter-spacing: 0.5px;
     }
 
-    /* --- تغليف الوصف والزر معاً --- */
-    .desc-wrapper {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 5px;
-        width: 100%;
-    }
+    .desc-wrapper { display: flex; flex-direction: column; margin-bottom: 5px; width: 100%; }
 
-    /* --- الكود الموحد للوصف (سطرين فقط مع نقاط) --- */
     .product-description {
         font-size: 11px;
         color: #777;
@@ -359,7 +338,6 @@
         min-height: 33px; 
     }
 
-    /* --- تنسيق زر اقرأ المزيد --- */
     .read-more {
         color: var(--secondary-color);
         font-weight: 700;
@@ -367,10 +345,7 @@
         cursor: pointer;
         align-self: flex-start;
     }
-
-    .read-more:hover {
-        text-decoration: underline;
-    }
+    .read-more:hover { text-decoration: underline; }
 
     .price-row {
         color: #f27a1a !important;
@@ -392,436 +367,117 @@
         cursor: pointer;
         transition: background 0.2s;
     }
-
     .btn-add-to-cart:hover { background-color: var(--primary-color); }
 
-    /* --- تصميم الموبايل لشبكة المنتجات --- */
+    /* منتجات الموبايل */
     @media (max-width: 768px) {
         html, body { overflow-x: hidden !important; }
-
-        .products-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 8px !important;
-            padding: 5px !important;
-        }
-
-        .product-card {
-            padding: 0;
-        }
-
-        .image-container {
-            height: 120px !important;
-            padding: 5px !important;
-        }
-
-        .product-info {
-            padding: 8px 5px 10px 5px !important; 
-        }
-
-        .product-title {
-            font-size: 11px !important;
-            margin-bottom: 3px !important;
-        }
-
-        .product-description {
-            font-size: 9px !important; 
-            margin-bottom: 3px !important;
-            min-height: 27px; 
-            -webkit-line-clamp: 2 !important; 
-        }
-
-        .price-row {
-            font-size: 11px !important;
-            margin-bottom: 3px !important;
-        }
-
-        .btn-add-to-cart {
-            padding: 4px !important;
-            font-size: 10px !important;
-        }
-        
-        .product-info::before {
-            width: 25px !important;
-        }
+        .products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; padding: 5px !important; }
+        .product-card { padding: 0; }
+        .image-container { height: 120px !important; padding: 5px !important; }
+        .product-info { padding: 8px 5px 10px 5px !important; }
+        .product-title { font-size: 11px !important; margin-bottom: 3px !important; }
+        .product-description { font-size: 9px !important; margin-bottom: 3px !important; min-height: 27px; -webkit-line-clamp: 2 !important; }
+        .price-row { font-size: 11px !important; margin-bottom: 3px !important; }
+        .btn-add-to-cart { padding: 4px !important; font-size: 10px !important; }
+        .product-info::before { width: 25px !important; }
     }
 
-    /* --- صفحات الحسابات --- */
-    .auth-page-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: calc(100vh - 80px);
-        padding: 40px 20px;
-    }
 
-    .auth-box {
-        background: white;
-        width: 100%;
-        max-width: 450px;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        border: 1px solid var(--border-color);
-    }
-
-    .auth-header {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    .auth-header h2 {
-        color: var(--secondary-color);
-        font-size: 26px;
-        margin-bottom: 10px;
-    }
-
-    .auth-header p {
-        color: #777;
-        font-size: 14px;
-    }
-
-    .auth-form {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .input-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        font-size: 14px;
-        color: #444;
-    }
-
-    .input-with-icon {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .input-with-icon i {
-        position: absolute;
-        right: 15px;
-        color: #aaa;
-        font-size: 16px;
-    }
-
-    .input-with-icon input {
-        width: 100%;
-        padding: 12px 40px 12px 15px; 
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 14px;
-        outline: none;
-        transition: all 0.3s ease;
-        background: #fafafa;
-    }
-
-    .input-with-icon input:focus {
-        border-color: var(--primary-color);
-        background: white;
-        box-shadow: 0 0 0 3px rgba(242, 122, 26, 0.1);
-    }
-
-    .input-with-icon input:focus + i {
-        color: var(--primary-color);
-    }
-
-    .btn-auth {
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 15px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.3s ease;
-        margin-top: 10px;
-    }
-
-    .btn-auth:hover {
-        background-color: #e06912;
-    }
-        
-    .auth-footer {
-        text-align: center;
-        margin-top: 25px;
-        font-size: 14px;
-        color: #666;
-    }
-
-    .auth-footer a {
-        color: var(--secondary-color);
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-    .auth-footer a:hover {
-        color: var(--primary-color);
-        text-decoration: underline;
-    }
-
-    /* --- النوافذ المنبثقة (Modals) --- */
+    /* =========================================
+       8. النوافذ المنبثقة والإشعارات والسلة 
+    ========================================= */
     .modal-overlay {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(26, 54, 93, 0.6); 
         backdrop-filter: blur(3px); 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
+        display: flex; justify-content: center; align-items: center;
+        z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.3s ease;
     }
-
-    .modal-overlay.active {
-        opacity: 1;
-        visibility: visible;
-    }
-
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    
     .modal-box {
-        background: white;
-        padding: 30px 25px;
-        border-radius: 12px;
-        width: 90%;
-        max-width: 350px;
-        text-align: center;
-        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-        transform: translateY(20px) scale(0.95);
-        transition: all 0.3s ease;
+        background: white; padding: 30px 25px; border-radius: 12px; width: 90%; max-width: 350px;
+        text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        transform: translateY(20px) scale(0.95); transition: all 0.3s ease;
     }
-
-    .modal-overlay.active .modal-box {
-        transform: translateY(0) scale(1);
-    }
-
-    .modal-icon i {
-        font-size: 40px;
-        color: var(--primary-color);
-        margin-bottom: 15px;
-    }
-
-    .modal-box h3 {
-        color: var(--secondary-color);
-        margin-bottom: 10px;
-        font-size: 20px;
-    }
-
-    .modal-box p {
-        color: #555;
-        font-size: 15px;
-        line-height: 1.6;
-        margin-bottom: 20px;
-    }
-
-    .modal-actions {
-        display: flex;
-        gap: 10px;
-    }
-
-    .btn-confirm, .btn-cancel {
-        flex: 1;
-        padding: 12px;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-        font-family: 'Cairo', sans-serif;
-        transition: background 0.2s;
-    }
-
+    .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
+    .modal-icon i { font-size: 40px; color: var(--primary-color); margin-bottom: 15px; }
+    .modal-box h3 { color: var(--secondary-color); margin-bottom: 10px; font-size: 20px; }
+    .modal-box p { color: #555; font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; }
+    .btn-confirm, .btn-cancel { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
     .btn-confirm { background: #25D366; color: white; }
     .btn-confirm:hover { background: #20ba5a; }
-
     .btn-cancel { background: #eee; color: #333; }
     .btn-cancel:hover { background: #ddd; }
 
-    /* --- الإشعارات (Toasts) --- */
     #toast-container {
-        position: fixed;
-        bottom: 40px;   
-        left: 110px;    
-        z-index: 10000;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+        position: fixed; bottom: 40px; left: 110px; z-index: 10000;
+        display: flex; flex-direction: column; gap: 10px;
     }
-
-    /* التنسيق الأساسي لكرت الإشعار (تم استعادته) */
     .toast-message {
-        background: white;
-        color: #333;
-        padding: 15px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        border-right: 5px solid #25D366; 
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 600;
-        font-size: 14px;
+        background: white; color: #333; padding: 15px 20px; border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15); border-right: 5px solid #25D366; 
+        display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 14px;
         animation: slideIn 0.4s ease forwards;
     }
-
-    /* --- ضبط مخصص ومضمون لشاشات الموبايل (مع إصلاح الأقواس) --- */
     @media (max-width: 768px) {
-        #toast-container {
-            bottom: 28px; 
-            left: 85px;   
-            max-width: calc(100vw - 100px); 
-        }
-
-        .toast-message {
-            padding: 8px 12px !important; 
-            font-size: 11px !important;   
-            gap: 6px !important;          
-            white-space: nowrap;          
-            display: flex;
-            align-items: center;
-            width: max-content;           
-        }
+        #toast-container { bottom: 28px; left: 85px; max-width: calc(100vw - 100px); }
+        .toast-message { padding: 8px 12px !important; font-size: 11px !important; gap: 6px !important; white-space: nowrap; width: max-content; }
     }
-
     .toast-message i { color: #25D366; font-size: 20px; }
+    @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
+    .toast-message.fade-out { animation: slideOut 0.4s ease forwards; }
 
-    @keyframes slideIn {
-        from { transform: translateX(-100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(-100%); opacity: 0; }
-    }
-
-    .toast-message.fade-out {
-        animation: slideOut 0.4s ease forwards;
-    }
-
-    /* --- السلة العائمة (Floating Cart) --- */
+    /* السلة العائمة */
     .floating-cart-btn {
-        position: fixed;
-        bottom: 30px; 
-        left: 30px;   
-        background-color: #f27a1a; 
-        color: white;
-        width: 65px;
-        height: 65px;
-        border-radius: 50%; 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: 0 4px 15px rgba(242, 122, 26, 0.4); 
-        z-index: 9999; 
-        text-decoration: none;
-        font-size: 26px;
-        transition: transform 0.3s ease, background-color 0.3s;
+        position: fixed; bottom: 30px; left: 30px; background-color: #f27a1a; color: white;
+        width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+        box-shadow: 0 4px 15px rgba(242, 122, 26, 0.4); z-index: 9999; text-decoration: none; font-size: 26px; transition: transform 0.3s ease, background-color 0.3s;
     }
-
-    .floating-cart-btn:hover {
-        transform: scale(1.1);
-        background-color: #e06912;
-        color: white;
-    }
-
+    .floating-cart-btn:hover { transform: scale(1.1); background-color: #e06912; color: white; }
     .floating-cart-count {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background-color: #1a365d; 
-        color: white;
-        font-size: 14px;
-        font-weight: bold;
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: 2px solid white; 
+        position: absolute; top: -5px; right: -5px; background-color: #1a365d; color: white;
+        font-size: 14px; font-weight: bold; width: 26px; height: 26px; border-radius: 50%;
+        display: flex; justify-content: center; align-items: center; border: 2px solid white; 
     }
-
     @media (max-width: 768px) {
-        .floating-cart-btn {
-            bottom: 20px;
-            left: 20px;
-            width: 55px;
-            height: 55px;
-            font-size: 22px;
-        }
-        .floating-cart-count {
-            width: 22px;
-            height: 22px;
-            font-size: 12px;
-        }
+        .floating-cart-btn { bottom: 20px; left: 20px; width: 55px; height: 55px; font-size: 22px; }
+        .floating-cart-count { width: 22px; height: 22px; font-size: 12px; }
     }
 
-    /* --- تنسيق زر حول الشركة في الهيدر --- */
-    .header-action-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        padding: 8px 15px;
-        border-radius: 6px;
-        border: 1px solid var(--border-color);
-        color: var(--secondary-color);
-        font-weight: bold;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        background: white;
+    /* =========================================
+       9. صفحات الحسابات (Auth) ونوافذ سويت أليرت
+    ========================================= */
+    .auth-page-container {
+        display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 80px); padding: 40px 20px;
     }
-
-    .header-action-btn i {
-        font-size: 18px;
-        color: var(--primary-color);
+    .auth-box {
+        background: white; width: 100%; max-width: 450px; padding: 40px; border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid var(--border-color);
     }
+    .auth-header { text-align: center; margin-bottom: 30px; }
+    .auth-header h2 { color: var(--secondary-color); font-size: 26px; margin-bottom: 10px; }
+    .auth-header p { color: #777; font-size: 14px; }
+    .auth-form { display: flex; flex-direction: column; gap: 20px; }
+    .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #444; }
+    .input-with-icon { position: relative; display: flex; align-items: center; }
+    .input-with-icon i { position: absolute; right: 15px; color: #aaa; font-size: 16px; }
+    .input-with-icon input { width: 100%; padding: 12px 40px 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; transition: all 0.3s ease; background: #fafafa; }
+    .input-with-icon input:focus { border-color: var(--primary-color); background: white; box-shadow: 0 0 0 3px rgba(242, 122, 26, 0.1); }
+    .input-with-icon input:focus + i { color: var(--primary-color); }
+    .btn-auth { background-color: var(--primary-color); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s ease; margin-top: 10px; }
+    .btn-auth:hover { background-color: #e06912; }
+    .auth-footer { text-align: center; margin-top: 25px; font-size: 14px; color: #666; }
+    .auth-footer a { color: var(--secondary-color); font-weight: bold; text-decoration: none; }
+    .auth-footer a:hover { color: var(--primary-color); text-decoration: underline; }
 
-    .header-action-btn:hover {
-        border-color: var(--primary-color);
-        background-color: #fff1e6;
-        color: var(--primary-color);
-    }
-
-    /* --- التحكم المزدوج بزر حول الشركة --- */
-    .mobile-about-btn { display: none !important; }
-    .desktop-about-btn { display: flex !important; }
-
-    @media (max-width: 600px) {
-        .mobile-about-btn {
-            display: flex !important;
-            align-items: center;
-        }
-        .desktop-about-btn { display: none !important; }
-    }
-
-    /* --- تخصيص نافذة SweetAlert --- */
-    .swal2-popup.my-swal-popup {
-        width: 300px !important; 
-        padding: 15px !important;
-        border-radius: 15px !important;
-    }
-
-    .swal2-title.my-swal-title {
-        font-size: 18px !important;
-        color: #1a365d !important;
-        margin-bottom: 5px !important;
-    }
-
-    .swal2-html-container {
-        font-size: 14px !important;
-        color: #555 !important;
-    }
-
+    /* SweetAlert */
+    .swal2-popup.my-swal-popup { width: 300px !important; padding: 15px !important; border-radius: 15px !important; }
+    .swal2-title.my-swal-title { font-size: 18px !important; color: #1a365d !important; margin-bottom: 5px !important; }
+    .swal2-html-container { font-size: 14px !important; color: #555 !important; }
     .swal2-actions { margin-top: 15px !important; }
-
-    .swal2-styled.swal2-confirm, 
-    .swal2-styled.swal2-cancel {
-        padding: 8px 20px !important;
-        font-size: 13px !important;
-        border-radius: 8px !important;
-    }
+    .swal2-styled.swal2-confirm, .swal2-styled.swal2-cancel { padding: 8px 20px !important; font-size: 13px !important; border-radius: 8px !important; }
