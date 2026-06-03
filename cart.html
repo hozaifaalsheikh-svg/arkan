@@ -41,13 +41,29 @@
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-container">
-            <a href="index.html" style="text-decoration: none;">
-                <div class="logo">Arkan<span>PHARMACY</span></div>
-            </a>
-        </div>
-    </header>
+    <div class="sticky-wrapper">
+        <header class="main-header">
+            <div class="header-container">
+                <div class="brand-group">
+                    <a href="index.html" style="text-decoration: none;">
+                        <div class="logo">Arkan<span>COMPANY</span></div>
+                    </a>
+                </div>
+                
+                <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+                    <a href="about.html" class="header-action-btn" style="text-decoration: none;">
+                        <i class="fas fa-info-circle"></i> <span class="hide-on-mobile">حول الشركة</span><span class="mobile-only-text">حول</span>
+                    </a>
+
+                    <div class="header-links" style="display: flex; align-items: center; gap: 10px;">
+                        <a href="login.html" class="header-action-btn" style="text-decoration: none;">
+                            <i class="fas fa-user-plus"></i> <span class="hide-on-mobile">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
 
     <main class="cart-page-container">
         <a href="index.html" class="back-link"><i class="fas fa-arrow-right"></i> متابعة التسوق</a>
@@ -80,8 +96,7 @@
     <script src="script.js"></script>
 
     <script>
-        // قراءة السلة من الذاكرة
-         cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+        cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
 
         function renderCartPage() {
             const contentDiv = document.getElementById('cart-content');
@@ -137,16 +152,12 @@
             renderCartPage();
         }
 
-        // دالة إرسال الطلب المحمية بحساب المستخدم
-        // دالة إرسال الطلب (حفظ في قاعدة البيانات + توجيه للواتساب)
         async function submitOrder() {
-            // 1. جلب بيانات العميل
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const city = document.getElementById('cust-city').value;
             const address = document.getElementById('cust-address').value;
 
-            // 2. التحقق من الحقول
             if(!name || !phone || !city || !address) {
                 Swal.fire({
                     icon: 'warning',
@@ -157,17 +168,13 @@
                 return;
             }
 
-            // 3. حساب الإجمالي وتجهيز الطلب ورسالة الواتساب
             let total = 0;
             let whatsappMessage = `*طلب جديد من شركة أركان 🛍️*\n\n*الاسم:* ${name}\n*رقم التواصل:* ${phone}\n*المدينة:* ${city}\n*العنوان:* ${address}\n-----------------------------\n`;
             
             const orderItems = cart.map((item, index) => {
                 const itemPrice = parseInt(item.price) || 0;
                 total += itemPrice * item.qty;
-                
-                // إضافة تفاصيل المنتج لرسالة الواتساب
                 whatsappMessage += `${index + 1}) *${item.name}*\n   الكمية: ${item.qty} | السعر: ${item.price}\n`;
-                
                 return { name: item.name, qty: item.qty, price: item.price };
             });
 
@@ -180,7 +187,6 @@
             });
 
             try {
-                // 4. الحفظ في قاعدة البيانات (Supabase)
                 const { data, error } = await supabaseClient
                     .from('orders')
                     .insert([
@@ -196,21 +202,18 @@
 
                 if (error) throw error;
 
-                // 5. مسح السلة بعد نجاح الحفظ
                 localStorage.removeItem('arkan_cart');
                 cart = [];
                 renderCartPage();
 
-                // 6. إظهار رسالة النجاح وفتح الواتساب
                 Swal.fire({
                     icon: 'success',
                     title: 'تم تسجيل الطلب!',
                     text: 'سيتم تحويلك الآن للواتساب لإرسال رسالة التأكيد.',
                     confirmButtonColor: '#2ecc71',
-                    timer: 2500, // الانتظار ثانيتين ونصف قبل فتح الواتساب
+                    timer: 2500,
                     showConfirmButton: false
                 }).then(() => {
-                    // توجيه العميل للواتساب مع الرسالة الجاهزة
                     const whatsappUrl = `https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(whatsappMessage)}`;
                     window.open(whatsappUrl, '_blank');
                 });
@@ -221,7 +224,6 @@
             }
         }
 
-        // تشغيل الدالة عند فتح الصفحة
         document.addEventListener('DOMContentLoaded', renderCartPage);
     </script>
 </body>

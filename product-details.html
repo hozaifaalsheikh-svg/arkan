@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* الحاوية الرئيسية للمنتج */
         .details-wrapper { 
             max-width: 1000px; 
             margin: 50px auto; 
@@ -20,15 +19,14 @@
         
         .product-grid { 
             display: grid; 
-            grid-template-columns: 1fr 1.2fr; /* إعطاء مساحة أوسع للنصوص */
+            grid-template-columns: 1fr 1.2fr; 
             gap: 50px; 
             align-items: center; 
         }
         
-        /* صندوق الصورة */
         .img-box { 
             position: relative; 
-            background: #f8f9fa; /* خلفية رمادية فاتحة جداً تبرز المنتج */
+            background: #f8f9fa; 
             border-radius: 16px; 
             padding: 40px 20px; 
             text-align: center; 
@@ -36,15 +34,14 @@
         }
         .img-box img { 
             max-width: 100%; 
-            max-height: 400px; /* منع الصورة من التمدد المبالغ فيه */
+            max-height: 400px; 
             object-fit: contain; 
             transition: transform 0.3s ease;
         }
         .img-box:hover img {
-            transform: scale(1.05); /* تأثير زووم خفيف عند تمرير الماوس */
+            transform: scale(1.05); 
         }
         
-        /* شارة ARKAN */
         .arkan-tag { 
             position: absolute; 
             top: 20px; 
@@ -59,7 +56,6 @@
             letter-spacing: 1px; 
         }
         
-        /* صندوق النصوص */
         .info-box { 
             text-align: right; 
             display: flex;
@@ -67,9 +63,8 @@
             justify-content: center;
         }
         
-        /* شارة البراند (الماركة) */
         .brand-badge { 
-            align-self: flex-start; /* لمنعها من التمدد على كامل العرض */
+            align-self: flex-start; 
             background: #fdf3eb; 
             color: #555; 
             padding: 6px 18px; 
@@ -94,7 +89,6 @@
             margin-bottom: 30px;
         }
         
-        /* السعر */
         .info-box .price { 
             font-size: 36px; 
             font-weight: 900; 
@@ -107,7 +101,6 @@
             border: 1px dashed #ddd;
         }
         
-        /* الأزرار */
         .btn-group { 
             display: flex; 
             gap: 15px; 
@@ -128,7 +121,7 @@
             background: #f27a1a; 
             color: white; 
             border: none; 
-            box-shadow: 0 6px 15px rgba(242, 122, 26, 0.3); /* ظل يعطي الزر بروزاً */
+            box-shadow: 0 6px 15px rgba(242, 122, 26, 0.3); 
         }
         .btn-add:hover { 
             background: #e06912; 
@@ -145,7 +138,6 @@
             transform: translateY(-3px); 
         }
 
-        /* تجاوب الشاشات الصغيرة (الموبايل) */
         @media (max-width: 768px) {
             .product-grid { grid-template-columns: 1fr; gap: 30px; }
             .info-box { text-align: center; align-items: center; }
@@ -157,13 +149,29 @@
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-container">
-            <a href="index.html" style="text-decoration: none;">
-                <div class="logo">Arkan<span>PHARMACY</span></div>
-            </a>
-        </div>
-    </header>
+    <div class="sticky-wrapper">
+        <header class="main-header">
+            <div class="header-container">
+                <div class="brand-group">
+                    <a href="index.html" style="text-decoration: none;">
+                        <div class="logo">Arkan<span>COMPANY</span></div>
+                    </a>
+                </div>
+                
+                <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+                    <a href="about.html" class="header-action-btn" style="text-decoration: none;">
+                        <i class="fas fa-info-circle"></i> <span class="hide-on-mobile">حول الشركة</span><span class="mobile-only-text">حول</span>
+                    </a>
+
+                    <div class="header-links" style="display: flex; align-items: center; gap: 10px;">
+                        <a href="login.html" class="header-action-btn" style="text-decoration: none;">
+                            <i class="fas fa-user-plus"></i> <span class="hide-on-mobile">تسجيل الدخول</span><span class="mobile-only-text">حسابي</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
 
     <main class="details-wrapper">
         <div id="product-content" class="product-grid">
@@ -194,7 +202,6 @@
             const sku = urlParams.get('id');
             if (!sku) return;
 
-            // نستخدم supabaseClient المُعرف مسبقاً في ملف script.js
             const { data, error } = await supabaseClient.from('inventory').select('*').eq('sku', sku).single();
             
             if (error || !data) {
@@ -202,7 +209,6 @@
                 return;
             }
 
-            // عرض المنتج وربط زر الإضافة بدالة الإشعارات الجديدة مع عرض البراند وتنسيق السعر ديناميكياً
             document.getElementById('product-content').innerHTML = `
                 <div class="img-box">
                     <div class="arkan-tag">ARKAN</div>
@@ -221,7 +227,6 @@
             `;
         }
 
-        // تشغيل الدالة عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', loadProduct);
     </script>
     <a href="cart.html" class="floating-cart-btn">

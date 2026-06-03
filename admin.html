@@ -10,7 +10,7 @@
     <style>
         :root {
             --primary-color: #1a365d;
-            --secondary-color: #e67e22;
+            --secondary-color: #f27a1a; /* تعديل للون البرتقالي الرسمي لشركة أركان */
             --bg-color: #f4f7f6;
         }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
@@ -33,12 +33,12 @@
 <body>
     <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
         <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%;">
-            <h2 style="color: var(--primary-color, #1a365d); margin-top: 0;"><i class="fas fa-lock"></i> الإدارة المحمية</h2>
+            <h2 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-lock"></i> الإدارة المحمية</h2>
             <p style="color: #666; font-size: 14px;">الرجاء إدخال كلمة المرور للمتابعة</p>
             <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; text-align: center; box-sizing: border-box; outline: none;">
             
             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button onclick="checkAdminPassword()" style="flex: 1; padding: 12px; background: var(--secondary-color, #e67e22); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">دخول</button>
+                <button onclick="checkAdminPassword()" style="flex: 1; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">دخول</button>
                 <button onclick="window.location.href='index.html'" style="flex: 1; padding: 12px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">رجوع للموقع</button>
             </div>
         </div>
@@ -75,10 +75,10 @@
             </table>
         </div>
     </div>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // دالة التحقق من كلمة المرور
         function checkAdminPassword() {
             const passInput = document.getElementById('admin-pass').value;
             if(passInput === 'arkan123') { 
@@ -88,17 +88,13 @@
             }
         }
 
-        document.getElementById('admin-pass').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') checkAdminPassword();
-        });
-
-        // تفعيل الضغط على زر Enter لتسجيل الدخول
+        // تفعيل الضغط على زر Enter لتسجيل الدخول (تم تنظيف التكرار)
         document.getElementById('admin-pass').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 checkAdminPassword();
             }
         });
-        // ضع مفاتيح Supabase الخاصة بك هنا (نفسها الموجودة في script.js)
+
         const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
 
@@ -108,7 +104,6 @@
             const tableBody = document.getElementById('orders-table-body');
 
             try {
-                // جلب الطلبات وترتيبها من الأحدث للأقدم
                 const { data: orders, error } = await supabaseClient
                     .from('orders')
                     .select('*')
@@ -123,10 +118,8 @@
 
                 let html = '';
                 orders.forEach(order => {
-                    // تنسيق التاريخ ليصبح مقروءاً
                     const date = new Date(order.created_at).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
                     
-                    // تنسيق المنتجات المطلوبة من الـ JSON
                     let productsHtml = '<ul class="order-details-list">';
                     if(order.order_details && Array.isArray(order.order_details)) {
                         order.order_details.forEach(item => {
@@ -145,14 +138,14 @@
                             <td>${productsHtml}</td>
                             <td class="total-amount">${order.total_amount} ل.س</td>
                             <td>
-                <select onchange="updateOrderStatus(${order.id}, this.value)" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc; background: ${order.status === 'تم التسليم' ? '#d4edda' : order.status === 'ملغي' ? '#f8d7da' : '#fff3cd'}; font-weight: bold; cursor: pointer;">
-                <option value="قيد المراجعة" ${order.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
-                <option value="قيد التجهيز" ${order.status === 'قيد التجهيز' ? 'selected' : ''}>قيد التجهيز</option>
-                <option value="تم الشحن" ${order.status === 'تم الشحن' ? 'selected' : ''}>تم الشحن</option>
-                <option value="تم التسليم" ${order.status === 'تم التسليم' ? 'selected' : ''}>تم التسليم</option>
-                <option value="ملغي" ${order.status === 'ملغي' ? 'selected' : ''}>ملغي</option>
-                </select>
-                </td>
+                                <select onchange="updateOrderStatus(${order.id}, this.value)" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc; background: ${order.status === 'تم التسليم' ? '#d4edda' : order.status === 'ملغي' ? '#f8d7da' : '#fff3cd'}; font-weight: bold; cursor: pointer;">
+                                    <option value="قيد المراجعة" ${order.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
+                                    <option value="قيد التجهيز" ${order.status === 'قيد التجهيز' ? 'selected' : ''}>قيد التجهيز</option>
+                                    <option value="تم الشحن" ${order.status === 'تم الشحن' ? 'selected' : ''}>تم الشحن</option>
+                                    <option value="تم التسليم" ${order.status === 'تم التسليم' ? 'selected' : ''}>تم التسليم</option>
+                                    <option value="ملغي" ${order.status === 'ملغي' ? 'selected' : ''}>ملغي</option>
+                                </select>
+                            </td>
                         </tr>
                     `;
                 });
@@ -164,16 +157,13 @@
                 tableBody.innerHTML = `<tr><td colspan="8" class="loading-text" style="color: red;">حدث خطأ أثناء الاتصال بقاعدة البيانات.</td></tr>`;
             }
         }
-        // 1. دالة تصدير الجدول إلى ملف إكسل
+
         function exportToExcel() {
             let table = document.querySelector("table");
-            // تحويل الجدول مع دعم اللغة العربية
             let wb = XLSX.utils.table_to_book(table, { sheet: "طلبات أركان", raw: true });
-            // تحميل الملف
             XLSX.writeFile(wb, "Arkan_Orders_Report.xlsx");
         }
 
-        // 2. دالة ترتيب الجدول عند الضغط على اسم العمود (فرز أبجدي ورقمي)
         function sortTable(n) {
             var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
             table = document.querySelector("table");
@@ -213,7 +203,7 @@
                 }
             }
         }
-// دالة تحديث حالة الطلب في قاعدة البيانات
+
         async function updateOrderStatus(orderId, newStatus) {
             try {
                 const { error } = await supabaseClient
@@ -222,8 +212,6 @@
                     .eq('id', orderId);
 
                 if (error) throw error;
-                
-                // إعادة تحميل الطلبات لتحديث ألوان الجدول
                 fetchOrders(); 
                 
             } catch (err) {
@@ -231,7 +219,7 @@
                 alert("حدث خطأ أثناء تحديث حالة الطلب.");
             }
         }
-        // تشغيل الدالة فور تحميل الصفحة
+
         document.addEventListener('DOMContentLoaded', fetchOrders);
     </script>
 </body>
