@@ -3,47 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>سلة التسوق | شركة أركان</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #f8fafc; padding: 20px; }
-        .cart-page-container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 12px; }
-        .cart-item-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
-        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; width: 100%; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+        /* التنسيق مدمج هنا لضمان عدم اختفائه */
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; padding: 20px; margin: 0; }
+        .cart-page-container { max-width: 800px; margin: 40px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .cart-item-row { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #eee; }
+        .qty-controls button { background: #eee; border: none; width: 30px; height: 30px; border-radius: 4px; cursor: pointer; }
+        .btn-clear { background: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+        .btn-whatsapp { background: #25D366; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <main class="cart-page-container">
-    <h1>سلة المشتريات</h1>
+    <h1 style="text-align: center;">سلة المشتريات</h1>
     <div id="cart-content"></div>
-    <div id="cart-summary" style="display: none;">
-        <h3 id="final-total">الإجمالي: 0 ل.س</h3>
-        <button onclick="clearCart()" style="background:red; color:white; border:none; padding:10px; cursor:pointer;">تفريغ السلة</button>
-        <div style="margin-top:20px;">
-            <input type="text" id="cust-name" placeholder="الاسم">
+    
+    <div id="cart-summary" style="display: none; margin-top: 20px;">
+        <button class="btn-clear" onclick="clearCart()">تفريغ السلة بالكامل</button>
+        <div style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">الإجمالي: <span id="final-total">0</span> ل.س</div>
+        
+        <div class="checkout-form">
+            <input type="text" id="cust-name" placeholder="اسمك الكريم">
             <input type="tel" id="cust-phone" placeholder="رقم الموبايل">
             <input type="text" id="cust-city" placeholder="المدينة">
-            <input type="text" id="cust-address" placeholder="العنوان">
-            <button class="btn-whatsapp" onclick="submitOrder()">إرسال الطلب</button>
+            <input type="text" id="cust-address" placeholder="العنوان بالتفصيل">
+            <button class="btn-whatsapp" onclick="submitOrder()">تأكيد وإرسال الطلب</button>
         </div>
     </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
-
 <script>
-    // هذه الدوال خاصة بصفحة السلة فقط
+    // 1. إعداد Supabase (ضع مفاتيحك هنا)
+    const supabaseClient = window.supabase.createClient(
+        "https://aalpziidoobrqeppsvmi.supabase.co", 
+        "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"
+    );
+
+    // 2. التحميل الأولي
+    document.addEventListener('DOMContentLoaded', renderCartPage);
+
     function renderCartPage() {
         const contentDiv = document.getElementById('cart-content');
         const summaryDiv = document.getElementById('cart-summary');
         if (!contentDiv) return;
 
         let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
+        
         if (cart.length === 0) {
-            contentDiv.innerHTML = '<p>السلة فارغة</p>';
+            contentDiv.innerHTML = '<p style="text-align:center;">السلة فارغة حالياً.</p>';
             if(summaryDiv) summaryDiv.style.display = 'none';
             return;
         }
@@ -52,36 +66,58 @@
         let total = 0;
         cart.forEach(item => {
             total += (item.price * item.qty);
-            html += `<div class="cart-item-row"><div>${item.name} (${item.qty})</div><div>${item.price * item.qty}</div></div>`;
+            html += `
+                <div class="cart-item-row">
+                    <div>${item.name} (${item.qty})</div>
+                    <div>${(item.price * item.qty).toLocaleString()} ل.س</div>
+                </div>
+            `;
         });
-        
         contentDiv.innerHTML = html;
-        document.getElementById('final-total').textContent = "الإجمالي: " + total + " ل.س";
+        document.getElementById('final-total').textContent = total.toLocaleString();
         summaryDiv.style.display = 'block';
     }
 
     function clearCart() {
-        localStorage.removeItem('arkan_cart');
-        renderCartPage();
-        updateCartCount();
+        Swal.fire({
+            title: 'هل أنت متأكد؟',
+            text: "سيتم حذف كافة المنتجات من السلة",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، أفرغها'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem('arkan_cart');
+                renderCartPage();
+            }
+        });
     }
 
     async function submitOrder() {
         const cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
         const name = document.getElementById('cust-name').value;
-        // (قم بإكمال باقي الحقول هنا)
-        
+        const phone = document.getElementById('cust-phone').value;
+        const city = document.getElementById('cust-city').value;
+        const address = document.getElementById('cust-address').value;
+
+        if(!name || !phone || !city || !address) return Swal.fire('خطأ', 'يرجى تعبئة كافة الحقول', 'error');
+
+        // إرسال لقاعدة البيانات
         const { error } = await supabaseClient.from('orders').insert([{
-            customer_name: name,
-            order_details: cart,
+            customer_name: name, customer_phone: phone, city: city, 
+            detailed_address: address, order_details: cart, 
             total_amount: document.getElementById('final-total').textContent
         }]);
 
-        if (error) { Swal.fire('خطأ', error.message, 'error'); } 
-        else { Swal.fire('تم!', 'تم إرسال الطلب', 'success'); }
-    }
+        if (error) return Swal.fire('خطأ', 'تعذر تسجيل الطلب: ' + error.message, 'error');
 
-    document.addEventListener('DOMContentLoaded', renderCartPage);
+        // واتساب
+        const msg = `طلب جديد: ${name}, المدينة: ${city}, العنوان: ${address}`;
+        window.open(`https://api.whatsapp.com/send?phone=963956017232&text=${encodeURIComponent(msg)}`, '_blank');
+        
+        localStorage.removeItem('arkan_cart');
+        window.location.reload();
+    }
 </script>
 </body>
 </html>
