@@ -3,82 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم | شركة أركان</title>
+    <title>لوحة التحكم الشاملة | شركة أركان</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
             --primary-color: #1a365d;
-            --secondary-color: #f27a1a; /* تعديل للون البرتقالي الرسمي لشركة أركان */
+            --secondary-color: #f27a1a;
             --bg-color: #f4f7f6;
         }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; }
-        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .admin-header h1 { color: var(--primary-color); margin: 0; font-size: 24px; }
+        .admin-container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid #ddd; }
-        th { background-color: var(--primary-color); color: white; font-weight: 600; }
-        tr:hover { background-color: #f9f9f9; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        .admin-header h1 { color: var(--primary-color); margin: 0; font-size: 28px; }
+        .admin-header .home-link { color: var(--secondary-color); text-decoration: none; font-weight: bold; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .admin-header .home-link:hover { opacity: 0.8; }
+
+        /* تنسيق بطاقات لوحة التحكم */
+        .dashboard-grid {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px;
+        }
+        .dash-card {
+            color: white; 
+            padding: 30px 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            text-align: center; 
+            text-decoration: none;
+            display: block;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .dash-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        .dash-card i { font-size: 40px; margin-bottom: 15px; }
+        .dash-card h3 { margin: 0 0 10px 0; font-size: 20px; }
+        .dash-card p { margin: 0; font-size: 14px; opacity: 0.9; }
+
+        /* ألوان البطاقات */
+        .card-orders { background: linear-gradient(135deg, #1a365d, #2c5282); }
+        .card-orders i { color: #f27a1a; }
         
-        .order-details-list { margin: 0; padding-right: 15px; font-size: 13px; color: #555; }
-        .total-amount { font-weight: bold; color: var(--secondary-color); }
-        .status-badge { background: #ffeaa7; color: #d35400; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .card-products { background: linear-gradient(135deg, #f27a1a, #e66a00); }
+        .card-products i { color: #1a365d; }
         
-        .loading-text { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+        .card-reports { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        
+        .card-settings { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+
+        /* الموبايل */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .admin-container { padding: 20px 15px; }
+            .admin-header { flex-direction: column; text-align: center; gap: 15px; }
+            .dash-card { padding: 20px 15px; }
+            .dash-card i { font-size: 30px; }
+            .dash-card h3 { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
+
     <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
         <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%;">
-            <h2 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-lock"></i> الإدارة المحمية</h2>
-            <p style="color: #666; font-size: 14px;">الرجاء إدخال كلمة المرور للمتابعة</p>
-            <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; text-align: center; box-sizing: border-box; outline: none;">
+            <div style="font-size: 24px; font-weight: bold; color: var(--primary-color); margin-bottom: 20px; letter-spacing: 1px;">Arkan<span style="color: var(--secondary-color); font-size: 14px;">COMPANY</span></div>
+            <h2 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-lock"></i> الإدارة المركزية</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">الرجاء إدخال كلمة المرور للمتابعة</p>
+            <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #eee; border-radius: 8px; text-align: center; box-sizing: border-box; outline: none; font-size: 16px;">
             
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button onclick="checkAdminPassword()" style="flex: 1; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">دخول</button>
-                <button onclick="window.location.href='index.html'" style="flex: 1; padding: 12px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">رجوع للموقع</button>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="checkAdminPassword()" style="flex: 1; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">تسجيل الدخول</button>
             </div>
+            <a href="index.html" style="display: block; margin-top: 20px; color: #888; text-decoration: none; font-size: 14px;"><i class="fas fa-arrow-right"></i> العودة للمتجر</a>
         </div>
     </div>
 
     <div class="admin-container">
         <div class="admin-header">
-            <h1><i class="fas fa-tachometer-alt"></i> لوحة إدارة الطلبات</h1>
-            <div style="display: flex; gap: 15px;">
-                <button onclick="exportToExcel()" style="background: #27ae60; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
-                    <i class="fas fa-file-excel"></i> تحميل التقرير (Excel)
-                </button>
-                <a href="index.html" style="color: var(--secondary-color); text-decoration: none; font-weight: bold; padding: 10px;"><i class="fas fa-home"></i> العودة للمتجر</a>
-            </div>
+            <h1><i class="fas fa-tachometer-alt"></i> لوحة تحكم أركان</h1>
+            <a href="index.html" class="home-link"><i class="fas fa-home"></i> معاينة المتجر</a>
         </div>
 
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th onclick="sortTable(0)" style="cursor: pointer;">رقم الطلب <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTable(1)" style="cursor: pointer;">التاريخ <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTable(2)" style="cursor: pointer;">العميل <i class="fas fa-sort"></i></th>
-                        <th>التواصل</th>
-                        <th onclick="sortTable(4)" style="cursor: pointer;">العنوان <i class="fas fa-sort"></i></th>
-                        <th>تفاصيل المنتجات</th>
-                        <th onclick="sortTable(6)" style="cursor: pointer;">الإجمالي <i class="fas fa-sort"></i></th>
-                        <th onclick="sortTable(7)" style="cursor: pointer;">الحالة <i class="fas fa-sort"></i></th>
-                    </tr>
-                </thead>
-                <tbody id="orders-table-body">
-                    <tr><td colspan="8" class="loading-text">جاري جلب الطلبات...</td></tr>
-                </tbody>
-            </table>
+        <div class="dashboard-grid">
+            
+            <a href="admin-orders.html" class="dash-card card-orders">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>إدارة الطلبات</h3>
+                <p>متابعة وتحديث حالة الطلبات الجديدة</p>
+            </a>
+
+            <a href="admin-products.html" class="dash-card card-products">
+                <i class="fas fa-box-open"></i>
+                <h3>المنتجات والمخزون</h3>
+                <p>تعديل الأسعار والأسماء والأوصاف</p>
+            </a>
+
+            <a href="#" class="dash-card card-reports" onclick="alert('قسم التقارير المالية قيد التطوير وسيتم ربطه قريباً'); return false;">
+                <i class="fas fa-chart-line"></i>
+                <h3>التقارير المالية</h3>
+                <p>المبيعات، الأرباح، وحركة الصندوق</p>
+            </a>
+
+            <a href="#" class="dash-card card-settings" onclick="alert('قسم إعدادات الواجهة قيد التطوير وسيتم ربطه قريباً'); return false;">
+                <i class="fas fa-bullhorn"></i>
+                <h3>البنرات والوكالات</h3>
+                <p>تحديث الإعلانات وصور الواجهة الرئيسية</p>
+            </a>
+
         </div>
     </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
+        // نظام الحماية
         function checkAdminPassword() {
             const passInput = document.getElementById('admin-pass').value;
             if(passInput === 'arkan123') { 
@@ -87,140 +128,9 @@
                 alert('عذراً، كلمة المرور غير صحيحة!');
             }
         }
-
-        // تفعيل الضغط على زر Enter لتسجيل الدخول (تم تنظيف التكرار)
         document.getElementById('admin-pass').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkAdminPassword();
-            }
+            if (e.key === 'Enter') checkAdminPassword();
         });
-
-        const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
-        const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
-
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        async function fetchOrders() {
-            const tableBody = document.getElementById('orders-table-body');
-
-            try {
-                const { data: orders, error } = await supabaseClient
-                    .from('orders')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                if (orders.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="8" class="loading-text">لا توجد طلبات حالياً.</td></tr>';
-                    return;
-                }
-
-                let html = '';
-                orders.forEach(order => {
-                    const date = new Date(order.created_at).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
-                    
-                    let productsHtml = '<ul class="order-details-list">';
-                    if(order.order_details && Array.isArray(order.order_details)) {
-                        order.order_details.forEach(item => {
-                            productsHtml += `<li>${item.qty}x ${item.name}</li>`;
-                        });
-                    }
-                    productsHtml += '</ul>';
-
-                    html += `
-                        <tr>
-                            <td style="font-weight: bold;">#${order.id}</td>
-                            <td style="font-size: 13px;">${date}</td>
-                            <td style="font-weight: 600;">${order.customer_name}</td>
-                            <td style="direction: ltr; text-align: right;">${order.customer_phone}</td>
-                            <td style="font-size: 13px;">${order.city} - ${order.detailed_address}</td>
-                            <td>${productsHtml}</td>
-                            <td class="total-amount">${order.total_amount} ل.س</td>
-                            <td>
-                                <select onchange="updateOrderStatus(${order.id}, this.value)" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc; background: ${order.status === 'تم التسليم' ? '#d4edda' : order.status === 'ملغي' ? '#f8d7da' : '#fff3cd'}; font-weight: bold; cursor: pointer;">
-                                    <option value="قيد المراجعة" ${order.status === 'قيد المراجعة' ? 'selected' : ''}>قيد المراجعة</option>
-                                    <option value="قيد التجهيز" ${order.status === 'قيد التجهيز' ? 'selected' : ''}>قيد التجهيز</option>
-                                    <option value="تم الشحن" ${order.status === 'تم الشحن' ? 'selected' : ''}>تم الشحن</option>
-                                    <option value="تم التسليم" ${order.status === 'تم التسليم' ? 'selected' : ''}>تم التسليم</option>
-                                    <option value="ملغي" ${order.status === 'ملغي' ? 'selected' : ''}>ملغي</option>
-                                </select>
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                tableBody.innerHTML = html;
-
-            } catch (err) {
-                console.error("خطأ في جلب الطلبات:", err);
-                tableBody.innerHTML = `<tr><td colspan="8" class="loading-text" style="color: red;">حدث خطأ أثناء الاتصال بقاعدة البيانات.</td></tr>`;
-            }
-        }
-
-        function exportToExcel() {
-            let table = document.querySelector("table");
-            let wb = XLSX.utils.table_to_book(table, { sheet: "طلبات أركان", raw: true });
-            XLSX.writeFile(wb, "Arkan_Orders_Report.xlsx");
-        }
-
-        function sortTable(n) {
-            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-            table = document.querySelector("table");
-            switching = true;
-            dir = "asc"; 
-            while (switching) {
-                switching = false;
-                rows = table.rows;
-                for (i = 1; i < (rows.length - 1); i++) {
-                    shouldSwitch = false;
-                    x = rows[i].getElementsByTagName("TD")[n];
-                    y = rows[i + 1].getElementsByTagName("TD")[n];
-                    
-                    let valX = x.innerText.toLowerCase().replace(/[^0-9a-zأ-ي]/g, '');
-                    let valY = y.innerText.toLowerCase().replace(/[^0-9a-zأ-ي]/g, '');
-                    
-                    if (Number(valX) && Number(valY)) {
-                        valX = parseFloat(valX);
-                        valY = parseFloat(valY);
-                    }
-
-                    if (dir == "asc") {
-                        if (valX > valY) { shouldSwitch = true; break; }
-                    } else if (dir == "desc") {
-                        if (valX < valY) { shouldSwitch = true; break; }
-                    }
-                }
-                if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                    switchcount ++;      
-                } else {
-                    if (switchcount == 0 && dir == "asc") {
-                        dir = "desc";
-                        switching = true;
-                    }
-                }
-            }
-        }
-
-        async function updateOrderStatus(orderId, newStatus) {
-            try {
-                const { error } = await supabaseClient
-                    .from('orders')
-                    .update({ status: newStatus })
-                    .eq('id', orderId);
-
-                if (error) throw error;
-                fetchOrders(); 
-                
-            } catch (err) {
-                console.error("خطأ في تحديث الحالة:", err);
-                alert("حدث خطأ أثناء تحديث حالة الطلب.");
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', fetchOrders);
     </script>
 </body>
 </html>
