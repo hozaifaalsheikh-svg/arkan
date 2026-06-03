@@ -31,19 +31,6 @@
     </style>
 </head>
 <body>
-    <div id="admin-login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 350px; width: 90%;">
-            <h2 style="color: var(--primary-color); margin-top: 0;"><i class="fas fa-lock"></i> الإدارة المحمية</h2>
-            <p style="color: #666; font-size: 14px;">الرجاء إدخال كلمة المرور للمتابعة</p>
-            <input type="password" id="admin-pass" placeholder="كلمة المرور..." style="width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; text-align: center; box-sizing: border-box; outline: none;">
-            
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button onclick="checkAdminPassword()" style="flex: 1; padding: 12px; background: var(--secondary-color); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">دخول</button>
-                <button onclick="window.location.href='index.html'" style="flex: 1; padding: 12px; background: #e0e0e0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;">رجوع للموقع</button>
-            </div>
-        </div>
-    </div>
-
     <div class="admin-container">
         <div class="admin-header">
             <h1><i class="fas fa-tachometer-alt"></i> لوحة إدارة الطلبات</h1>
@@ -79,22 +66,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        function checkAdminPassword() {
-            const passInput = document.getElementById('admin-pass').value;
-            if(passInput === 'arkan123') { 
-                document.getElementById('admin-login-overlay').style.display = 'none';
-            } else {
-                alert('عذراً، كلمة المرور غير صحيحة!');
-            }
-        }
-
-        // تفعيل الضغط على زر Enter لتسجيل الدخول (تم تنظيف التكرار)
-        document.getElementById('admin-pass').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkAdminPassword();
-            }
-        });
-
         const SUPABASE_URL = "https://aalpziidoobrqeppsvmi.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_Dzt7QBcxmcidwgZE3rkQcA_yoKmje1w"; 
 
