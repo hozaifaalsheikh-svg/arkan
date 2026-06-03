@@ -34,6 +34,34 @@
             th, td { padding: 8px 10px; font-size: 12px; white-space: nowrap; }
             td img { width: 30px; height: 30px; }
         }
+        @media (max-width: 768px) {
+            /* إخفاء رأس الجدول العادي في الموبايل */
+            thead { display: none; }
+
+            /* تحويل كل صف إلى بطاقة */
+            tbody, tr, td { display: block; width: 100%; }
+            tr { 
+                background: #fff; 
+                margin-bottom: 15px; 
+                padding: 15px; 
+                border-radius: 10px; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                border-bottom: 3px solid var(--primary-color);
+            }
+            td { 
+                text-align: right; 
+                padding: 5px 0 !important; 
+                border: none !important;
+                display: flex;
+                justify-content: space-between;
+            }
+            /* إضافة اسم الخانة قبل القيمة */
+            td::before { 
+                content: attr(data-label); 
+                font-weight: bold; 
+                color: #555; 
+            }
+        }
     </style>
 </head>
 <body>
@@ -84,18 +112,17 @@
             if (error) { tableBody.innerHTML = '<tr><td colspan="7" style="color:red; text-align:center;">خطأ في الاتصال</td></tr>'; return; }
             allProducts = products;
             
-            let html = '';
-            products.forEach(p => {
-                html += `<tr>
-                    <td>${p.sku}</td>
-                    <td><img src="${p.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:4px;"></td>
-                    <td>${p.name}</td>
-                    <td>${p.brand || '-'}</td>
-                    <td>${Number(p.price).toLocaleString()}</td>
-                    <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.description || ''}</td>
-                    <td><button class="btn-edit" onclick="openEditModal('${p.sku}')">تعديل</button></td>
-                </tr>`;
-            });
+             products.forEach(p => {
+                    html += `<tr>
+                        <td data-label="الرمز:">${p.sku}</td>
+                        <td data-label="الصورة:"><img src="${p.image_url || 'https://via.placeholder.com/50'}" width="40" height="40" style="border-radius:4px;"></td>
+                        <td data-label="الاسم:">${p.name}</td>
+                        <td data-label="البراند:">${p.brand || '-'}</td>
+                        <td data-label="السعر:">${Number(p.price).toLocaleString()} ل.س</td>
+                        <td data-label="الوصف:">${p.description ? p.description.substring(0, 20) + '...' : '-'}</td>
+                        <td data-label="التحكم:"><button class="btn-edit" onclick="openEditModal('${p.sku}')">تعديل</button></td>
+                    </tr>`;
+                });
             tableBody.innerHTML = html;
         }
 
