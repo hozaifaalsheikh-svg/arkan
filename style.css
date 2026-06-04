@@ -80,8 +80,8 @@
 }
 
 .search-bar input {
-    width: 100%;
-    padding: 20px 40px 10px 15px !important; /* مساحة 40 بكسل على اليمين للأيقونة */
+    width: 60%;
+    padding: 1px 40px 10px 15px !important; /* مساحة 40 بكسل على اليمين للأيقونة */
     border: 2px solid var(--border-color);
     border-radius: 6px;
     outline: none;
