@@ -38,41 +38,116 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 2. عرض المنتجات في الصفحة الرئيسية
+// 1. الدالة الجديدة لعرض المنتجات مع الشارات والزوم
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
     if(!grid) return; 
     grid.innerHTML = '';
     
-    productsList.forEach(product => {
+    productsList.forEach((product, index) => {
         const card = document.createElement('div');
         card.className = 'product-card';
-        // النقر على الكرت ينقلك لصفحة التفاصيل
         card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
         
-        let descText = product.description || "منتج أركان فارما المميز.";
-        let readMoreHtml = '';
+        let descText = product.description || "منتج أركان فارما المميز، يوفر لك العناية المتكاملة.";
         
-        // إذا كان النص أطول من 60 حرف، سيقوم بإنشاء زر "اقرأ المزيد"
-        if (descText.length > 60) {
-            readMoreHtml = '<span class="read-more">اقرأ المزيد</span>';
-        }
+        // توزيع الشارات
+        let badgeHtml = '';
+        if (index === 0) badgeHtml = '<span class="product-badge badge-new">جديد 🌟</span>';
+        else if (index === 1) badgeHtml = '<span class="product-badge badge-sale">عرض خاص 🔥</span>';
+        else if (index % 4 === 0) badgeHtml = '<span class="product-badge badge-hot">الأكثر مبيعاً 💎</span>';
 
-        // قمنا بتعديل محتوى البطاقة (card.innerHTML) هنا
+        const starsHtml = '<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>';
+
         card.innerHTML = `
-            <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
+            <div class="image-container">
+                ${badgeHtml}
+                <img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}">
+                <button class="quick-view-btn" onclick="event.stopPropagation(); openQuickView('${product.sku}')"><i class="fas fa-eye"></i> نظرة سريعة</button>
+                <div class="mobile-quick-view" onclick="event.stopPropagation(); openQuickView('${product.sku}')"><i class="fas fa-expand-arrows-alt"></i></div>
+            </div>
             <div class="product-info">
-                <span class="product-brand">${product.brand}</span>
+                <span class="product-brand">${product.brand || 'أركان'}</span>
                 <h4 class="product-title">${product.name}</h4>
+                <div class="product-rating">${starsHtml} <span>(تقييم)</span></div>
                 <div class="desc-wrapper">
                     <p class="product-description">${descText}</p>
-                    ${readMoreHtml}
                 </div>
-
-                <div class="price-row">${product.price} ل.س</div>
+                <div class="price-row">${product.price.toLocaleString()} ل.س</div>
                 <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); askToConfirmAdd('${product.sku}', '${product.name}', ${product.price})">إضافة إلى السلة</button>
             </div>
         `;
         grid.appendChild(card);
+    });
+}
+
+// 2. دوال نافذة النظرة السريعة
+function openQuickView(sku) {
+    const product = localProducts.find(p => String(p.sku) === String(sku));
+    if(!product) return;
+    
+    document.getElementById('qv-img').src = product.imageUrl || 'https://via.placeholder.com/200';
+    document.getElementById('qv-brand').textContent = product.brand || 'أركان';
+    document.getElementById('qv-name').textContent = product.name;
+    document.getElementById('qv-desc').textContent = product.description || "منتج أركان فارما المميز، يوفر لك العناية المتكاملة التي تبحث عنها بأفضل جودة.";
+    document.getElementById('qv-price').textContent = product.price.toLocaleString() + ' ل.س';
+    
+    const btn = document.getElementById('qv-add-btn');
+    btn.onclick = () => { askToConfirmAdd(product.sku, product.name, product.price); closeQuickView(); };
+    
+    document.getElementById('quick-view-modal').classList.add('active');
+}
+
+function closeQuickView() {
+    document.getElementById('quick-view-modal').classList.remove('active');
+}
+
+// 3. كود البحث الحي 
+const liveSearchInput = document.getElementById('search-input');
+const searchDropdown = document.getElementById('search-dropdown');
+
+if(liveSearchInput && searchDropdown) {
+    liveSearchInput.addEventListener('input', function(e) {
+        const query = e.target.value.trim().toLowerCase();
+        
+        if (query.length < 2) {
+            searchDropdown.style.display = 'none';
+            return;
+        }
+
+        const results = localProducts.filter(p => p.name.toLowerCase().includes(query) || (p.brand && p.brand.toLowerCase().includes(query)));
+        
+        if (results.length === 0) {
+            searchDropdown.innerHTML = '<div style="padding: 15px; text-align: center; color: #777; font-size: 13px;">لا يوجد نتائج مطابقة</div>';
+            searchDropdown.style.display = 'block';
+            return;
+        }
+
+        let html = '';
+        results.slice(0, 4).forEach(p => {
+            html += `
+                <div class="search-item" onclick="openQuickView('${p.sku}'); document.getElementById('search-dropdown').style.display='none';">
+                    <img src="${p.imageUrl || 'https://via.placeholder.com/200'}" alt="${p.name}">
+                    <div class="search-item-info">
+                        <span class="search-item-name">${p.name}</span>
+                        <span class="search-item-price">${p.price.toLocaleString()} ل.س</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        if (results.length > 4) {
+            html += `<div style="text-align:center; padding:12px; background:#fff8f3; color:var(--primary-color); cursor:pointer; font-weight:bold; font-size:13px;" onclick="renderProducts(localProducts.filter(p => p.name.toLowerCase().includes('${query}'))); document.getElementById('search-dropdown').style.display='none';">إظهار جميع النتائج</div>`;
+        }
+
+        searchDropdown.innerHTML = html;
+        searchDropdown.style.display = 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+        if(!liveSearchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.style.display = 'none';
+        }
     });
 }
 

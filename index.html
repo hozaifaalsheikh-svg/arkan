@@ -21,6 +21,11 @@
                 </div>
 
                 <div class="search-bar">
+            <input type="text" id="search-input" placeholder="ابحث عن مكملات غذائية.. كريمات تبييض.. سيرومات">
+            <button><i class="fas fa-search"></i></button>
+             <!-- هذه هي الحاوية الجديدة للبحث الحي -->
+            <div id="search-dropdown" class="search-dropdown"></div>
+              </div>
                 <input type="text" id="search-input" placeholder="ابحث عن مكملات غذائية.. كريمات تبييض.. سيرومات">                    <button><i class="fas fa-search"></i></button>
                 </div>
                 
@@ -86,6 +91,29 @@
         <span class="floating-cart-count" id="cart-counter-badge">0</span>
     </a>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- نافذة النظرة السريعة -->
+<div id="quick-view-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 700px; width: 95%; position: relative; padding: 25px;">
+        <button onclick="closeQuickView()" style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 20px; color: #888; cursor: pointer; z-index: 10;"><i class="fas fa-times"></i></button>
+        
+        <div class="qv-content">
+            <div class="qv-img-container">
+                <img id="qv-img" src="" alt="Product">
+            </div>
+            <div class="qv-details">
+                <span id="qv-brand" class="product-brand" style="align-self: flex-start; margin-top:0;"></span>
+                <h3 id="qv-name" style="color: var(--secondary-color); font-size: 22px; margin: 10px 0;"></h3>
+                <div class="product-rating" style="justify-content: flex-start; margin-bottom: 15px;">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    <span>(مراجعات ممتازة)</span>
+                </div>
+                <p id="qv-desc" style="color: #666; font-size: 14px; line-height: 1.7; margin-bottom: 25px;"></p>
+                <div id="qv-price" class="price-row" style="font-size: 24px; margin-bottom: 20px;"></div>
+                <button id="qv-add-btn" class="btn-add-to-cart" style="font-size: 15px; padding: 12px; border-radius: 8px;">إضافة إلى السلة <i class="fas fa-shopping-cart" style="margin-right: 8px;"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
