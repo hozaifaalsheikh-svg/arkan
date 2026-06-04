@@ -19,39 +19,54 @@
         }
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         
-        /* Header */
-        .cart-header { background: white; padding: 15px 5%; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        /* Header - تم تعديل الهيكل لضمان المحاذاة مع محتوى الصفحة */
+        .cart-header { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: 100%; }
+        .header-inner { max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 24px; font-weight: 700; color: var(--secondary-color); text-decoration: none; }
         .logo span { color: var(--primary-color); font-size: 14px; margin-right: 5px; }
         .back-btn { color: var(--secondary-color); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: color 0.3s; }
         .back-btn:hover { color: var(--primary-color); }
 
         /* Cart Layout */
-        .cart-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1.8fr 1fr; gap: 30px; align-items: start; }
+        .cart-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1.8fr 1fr; gap: 30px; align-items: start; transition: all 0.3s ease; }
         @media (max-width: 900px) { .cart-container { grid-template-columns: 1fr; } }
+
+        /* تعديل الشاشة عندما تكون السلة فارغة (توسيط وتكبير) */
+        .cart-container.is-empty { display: block; max-width: 900px; margin: 60px auto; }
+        .cart-container.is-empty .cart-items-section { padding: 40px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
 
         /* Items Section */
         .cart-items-section { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
-        .cart-title { font-size: 20px; color: var(--secondary-color); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--bg-color); display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
+        .cart-title { font-size: 20px; color: var(--secondary-color); margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--bg-color); display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
         
         .empty-cart { text-align: center; padding: 50px 20px; color: #777; }
         .empty-cart i { font-size: 60px; color: #eee; margin-bottom: 15px; }
         
-        /* Individual Item */
-        .cart-item { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid #f0f0f0; gap: 15px; }
-        .cart-item:last-child { border-bottom: none; padding-bottom: 0; }
+        /* Individual Item - تصميم البطاقات المستقلة الجديد */
+        .cart-item { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 20px; margin-bottom: 15px; gap: 15px; 
+            background: #fff; border: 1px solid #eaeaea; border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        .cart-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-color: var(--primary-color);
+        }
         
         .item-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
         .item-name { font-weight: 700; font-size: 15px; color: var(--secondary-color); }
         .item-price { color: #888; font-weight: 600; font-size: 13px; }
         
-        .qty-controls { display: flex; align-items: center; gap: 12px; background: #fcfcfc; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .qty-controls { display: flex; align-items: center; gap: 12px; background: #f9f9f9; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); }
         .qty-btn { background: none; border: none; font-size: 14px; cursor: pointer; color: var(--secondary-color); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: 0.2s; }
-        .qty-btn:hover { background: var(--border-color); }
+        .qty-btn:hover { background: #e0e0e0; }
         .qty-value { font-weight: 700; font-size: 15px; min-width: 20px; text-align: center; }
         
         .item-total { font-weight: 700; font-size: 16px; color: var(--primary-color); min-width: 100px; text-align: left; }
-        .remove-btn { color: #dc3545; background: #fff5f5; border: 1px solid #ffebeb; cursor: pointer; font-size: 14px; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .remove-btn { color: #dc3545; background: #fff5f5; border: 1px solid #ffebeb; cursor: pointer; font-size: 14px; width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .remove-btn:hover { background: #dc3545; color: white; }
 
         /* Checkout Section */
@@ -64,10 +79,11 @@
         .checkout-form { margin-top: 25px; display: flex; flex-direction: column; gap: 12px; }
         .input-group { position: relative; }
         .input-group i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #b0b0b0; }
-        
-        /* التعديل الجذري هنا لإصلاح اتجاه النص وتداخله مع الأيقونة */
         .checkout-form input { width: 100%; padding: 14px 40px 14px 14px; border: 1px solid #e0e0e0; border-radius: 8px; outline: none; transition: 0.3s; font-family: 'Cairo', sans-serif; font-size: 13px; box-sizing: border-box; background: #fafafa; }
         
+        /* حل مشكلة رقم الهاتف (المحاذاة لليمين) */
+        .checkout-form input[type="tel"] { text-align: right; direction: rtl; }
+
         .checkout-form input:focus { border-color: var(--primary-color); background: white; box-shadow: 0 0 0 3px rgba(242, 122, 26, 0.1); }
         .checkout-form input:focus + i { color: var(--primary-color); }
         
@@ -79,7 +95,7 @@
         /* Mobile Adjustments */
         @media (max-width: 600px) {
             .cart-item { flex-wrap: wrap; position: relative; padding-right: 40px; }
-            .remove-btn { position: absolute; right: 0; top: 18px; }
+            .remove-btn { position: absolute; right: 10px; top: 20px; }
             .item-info { flex: 100%; margin-bottom: 10px; }
             .item-total { flex: 1; text-align: left; }
         }
@@ -88,11 +104,13 @@
 <body>
 
 <header class="cart-header">
-    <a href="index.html" class="logo">Arkan<span>COMPANY</span></a>
-    <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i> متابعة التسوق</a>
+    <div class="header-inner">
+        <a href="index.html" class="logo">Arkan<span>COMPANY</span></a>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-right"></i> متابعة التسوق</a>
+    </div>
 </header>
 
-<div class="cart-container">
+<div class="cart-container" id="main-cart-container">
     <div class="cart-items-section">
         <div class="cart-title">
             <span>محتويات السلة</span>
@@ -157,18 +175,25 @@
         const contentDiv = document.getElementById('cart-content');
         const checkoutSection = document.getElementById('checkout-section');
         const clearBtn = document.getElementById('btn-clear-all');
+        const mainContainer = document.getElementById('main-cart-container');
         
         if (cart.length === 0) {
+            // تفعيل حالة السلة الفارغة لإصلاح العرض (التوسيط والتكبير)
+            mainContainer.classList.add('is-empty');
+            
             contentDiv.innerHTML = `
                 <div class="empty-cart">
                     <i class="fas fa-shopping-basket"></i>
                     <h3>سلتك فارغة حالياً</h3>
-                    <p>قم بزيارة المتجر لإضافة منتجاتك المفضلة.</p>
+                    <p style="margin-top: 10px;">قم بزيارة المتجر لإضافة منتجاتك المفضلة.</p>
                 </div>`;
             checkoutSection.style.display = 'none';
             clearBtn.style.display = 'none';
             return;
         }
+
+        // إزالة حالة السلة الفارغة إذا كان هناك منتجات
+        mainContainer.classList.remove('is-empty');
 
         let html = '';
         let total = 0;
@@ -269,7 +294,6 @@
         btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> جاري إرسال الطلب...';
 
         const displayTotal = document.getElementById('final-total').textContent;
-        // التعديل هنا: نقوم بحساب وإرسال الرقم الصافي لقاعدة البيانات لتجنب تعارض نوع البيانات
         const numericTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
         const { error } = await supabaseClient.from('orders').insert([{
@@ -286,7 +310,6 @@
             btn.style.opacity = '1';
             btn.innerHTML = 'تأكيد وإرسال الطلب <i class="fab fa-whatsapp" style="font-size: 20px; color:#25D366;"></i>';
             
-            // التعديل هنا: طباعة الخطأ الفعلي لمساعدتك في حال كانت هناك مشكلة بصلاحيات قاعدة البيانات
             return Swal.fire({
                 icon: 'error',
                 title: 'لم يتم التسجيل في قاعدة البيانات',
