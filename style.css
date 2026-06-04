@@ -46,7 +46,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 15px 20px;
+        padding: 8px 20px;
         width: 100%; 
         gap: 15px; /* مسافة آمنة بين العناصر */
     }
@@ -78,7 +78,7 @@
 
     .search-bar input {
         width: 100%;
-        padding: 10px 15px 10px 45px !important; /* 45px لليسار لحجز مكان الأيقونة */
+        padding: 8px 15px 8px 45px !important; /* 45px لليسار لحجز مكان الأيقونة */
         border: 2px solid var(--border-color);
         border-radius: 6px;
         outline: none;
@@ -129,7 +129,7 @@
         font-size: 14px !important;
         transition: all 0.3s ease !important;
         background: white !important;
-        height: 42px !important; /* الارتفاع الموحد للكمبيوتر */
+        height: 38px !important; /* الارتفاع الموحد للكمبيوتر */
         white-space: nowrap !important; /* يمنع نزول النص لسطرين */
         text-decoration: none !important;
         box-sizing: border-box;
@@ -203,7 +203,7 @@
         overflow-x: auto !important;  
         -webkit-overflow-scrolling: touch !important; 
         white-space: nowrap !important; 
-        padding: 10px 20px !important;
+        padding: 5px 20px !important;
         width: 100% !important;
         background: white;
         border-bottom: 1px solid var(--border-color);
