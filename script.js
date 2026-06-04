@@ -267,27 +267,28 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 });
 
 // دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
+// دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
 function updateAuthUI(session) {
+    // جلب حاوية الأزرار
     const headerLinks = document.querySelector('.header-links');
     if (!headerLinks) return;
 
     if (session) {
-        // حالة المستخدم مسجل الدخول
-        const userName = session.user.user_metadata.full_name || "حسابي";
+        // إذا كان المستخدم مسجلاً للدخول
+        const userName = session.user.user_metadata?.full_name || "حسابي";
         
-        // رسم الزر بتنسيق (header-action-btn) وبدون تكرار زر حول
+        // رسم زر الحساب بتنسيق احترافي وبدون تكرار لزر (حول)
         headerLinks.innerHTML = `
-            <a href="#" onclick="askToLogout(event)" class="header-action-btn" style="text-decoration: none; cursor: pointer;" title="اضغط لتسجيل الخروج">
-                <i class="fas fa-user" style="margin-left: 5px;"></i> 
+            <a href="#" onclick="askToLogout(event)" class="header-action-btn" style="text-decoration: none; cursor: pointer;" title="تسجيل الخروج">
+                <i class="fas fa-user"></i> 
                 <span class="hide-on-mobile">${userName}</span>
-                <span class="mobile-only-text">خروج</span>
             </a>
         `;
     } else {
-        // حالة المستخدم غير مسجل
+        // إذا كان المستخدم غير مسجل
         headerLinks.innerHTML = `
             <a href="login.html" class="header-action-btn" style="text-decoration: none;">
-                <i class="fas fa-user-plus" style="margin-left: 5px;"></i> 
+                <i class="fas fa-user-plus"></i> 
                 <span class="hide-on-mobile">تسجيل الدخول</span>
                 <span class="mobile-only-text">حسابي</span>
             </a>
