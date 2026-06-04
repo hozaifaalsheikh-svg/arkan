@@ -267,27 +267,28 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 });
 
 // دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
+// دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
 function updateAuthUI(session) {
-    const headerLinks = document.querySelector('.header-links');
-    if (!headerLinks) return;
+    const authContainer = document.getElementById('auth-container') || document.querySelector('.header-links');
+    if (!authContainer) return;
 
     if (session) {
-        // حالة المستخدم مسجل الدخول
-        const userName = session.user.user_metadata.full_name || "حسابي";
-        
-        // رسم الزر بتنسيق (header-action-btn) وبدون تكرار زر حول
-        headerLinks.innerHTML = `
-            <a href="#" onclick="askToLogout(event)" class="header-action-btn" style="text-decoration: none; cursor: pointer;" title="اضغط لتسجيل الخروج">
-                <i class="fas fa-user" style="margin-left: 5px;"></i> 
-                <span class="hide-on-mobile">${userName}</span>
-                <span class="mobile-only-text">خروج</span>
+        // جلب الاسم الكامل، ثم أخذ "الاسم الأول" فقط لجمالية التصميم في الموبايل
+        let fullName = session.user.user_metadata?.full_name || "حسابي";
+        let firstName = fullName.split(' ')[0]; 
+
+        authContainer.innerHTML = `
+            <a href="#" onclick="askToLogout(event)" class="header-action-btn" style="text-decoration: none;" title="تسجيل الخروج">
+                <i class="fas fa-user" style="color: var(--primary-color);"></i> 
+                <span style="margin: 0 6px; font-weight: bold; font-size: 14px;">${firstName}</span>
+                <i class="fas fa-sign-out-alt" style="color: #dc3545; font-size: 15px;" title="خروج"></i>
             </a>
         `;
     } else {
         // حالة المستخدم غير مسجل
-        headerLinks.innerHTML = `
+        authContainer.innerHTML = `
             <a href="login.html" class="header-action-btn" style="text-decoration: none;">
-                <i class="fas fa-user-plus" style="margin-left: 5px;"></i> 
+                <i class="fas fa-user-plus"></i> 
                 <span class="hide-on-mobile">تسجيل الدخول</span>
                 <span class="mobile-only-text">حسابي</span>
             </a>
