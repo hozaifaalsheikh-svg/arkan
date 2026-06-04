@@ -67,44 +67,49 @@
     /* =========================================
        3. شريط البحث (Search Bar) - تم الإصلاح
     ========================================= */
-    .search-bar {
-        flex: 1;
-        width: 100%; 
-        margin: 0 20px;
-        display: flex;
-        position: relative; /* ضروري جداً لتثبيت الأيقونة داخله */
-        align-items: center;
-    }
+/* =========================================
+   شريط البحث (Search Bar) الأصلي
+========================================= */
+.search-bar {
+    flex: 1;
+    width: 100%; 
+    margin: 0 20px;
+    display: flex;
+    position: relative; 
+    align-items: center;
+}
 
-    .search-bar input {
-        width: 100%;
-        padding: 8px 15px 8px 45px !important; /* 45px لليسار لحجز مكان الأيقونة */
-        border: 2px solid var(--border-color);
-        border-radius: 6px;
-        outline: none;
-        font-size: 14px;
-        transition: border 0.2s;
-        box-sizing: border-box; /* يمنع الحقل من الخروج عن الإطار */
-    }
+.search-bar input {
+    width: 100%;
+    padding: 10px 15px 10px 45px !important; 
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+    transition: border 0.2s;
+    box-sizing: border-box; 
+}
 
-    .search-bar input:focus { border-color: var(--primary-color); }
+.search-bar input:focus { 
+    border-color: var(--primary-color); 
+}
 
-    .search-bar button {
-        position: absolute;
-        left: 12px; /* تثبيت الأيقونة على بعد 12 بكسل من يسار الحقل */
-        top: 50%;
-        transform: translateY(-50%); /* توسيط عامودي دقيق */
-        background: transparent;
-        border: none;
-        color: var(--primary-color);
-        padding: 0;
-        cursor: pointer;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2;
-    }
+.search-bar button {
+    position: absolute;
+    left: 12px; 
+    top: 50%;
+    transform: translateY(-50%); 
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    padding: 0;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
 
     /* =========================================
        4. أزرار الهيدر (حسابي وحول) - تم الإصلاح وتوحيد الحجم
@@ -153,12 +158,14 @@
     /* =========================================
        5. التجاوب للموبايل (Mobile Responsive)
     ========================================= */
-    @media (max-width: 768px) {
-        .header-container {
-            flex-wrap: wrap !important; /* يسمح بنزول البحث لسطر جديد */
-            padding: 10px 15px !important;
-            gap: 10px !important;
-        }
+ /* التجاوب مع شاشات الموبايل */
+@media (max-width: 768px) {
+    .search-bar {
+        order: 3 !important;
+        flex: 0 0 100% !important; 
+        margin: 5px 0 0 0 !important; 
+    }
+}
         
         .hide-on-mobile { display: none !important; }
         .desktop-only-text { display: none !important; }
