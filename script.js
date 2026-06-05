@@ -6,38 +6,81 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let localProducts = [];
 let cart = JSON.parse(localStorage.getItem('arkan_cart')) || [];
 let productToConfirm = null; 
+let currentSypRate = 14000; // سعر صرف افتراضي للطوارئ
 
-// 1. جلب البيانات من Supabase
+// =========================================
+// 1. جلب سعر الصرف من قاعدة البيانات
+// =========================================
+async function fetchExchangeRate() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('app_settings')
+            .select('current_syp_rate')
+            .eq('id', 1)
+            .single();
+
+        if (error) throw error;
+        
+        if (data && data.current_syp_rate) {
+            currentSypRate = data.current_syp_rate;
+            console.log("تم جلب سعر الصرف بنجاح:", currentSypRate);
+        }
+    } catch (err) {
+        console.error("فشل جلب سعر الصرف، سيتم استخدام السعر الافتراضي:", err);
+    }
+}
+
+// =========================================
+// 2. جلب المنتجات من Supabase وحساب السعر
+// =========================================
 async function loadProductsFromSupabase() {
     try {
         const { data, error } = await supabaseClient.from('inventory').select('*');
         if (error) { console.error("خطأ:", error); return; }
 
-        localProducts = data.map(product => ({
-            sku: product.sku,
-            name: product.name,
-            description: product.description || "منتج أركان فارما المميز.",
-            price: product.price || 0,
-            category: product.category || "عام",
-            brand: product.brand || "Bioxcin", // جلب البراند من قاعدة البيانات
-            imageUrl: product.image_url 
-        }));
+        localProducts = data.map(product => {
+            const priceInUSD = product.price || 0;
+            const priceInSYP = Math.round(priceInUSD * currentSypRate); // ضرب السعر بالدولار بسعر الصرف المحدث
+
+            return {
+                sku: product.sku,
+                name: product.name,
+                description: product.description || "منتج أركان فارما المميز.",
+                priceUSD: priceInUSD, // نحتفظ بسعر الدولار كمرجع إذا لزم الأمر
+                priceSYP: priceInSYP, // السعر النهائي بالليرة السورية
+                category: product.category || "عام",
+                brand: product.brand || "Bioxcin", 
+                imageUrl: product.image_url 
+            };
+        });
         renderProducts(localProducts); 
     } catch (err) { console.error("فشل الاتصال:", err); }
 }
 
-// تشغيل الأكواد عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', () => {
-    loadProductsFromSupabase();
-    updateCartCount();
+// =========================================
+// تشغيل الأكواد عند تحميل الصفحة (مدمجة ومنظمة)
+// =========================================
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. جلب سعر الصرف أولاً
+    await fetchExchangeRate();
+    
+    // 2. جلب المنتجات وعرضها (إذا كنا في الصفحة التي تحتوي على المنتجات)
+    const grid = document.getElementById('products-grid');
+    if (grid) {
+        await loadProductsFromSupabase();
+    }
 
+    // 3. تحديث السلة والأزرار
+    updateCartCount();
     const confirmBtn = document.getElementById('modal-btn-confirm');
     if(confirmBtn) {
         confirmBtn.addEventListener('click', confirmAddToCart);
     }
 });
 
-// 2. عرض المنتجات في الصفحة الرئيسية
+// =========================================
+// 3. عرض المنتجات في الصفحة الرئيسية
+// =========================================
 function renderProducts(productsList) {
     const grid = document.getElementById('products-grid');
     if(!grid) return; 
@@ -46,18 +89,18 @@ function renderProducts(productsList) {
     productsList.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
-        // النقر على الكرت ينقلك لصفحة التفاصيل
         card.onclick = () => { window.location.href = `product-details.html?id=${product.sku}`; };
         
         let descText = product.description || "منتج أركان فارما المميز.";
         let readMoreHtml = '';
         
-        // إذا كان النص أطول من 60 حرف، سيقوم بإنشاء زر "اقرأ المزيد"
         if (descText.length > 60) {
             readMoreHtml = '<span class="read-more">اقرأ المزيد</span>';
         }
 
-        // قمنا بتعديل محتوى البطاقة (card.innerHTML) هنا
+        // تنسيق السعر ليحتوي على فواصل (مثال: 150,000)
+        const formattedPriceSYP = product.priceSYP.toLocaleString('ar-SY');
+
         card.innerHTML = `
             <div class="image-container"><img src="${product.imageUrl || 'https://via.placeholder.com/200'}" alt="${product.name}"></div>
             <div class="product-info">
@@ -68,8 +111,8 @@ function renderProducts(productsList) {
                     ${readMoreHtml}
                 </div>
 
-                <div class="price-row">${product.price} ل.س</div>
-                <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); askToConfirmAdd('${product.sku}', '${product.name}', ${product.price})">إضافة إلى السلة</button>
+                <div class="price-row">${formattedPriceSYP} ل.س</div>
+                <button type="button" class="btn-add-to-cart" onclick="event.stopPropagation(); askToConfirmAdd('${product.sku}', '${product.name}', ${product.priceSYP})">إضافة إلى السلة</button>
             </div>
         `;
         grid.appendChild(card);
@@ -77,9 +120,8 @@ function renderProducts(productsList) {
 }
 
 // =========================================
-// 3. دوال نافذة التأكيد والإشعارات
+// 4. دوال نافذة التأكيد والإشعارات
 // =========================================
-
 function askToConfirmAdd(sku, name, price) {
     productToConfirm = { sku, name, price };
     const nameElement = document.getElementById('modal-target-product');
@@ -133,13 +175,14 @@ function showToast(message) {
 }
 
 // =========================================
-// 4. دوال السلة والفلترة والبحث 
+// 5. دوال السلة والفلترة والبحث 
 // =========================================
-
 function updateCartCount() {
     const cartCount = document.getElementById('cart-count');
     if(cartCount) cartCount.textContent = cart.reduce((acc, item) => acc + item.qty, 0);
-    document.getElementById('cart-counter-badge').textContent = cart.length; // أو مجموع الكميات حسب برمجتك
+    
+    const cartBadge = document.getElementById('cart-counter-badge');
+    if (cartBadge) cartBadge.textContent = cart.length; 
 }
 
 function filterCategory(catName, btnElement) {
@@ -155,10 +198,8 @@ document.getElementById('search-input')?.addEventListener('input', function(e) {
 });
 
 // ========================================================
-// 5. نظام المصادقة (إنشاء حساب + تسجيل دخول) - رسائل أنيقة
+// 6. نظام المصادقة (إنشاء حساب + تسجيل دخول)
 // ========================================================
-
-// دالة إنشاء حساب جديد
 async function registerUser(event) {
     event.preventDefault(); 
     
@@ -173,7 +214,7 @@ async function registerUser(event) {
             title: 'انتبه من فضلك',
             text: 'كلمات المرور غير متطابقة 🧐',
             confirmButtonText: 'حسناً',
-            confirmButtonColor: '#f39c12' // لون برتقالي
+            confirmButtonColor: '#f39c12' 
         });
         return;
     }
@@ -181,9 +222,7 @@ async function registerUser(event) {
     const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
-        options: {
-            data: { full_name: name }
-        }
+        options: { data: { full_name: name } }
     });
 
     if (error) {
@@ -192,7 +231,7 @@ async function registerUser(event) {
             title: 'حدث خطأ',
             text: error.message,
             confirmButtonText: 'حسناً',
-            confirmButtonColor: '#e74c3c' // لون أحمر
+            confirmButtonColor: '#e74c3c' 
         });
     } else {
         Swal.fire({
@@ -200,18 +239,15 @@ async function registerUser(event) {
             title: 'أهلاً بك في عائلة أركان!',
             text: 'تم إنشاء حسابك بنجاح 🎉',
             confirmButtonText: 'الذهاب لتسجيل الدخول',
-            confirmButtonColor: '#2ecc71' // لون أخضر
+            confirmButtonColor: '#2ecc71' 
         }).then(() => {
-            // يتم التحويل فقط بعد أن يضغط المستخدم على زر "الذهاب لتسجيل الدخول"
             window.location.href = 'login.html'; 
         });
     }
 }
 
-// كود تسجيل الدخول
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
-    // 1. استرجاع الإيميل المحفوظ تلقائياً عند فتح صفحة تسجيل الدخول
     const savedEmail = localStorage.getItem("arkan_remembered_email");
     if (savedEmail) {
         document.getElementById('login-email').value = savedEmail;
@@ -223,7 +259,7 @@ if (loginForm) {
         
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
-        const rememberCheckbox = document.getElementById('remember-me'); // جلب حالة زر تذكرني
+        const rememberCheckbox = document.getElementById('remember-me'); 
 
         const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
@@ -239,11 +275,10 @@ if (loginForm) {
                 confirmButtonColor: '#e74c3c'
             });
         } else {
-            // 2. إذا نجح تسجيل الدخول، نتحقق من زر "تذكرني"
             if (rememberCheckbox && rememberCheckbox.checked) {
-                localStorage.setItem("arkan_remembered_email", email); // حفظ الإيميل
+                localStorage.setItem("arkan_remembered_email", email); 
             } else {
-                localStorage.removeItem("arkan_remembered_email"); // مسحه إذا ألغى التحديد
+                localStorage.removeItem("arkan_remembered_email"); 
             }
 
             Swal.fire({
@@ -258,22 +293,19 @@ if (loginForm) {
         }
     });
 }
-// 6. إدارة جلسات المستخدمين (Session Management)
-// =========================================
 
-// مراقبة حالة تسجيل الدخول تلقائياً
+// =========================================
+// 7. إدارة جلسات المستخدمين (Session Management)
+// =========================================
 supabaseClient.auth.onAuthStateChange((event, session) => {
     updateAuthUI(session);
 });
 
-// دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
-// دالة لتحديث شكل الهيدر بناءً على حالة المستخدم
 function updateAuthUI(session) {
     const authContainer = document.getElementById('auth-container') || document.querySelector('.header-links');
     if (!authContainer) return;
 
     if (session) {
-        // جلب الاسم الكامل، ثم أخذ "الاسم الأول" فقط لجمالية التصميم في الموبايل
         let fullName = session.user.user_metadata?.full_name || "حسابي";
         let firstName = fullName.split(' ')[0]; 
 
@@ -285,7 +317,6 @@ function updateAuthUI(session) {
             </a>
         `;
     } else {
-        // حالة المستخدم غير مسجل
         authContainer.innerHTML = `
             <a href="login.html" class="header-action-btn" style="text-decoration: none;">
                 <i class="fas fa-user-plus"></i> 
@@ -295,22 +326,20 @@ function updateAuthUI(session) {
         `;
     }
 }
-// دالة تأكيد تسجيل الخروج
 
 function askToLogout(event) {
     event.preventDefault();
     
     Swal.fire({
         title: 'تسجيل الخروج؟',
-        text: 'هل تود مغادرة الحساب؟', // نص مختصر ليناسب النافذة الصغيرة
+        text: 'هل تود مغادرة الحساب؟', 
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#e74c3c',
         cancelButtonColor: '#1a365d',
-        confirmButtonText: 'نعم', // اختصار الزر ليناسب المساحة
+        confirmButtonText: 'نعم', 
         cancelButtonText: 'إلغاء',
         reverseButtons: true,
-        // هذه الكلاسات هي التي تربط الكود بالتنسيق الجديد في الـ CSS
         customClass: {
             popup: 'my-swal-popup',
             title: 'my-swal-title'
@@ -321,7 +350,7 @@ function askToLogout(event) {
         }
     });
 }
-// دالة تسجيل الخروج
+
 async function logoutUser(event) {
     event.preventDefault();
     const { error } = await supabaseClient.auth.signOut();
@@ -335,39 +364,27 @@ async function logoutUser(event) {
                 timer: 1500,
                 showConfirmButton: false
             }).then(() => {
-                window.location.reload(); // إعادة تحميل الصفحة لتطبيق التغييرات
+                window.location.reload(); 
             });
         } else {
             window.location.reload();
         }
     }
 }
+
 // دالة تبديل اللوحات (Panels)
 function showPanel(panelId, element) {
-    // إخفاء جميع اللوحات
     document.querySelectorAll('.content-panel').forEach(p => p.style.display = 'none');
-    // إظهار اللوحة المطلوبة
     const target = document.getElementById(panelId);
     if (target) target.style.display = 'block';
 
-    // تحديث تفعيل الزر في القائمة
     document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
     if (element) element.classList.add('active');
 }
 
-// دالة حفظ البروفايل (مبدئية)
 function saveProfile() {
     const name = document.getElementById('full-name').value;
     const phone = document.getElementById('phone-number').value;
     console.log("جاري حفظ:", name, phone);
     alert("تم حفظ البيانات بنجاح!");
 }
-
-// حماية الكود من الانهيار عند فتح صفحة الحساب
-window.addEventListener('DOMContentLoaded', () => {
-    // إذا كنت في الصفحة الرئيسية، حمل المنتجات
-    const grid = document.getElementById('products-grid');
-    if (grid) {
-        loadProductsFromSupabase();
-    }
-});
