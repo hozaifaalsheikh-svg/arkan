@@ -32,8 +32,7 @@
                         <span class="mobile-only-text">حول</span>
                     </a>
 
-                    <div class="header-links" id="auth-container" style="display: flex; align-items: center;">
-                        </div>
+                    <div class="header-links" id="auth-container" style="display: flex; align-items: center;"></div>
                 </div>
 
             </div>
@@ -67,25 +66,22 @@
 
     <div id="toast-container"></div>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
-    
-    <div style="text-align: center; padding: 20px; background: #fdfdfd; border-top: 1px solid #eee;">
-        <a href="admin.html" style="color: #ccc; text-decoration: none; font-size: 12px;">
-            <div style="text-align: center; padding: 25px; background: #fdfdfd; border-top: 1px solid #eee;">
-                <a href="https://www.facebook.com/share/1EFg5oq7Hz/" target="_blank" style="text-decoration: none; color: #777; font-size: 13px; transition: 0.3s;" onmouseover="this.style.color='#1a365d'" onmouseout="this.style.color='#777'">
-                    Designed & Developed by <span style="font-weight: 700; color: #1a365d;">Eng. HUDHAYFA AL-SHEIKH</span>
-                    <i class="fab fa-facebook" style="margin-right: 8px; color: #1877f2;"></i>
-                </a>
-            </div>
-        </a>
-    </div>
-
     <a href="cart.html" class="floating-cart-btn">
         <i class="fas fa-shopping-cart"></i>
         <span class="floating-cart-count" id="cart-counter-badge">0</span>
     </a>
-    
+
+    <footer style="text-align: center; padding: 25px; background: #fdfdfd; border-top: 1px solid #eee; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+        <a href="https://www.facebook.com/share/1EFg5oq7Hz/" target="_blank" style="text-decoration: none; color: #777; font-size: 13px; transition: 0.3s;" onmouseover="this.style.color='#1a365d'" onmouseout="this.style.color='#777'">
+            Designed & Developed by <span style="font-weight: 700; color: #1a365d;">Eng. HUDHAYFA AL-SHEIKH</span>
+            <i class="fab fa-facebook" style="margin-right: 8px; color: #1877f2;"></i>
+        </a>
+        <a href="admin.html" style="color: #bbb; text-decoration: none; font-size: 11px; transition: 0.3s;" onmouseover="this.style.color='#777'" onmouseout="this.style.color='#bbb'">لوحة التحكم</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="script.js?v=2"></script>
 </body>
 </html>
