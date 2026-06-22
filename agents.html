@@ -23,12 +23,16 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background-color: var(--bg-color); padding-bottom: 120px; color: #333; }
         
-        .header { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .header { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); flex-wrap: wrap; gap: 15px; }
         .header h1 { font-size: 22px; margin: 0; display: flex; align-items: center; gap: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
         .header h1 span { color: #f1c40f; font-size: 14px; background: rgba(255,255,255,0.15); padding: 5px 10px; border-radius: 6px; }
 
+        .agent-info { font-size: 14px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 10px; }
+        .agent-info a { color: #f1c40f; text-decoration: none; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .agent-info a:hover { color: #fff; }
+
         .container { max-width: 1300px; margin: 30px auto; padding: 0 15px; }
-        .table-wrapper { background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); overflow-x: auto; overflow-y: auto; max-height: 70vh; border: 1px solid var(--border-color); }
+        .table-wrapper { background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); overflow-x: auto; overflow-y: auto; max-height: 65vh; border: 1px solid var(--border-color); }
         
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background: #edf2f7; padding: 16px; text-align: right; border-bottom: 2px solid #cbd5e0; color: var(--primary-color); font-size: 14px; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -57,7 +61,8 @@
         .btn-order:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(211, 84, 0, 0.5); }
 
         @media (max-width: 768px) {
-            .header { padding: 15px; flex-direction: column; gap: 10px; text-align: center; }
+            .header { padding: 15px; flex-direction: column; text-align: center; }
+            .agent-info { width: 100%; justify-content: center; }
             .totals-group { gap: 10px; justify-content: center; width: 100%; }
             .total-item { padding: 8px 12px; flex: 1 1 calc(50% - 10px); align-items: center; text-align: center; }
             .total-item strong { font-size: 16px; }
@@ -69,12 +74,12 @@
         #invoice-template { display: none; padding: 40px; font-family: 'Cairo', sans-serif; background: white; color: #333; direction: rtl; }
         .inv-header { text-align: center; border-bottom: 2px solid #1a365d; padding-bottom: 20px; margin-bottom: 30px; }
         .inv-header h2 { color: #1a365d; margin: 0; font-size: 28px; }
-        .inv-header p { margin: 5px 0 0 0; color: #7f8c8d; font-size: 14px; }
+        .inv-header p { margin: 5px 0 0 0; color: #7f8c8d; font-size: 14px; font-weight: bold; }
         .inv-details { display: flex; justify-content: space-between; margin-bottom: 30px; }
-        .inv-details div { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; width: 48%; }
+        .inv-details div { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; width: 48%; line-height: 1.8; }
         .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        .inv-table th { background: #1a365d; color: white; padding: 12px; text-align: right; font-size: 14px; }
-        .inv-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; font-weight: bold; }
+        .inv-table th { background: #1a365d; color: white; padding: 12px; text-align: right; font-size: 14px; border: 1px solid #1a365d; }
+        .inv-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; font-size: 14px; font-weight: bold; }
         .inv-totals { width: 50%; margin-right: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; }
         .inv-totals-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; font-weight: bold; }
         .inv-totals-row.final { border-top: 2px solid #cbd5e0; padding-top: 10px; color: #c0392b; font-size: 20px; }
@@ -84,7 +89,13 @@
 <body>
 
     <header class="header">
-        <h1><i class="fas fa-handshake"></i> بوابة وكلاء بيوكسين <span>أسعار الجملة ($)</span></h1>
+        <h1><i class="fas fa-handshake"></i> بوابة الوكلاء <span>أسعار الجملة ($)</span></h1>
+        
+        <div class="agent-info">
+            <i class="fas fa-user-tie"></i> 
+            الوكيل: <span id="display-agent-name">الرجاء إدخال الاسم</span>
+            <a onclick="promptAgentName()">(تعديل البيانات)</a>
+        </div>
     </header>
 
     <div class="container">
@@ -130,7 +141,7 @@
             </div>
         </div>
         <button class="btn-order" onclick="generatePDFAndSend()">
-            تحميل الفاتورة (PDF) وإرسال <i class="fas fa-file-pdf" style="font-size: 22px;"></i>
+            تحميل الفاتورة وإرسال <i class="fas fa-file-pdf" style="font-size: 22px;"></i>
         </button>
     </div>
 
@@ -138,17 +149,19 @@
     <div id="invoice-template">
         <div class="inv-header">
             <h2>Arkan Pharmaceutical Company</h2>
-            <p>وكيل Zaroza في Syria | طلبية وكيل جملة (B2B)</p>
+            <!-- تم إزالة زاروزا واستبدالها بنص رسمي -->
+            <p>وكيل معتمد في سوريا | طلبية وكيل جملة (B2B)</p>
         </div>
         
         <div class="inv-details">
             <div>
+                <strong>الجهة الطالبة (الوكيل):</strong> <span id="inv-agent" style="color: #d35400;"></span><br>
                 <strong>تاريخ الطلب:</strong> <span id="inv-date"></span><br>
-                <strong>رقم الفاتورة المرجعي:</strong> <span id="inv-ref"></span>
+                <strong>رقم الفاتورة المرجعي:</strong> <span id="inv-ref" style="font-family: monospace;"></span>
             </div>
             <div>
                 <strong>العملة المعتمدة:</strong> الدولار الأمريكي ($)<br>
-                <strong>حالة الطلبية:</strong> بانتظار التأكيد
+                <strong>حالة الطلبية:</strong> بانتظار التأكيد من الإدارة
             </div>
         </div>
 
@@ -157,9 +170,9 @@
                 <tr>
                     <th>الكود</th>
                     <th>المنتج</th>
-                    <th>الكمية</th>
-                    <th>سعر الإفرادي</th>
-                    <th>الإجمالي</th>
+                    <th style="text-align: center;">الكمية</th>
+                    <th>سعر الإفرادي ($)</th>
+                    <th>الإجمالي ($)</th>
                 </tr>
             </thead>
             <tbody id="inv-items">
@@ -247,7 +260,50 @@
             { id: "5004751", brand: "nan", name: "شامبو بيوكسين كوانتوم للشعر الجاف/العادي (300*3)", capacity: "300*3", distributorPrice: 5.20, wholesalePrice: 6.00, qty: 0 }
         ];
 
+        // إدارة اسم الوكيل
+        let currentAgentName = localStorage.getItem('arkan_agent_name') || "";
+
+        async function promptAgentName() {
+            const { value: name } = await Swal.fire({
+                title: 'بيانات الوكيل',
+                input: 'text',
+                inputLabel: 'يرجى إدخال اسمك أو اسم الصيدلية/المركز',
+                inputPlaceholder: 'مثال: صيدلية الشفاء...',
+                inputValue: currentAgentName,
+                allowOutsideClick: false,
+                confirmButtonText: 'حفظ ومتابعة',
+                confirmButtonColor: '#1a365d',
+                inputValidator: (value) => {
+                    if (!value) { return 'الاسم مطلوب لإصدار الفواتير الرسمية!'; }
+                }
+            });
+
+            if (name) {
+                currentAgentName = name;
+                localStorage.setItem('arkan_agent_name', name);
+                document.getElementById('display-agent-name').innerText = name;
+            }
+        }
+
+        // دالة توليد رقم الفاتورة التسلسلي
+        function getNextOrderNumber() {
+            let count = localStorage.getItem('arkan_agent_order_count');
+            if (!count) {
+                count = 1;
+            } else {
+                count = parseInt(count) + 1;
+            }
+            localStorage.setItem('arkan_agent_order_count', count);
+            
+            // إضافة الأصفار (Padding) ليصبح مثل 00001
+            return 'ORD-' + String(count).padStart(5, '0');
+        }
+
         function renderTable() {
+            if (currentAgentName) {
+                document.getElementById('display-agent-name').innerText = currentAgentName;
+            }
+
             const tbody = document.getElementById('agents-grid');
             tbody.innerHTML = '';
 
@@ -332,7 +388,13 @@
             document.getElementById('bar-total-margin').innerText = `${totalMarginPct.toFixed(1)}%`;
         }
 
-        function generatePDFAndSend() {
+        async function generatePDFAndSend() {
+            // التحقق من إدخال اسم الوكيل قبل تصدير الفاتورة
+            if (!currentAgentName) {
+                await promptAgentName();
+                if (!currentAgentName) return; 
+            }
+
             const orderItems = agentsProducts.filter(p => p.qty > 0);
             
             if (orderItems.length === 0) {
@@ -340,9 +402,14 @@
                 return;
             }
 
+            // توليد رقم الفاتورة التسلسلي الجديد
+            const newOrderRef = getNextOrderNumber();
+
+            // تعبئة بيانات الفاتورة
             const today = new Date();
+            document.getElementById('inv-agent').innerText = currentAgentName;
             document.getElementById('inv-date').innerText = today.toLocaleDateString('ar-EG');
-            document.getElementById('inv-ref').innerText = 'ORD-' + Math.floor(Math.random() * 90000 + 10000);
+            document.getElementById('inv-ref').innerText = newOrderRef;
             
             const invItemsBody = document.getElementById('inv-items');
             invItemsBody.innerHTML = '';
@@ -359,7 +426,7 @@
                 tr.innerHTML = `
                     <td style="font-family: monospace;">${p.id}</td>
                     <td>${p.name}</td>
-                    <td>${p.qty}</td>
+                    <td style="text-align: center;">${p.qty}</td>
                     <td>$${p.distributorPrice.toFixed(2)}</td>
                     <td style="color:#c0392b;">$${itemCost.toFixed(2)}</td>
                 `;
@@ -381,7 +448,7 @@
 
             const opt = {
                 margin:       10,
-                filename:     `Arkan_Order_${Date.now()}.pdf`,
+                filename:     `Arkan_Order_${newOrderRef}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -390,24 +457,33 @@
             html2pdf().set(opt).from(element).save().then(() => {
                 element.style.display = 'none'; 
                 
+                const phoneNumber = "963956017232"; 
+                // تضمين اسم الوكيل ورقم الطلب في رسالة الواتساب
+                const msg = `مرحباً شركة أركان،\n\nأنا الوكيل: *${currentAgentName}*\nلقد قمت بإنشاء طلبية جديدة رقم (${newOrderRef}).\nتجدون التفاصيل في ملف الـ PDF المرفق.`;
+                const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(msg)}`;
+
                 Swal.fire({
                     icon: 'success',
                     title: 'تم حفظ الفاتورة بنجاح!',
-                    text: 'تم تحميل ملف الـ PDF على جهازك. سيتم الآن فتح الواتساب، يرجى إرسال الملف المرفق.',
-                    confirmButtonText: 'فتح الواتساب الآن',
-                    confirmButtonColor: '#25D366'
-                }).then((result) => {
-                    if (result.isConfirmedيي) {
-                        const phoneNumber = "963956017232"; 
-                        const msg = "مرحباً، لقد قمت بإنشاء طلبية جديدة. تجدون التفاصيل في ملف الـ PDF المرفق.";
-                        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`;
-                        window.location.href = whatsappUrl;
-                    }
+                    html: `
+                        <p style="margin-bottom: 20px; font-size: 15px;">تم تحميل ملف الـ PDF على جهازك.<br>الرجاء النقر على الزر أدناه لفتح الواتساب وإرسال الملف.</p>
+                        <a href="${whatsappUrl}" target="_blank" style="display: inline-block; background: #25D366; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);">
+                            <i class="fab fa-whatsapp" style="font-size: 18px; margin-left: 8px;"></i> فتح الواتساب وإرسال
+                        </a>
+                    `,
+                    showConfirmButton: false,
+                    showCloseButton: true
                 });
             });
         }
 
-        document.addEventListener('DOMContentLoaded', renderTable);
+        // تشغيل نافذة الاسم إذا لم يكن مسجلاً، ثم عرض الجدول
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!currentAgentName) {
+                await promptAgentName();
+            }
+            renderTable();
+        });
     </script>
 </body>
 </html>
