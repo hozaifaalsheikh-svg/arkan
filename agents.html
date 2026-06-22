@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الوكلاء | شركة أركان</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50; 
+            --secondary-color: #1a365d;
+            --accent-color: #d35400;
+            --bg-color: #f8f9fa;
+            --border-color: #e2e8f0;
+            --profit-color: #27ae60;
+        }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); padding-bottom: 100px; }
+        
+        .header { background: var(--primary-color); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 22px; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .header h1 span { color: #f1c40f; font-size: 14px; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; }
+        
+        .table-wrapper { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; border: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: #edf2f7; padding: 15px; text-align: right; border-bottom: 2px solid #cbd5e0; color: var(--primary-color); font-size: 15px; }
+        td { padding: 15px; border-bottom: 1px solid var(--border-color); vertical-align: middle; font-size: 14px; font-weight: 600; color: #333; }
+        tr:hover { background: #f8fafc; }
+
+        .product-name-col { display: flex; flex-direction: column; gap: 5px; }
+        .brand-badge { background: #e2e8f0; color: var(--primary-color); font-size: 11px; padding: 3px 10px; border-radius: 12px; width: fit-content; font-weight: bold; }
+        
+        .qty-input { width: 80px; padding: 10px; border: 2px solid var(--border-color); border-radius: 6px; text-align: center; font-weight: bold; font-size: 16px; outline: none; transition: 0.2s; }
+        .qty-input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.1); }
+
+        .text-profit { color: var(--profit-color); font-weight: bold; }
+        .text-cost { color: #c0392b; font-weight: bold; }
+
+        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--border-color); box-shadow: 0 -5px 20px rgba(0,0,0,0.08); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        .totals-group { display: flex; gap: 40px; }
+        .total-item { display: flex; flex-direction: column; }
+        .total-item span { font-size: 13px; color: #7f8c8d; font-weight: 600; margin-bottom: 3px; }
+        .total-item strong { font-size: 20px; color: var(--primary-color); }
+        .total-item strong.profit-val { color: var(--profit-color); }
+
+        .btn-order { background: var(--accent-color); color: white; border: none; padding: 14px 35px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; display: flex; gap: 10px; align-items: center; }
+        .btn-order:hover { background: #e67e22; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(211, 84, 0, 0.3); }
+
+        @media (max-width: 768px) {
+            .header { padding: 15px; }
+            .totals-group { gap: 15px; }
+            .total-item strong { font-size: 16px; }
+            .btn-order { padding: 12px 20px; font-size: 14px; }
+            .bottom-bar { padding: 15px; flex-direction: column; gap: 15px; align-items: stretch; }
+            .totals-group { justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1><i class="fas fa-handshake"></i> بوابة وكلاء بيوكسين <span>أسعار الجملة ($)</span></h1>
+    </header>
+
+    <div class="container">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>الكود (SKU)</th>
+                        <th>المنتج</th>
+                        <th>السعة</th>
+                        <th>سعر الجملة ($)</th>
+                        <th>سعر الموزع ($)</th>
+                        <th>الكمية المطلوبة</th>
+                        <th>التكلفة ($)</th>
+                        <th>هامش الربح ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="agents-grid">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <div class="totals-group">
+            <div class="total-item">
+                <span>إجمالي القطع</span>
+                <strong id="bar-total-qty">0</strong>
+            </div>
+            <div class="total-item">
+                <span>إجمالي التكلفة</span>
+                <strong id="bar-total-cost" class="text-cost">$0.00</strong>
+            </div>
+            <div class="total-item">
+                <span>إجمالي ربحك المتوقع</span>
+                <strong id="bar-total-profit" class="profit-val">$0.00</strong>
+            </div>
+        </div>
+        <button class="btn-order" onclick="alert('تم تجهيز طلبيتك كوكيل! سيتم برمجتها لتصل للإدارة لاحقاً.')">
+            اعتماد الطلبية <i class="fas fa-check-circle"></i>
+        </button>
+    </div>
+
+    <script>
+        const agentsProducts = [
+            { id: "5001390", brand: "BIOXCIN", name: "شامبو بيوكسين فورت", capacity: "300", distributorPrice: 3.00, wholesalePrice: 3.50, qty: 0 },
+            { id: "5006462", brand: "BIOXCIN", name: "شامبو بيوكسين للشعر الجاف/العادي", capacity: "300", distributorPrice: 2.60, wholesalePrice: 3.00, qty: 0 },
+            { id: "5005605", brand: "BIOXCIN", name: "شامبو بيوكسين بالثوم الأسود", capacity: "300", distributorPrice: 2.60, wholesalePrice: 3.00, qty: 0 },
+            { id: "5006607", brand: "BIOXCIN", name: "شامبو بيوكسين بالكيراتين والأرجان", capacity: "300", distributorPrice: 2.60, wholesalePrice: 3.00, qty: 0 },
+            { id: "5006610", brand: "BIOXCIN", name: "زيت العناية بالكيراتين والأرجان", capacity: "150", distributorPrice: 4.00, wholesalePrice: 4.80, qty: 0 },
+            { id: "5005606", brand: "BIOXCIN", name: "شامبو بيوكسين بالبيوتين", capacity: "300", distributorPrice: 2.60, wholesalePrice: 3.00, qty: 0 },
+            { id: "5006606", brand: "BIOXCIN", name: "شامبو بيوكسين بالكولاجين والبيوتين", capacity: "300", distributorPrice: 2.70, wholesalePrice: 3.15, qty: 0 },
+            { id: "5004110", brand: "BIOXCIN", name: "شامبو بيوكسين المضاد للقشرة بالمياه الحرارية", capacity: "300", distributorPrice: 3.50, wholesalePrice: 4.20, qty: 0 },
+            { id: "5005355", brand: "BIOXCIN", name: "شامبو بيوكسين دي اس المضاد للقشرة بالمياه الحرارية (مكثف )", capacity: "200", distributorPrice: 3.30, wholesalePrice: 4.00, qty: 0 },
+            { id: "5003832", brand: "BIOXCIN", name: "شامبو بيوكسين كوانتوم للشعر الجاف/العادي", capacity: "300", distributorPrice: 2.60, wholesalePrice: 3.00, qty: 0 },
+            { id: "5003830", brand: "BIOXCIN", name: "شامبو بيوكسين كوانتوم للشعر الدهني", capacity: "300", distributorPrice: 2.60, wholesalePrice: 3.00, qty: 0 },
+            { id: "5004214", brand: "BIOXCIN", name: "كريم واقي من الشمس للبشرة المعرضة لحب الشباب", capacity: "50", distributorPrice: 4.50, wholesalePrice: 6.00, qty: 0 },
+            { id: "5007152", brand: "BIOXCIN", name: "سيروم بيوكسين بالكولاجين والبيوتين للشعر", capacity: "100", distributorPrice: 4.75, wholesalePrice: 5.90, qty: 0 },
+            { id: "5007153", brand: "BIOXCIN", name: "شامبو بيوكسين بالزيوت المغذية", capacity: "300", distributorPrice: 3.00, wholesalePrice: 3.40, qty: 0 },
+            { id: "5007062", brand: "BIOXCIN", name: "كريم المغذي أتوبيكير من بيوكسين", capacity: "500", distributorPrice: 5.50, wholesalePrice: 6.70, qty: 0 },
+            { id: "5007044", brand: "BIOXCIN", name: "سيروم مضاد للتجاعيد من بيوكسين", capacity: "30", distributorPrice: 6.00, wholesalePrice: 7.50, qty: 0 },
+            { id: "5007043", brand: "BIOXCIN", name: "كريم الذهب المضاد للتجاعيد من بيوكسين", capacity: "50", distributorPrice: 8.80, wholesalePrice: 11.00, qty: 0 },
+            { id: "5006978", brand: "BIOXCIN", name: "أقراص  بيوتي بوستر(معزز الجمال ) بيوكسين", capacity: "Tablet–60 Adet", distributorPrice: 8.50, wholesalePrice: 11.00, qty: 0 },
+            { id: "5006375", brand: "BIOXCIN", name: "سيروم بيوكسين للحواجب والرموش", capacity: "3", distributorPrice: 4.00, wholesalePrice: 5.00, qty: 0 },
+            { id: "5006933", brand: "BIOXCIN", name: "تونر للبشرة المعرضة لحب الشباب", capacity: "200", distributorPrice: 2.50, wholesalePrice: 3.00, qty: 0 },
+            { id: "5006650", brand: "BIOXCIN", name: "سيروم فيتامين سي", capacity: "30", distributorPrice: 6.00, wholesalePrice: 7.50, qty: 0 },
+            { id: "5006611", brand: "BIOXCIN", name: "كريم العناية بالشعر بالكيراتين والأرجان", capacity: "250", distributorPrice: 3.30, wholesalePrice: 4.25, qty: 0 },
+            { id: "5006609", brand: "BIOXCIN", name: "بلسم سائل بالكيراتين والأرجان", capacity: "150", distributorPrice: 3.30, wholesalePrice: 4.25, qty: 0 },
+            { id: "5006938", brand: "BIOXCIN", name: "كريم العين المضاد للشيخوخة من بيوكسين", capacity: "15", distributorPrice: 5.00, wholesalePrice: 7.25, qty: 0 },
+            { id: "5006940", brand: "BIOXCIN", name: "كريم مضاد للتجاعيد من بيوكسين", capacity: "50", distributorPrice: 6.00, wholesalePrice: 7.50, qty: 0 },
+            { id: "5007150", brand: "BIOXCIN", name: "بلسم سائل بالكولاجين والبيوتين", capacity: "150", distributorPrice: 3.30, wholesalePrice: 4.25, qty: 0 },
+            { id: "5007078", brand: "BIOXCIN", name: "كريم العناية بالشعر بالكولاجين والبيوتين", capacity: "250", distributorPrice: 3.30, wholesalePrice: 4.25, qty: 0 },
+            { id: "5007598", brand: "BIOXCIN", name: "مزيل عرق رول أون بيوكسين 50 مل", capacity: "50", distributorPrice: 3.00, wholesalePrice: 3.70, qty: 0 },
+            { id: "5003834", brand: "BIOXCIN", name: "سيروم بيوكسين كوانتوم", capacity: "15x6", distributorPrice: 13.75, wholesalePrice: 17.00, qty: 0 },
+            { id: "5006290", brand: "BIOXCIN", name: "سيروم بيوكسين فورت 3x50", capacity: "3x50", distributorPrice: 12.00, wholesalePrice: 15.00, qty: 0 },
+            { id: "5007639", brand: "nan", name: "سيروم بيوكسين فورت 1x50", capacity: "1X50", distributorPrice: 5.00, wholesalePrice: 7.00, qty: 0 },
+            { id: "5006647", brand: "BIOXCIN", name: "زيت واقي شمس بيوكسين للتسمير بعامل حماية من الشمس 15", capacity: "200", distributorPrice: 7.00, wholesalePrice: 9.00, qty: 0 },
+            { id: "5006885", brand: "BIOXCIN", name: "كريم واقي الشمس الملون للبشرة المعرضة للتصبغات", capacity: "50", distributorPrice: 4.50, wholesalePrice: 6.00, qty: 0 },
+            { id: "5007172", brand: "BIOXCIN", name: "جل تنظيف غسول أكنيوم من بيوكسين", capacity: "500", distributorPrice: 5.00, wholesalePrice: 6.50, qty: 0 },
+            { id: "5007192", brand: "BIOXCIN", name: "كريم الوجه المغذي أتوبيكير من بيوكسين", capacity: "50", distributorPrice: 3.30, wholesalePrice: 4.20, qty: 0 },
+            { id: "5006782", brand: "BIOXCIN", name: "سيروم حمض الهيالورونيك من بيوكسين", capacity: "30", distributorPrice: 6.00, wholesalePrice: 7.50, qty: 0 },
+            { id: "5006529", brand: "BIOXCIN", name: "ظرف بودرة كولاجين بيوكسين", capacity: "30 SACHET", distributorPrice: 13.50, wholesalePrice: 17.00, qty: 0 },
+            { id: "5001091", brand: "BIOXCIN", name: "سيروم كولاجين من بيوكسين", capacity: "30", distributorPrice: 6.00, wholesalePrice: 7.50, qty: 0 },
+            { id: "5004215", brand: "BIOXCIN", name: "كريم واقي شمسي من بيوكسين للبشرة المعرضة للشوائب مع عامل حماية 50", capacity: "50", distributorPrice: 4.50, wholesalePrice: 6.00, qty: 0 },
+            { id: "5006746", brand: "BIOXCIN", name: "شامبو بيوكسين للرجال والرياضة", capacity: "500", distributorPrice: 3.50, wholesalePrice: 4.25, qty: 0 },
+            { id: "5006531", brand: "BIOXCIN", name: "اقراص كولاجين بيوكسين", capacity: "30 TABLET", distributorPrice: 4.00, wholesalePrice: 5.20, qty: 0 },
+            { id: "5006653", brand: "BIOXCIN", name: "كريم واقي من الشمس للبشرة المختلطة/الدهنية SPF 50", capacity: "50", distributorPrice: 4.50, wholesalePrice: 6.00, qty: 0 },
+            { id: "5006652", brand: "nan", name: "كريم واقي من الشمس للبشرة العادية والجافة", capacity: "50", distributorPrice: 4.50, wholesalePrice: 6.00, qty: 0 },
+            { id: "5006658", brand: "nan", name: "كريم واقي من الشمس ملون للبشرة العادية والجافة", capacity: "50", distributorPrice: 4.50, wholesalePrice: 6.00, qty: 0 },
+            { id: "5007154", brand: "BIOXCIN", name: "بلسم الزيوت المغذية", capacity: "200", distributorPrice: 3.65, wholesalePrice: 4.75, qty: 0 },
+            { id: "5007253", brand: "BIOXCIN", name: "سيروم نياسيناميد", capacity: "30", distributorPrice: 6.00, wholesalePrice: 7.50, qty: 0 },
+            { id: "5006802", brand: "BIOXCIN", name: "بيوتين 5000 ميكروغرام بيوكسين", capacity: "30 TABLET", distributorPrice: 2.80, wholesalePrice: 3.75, qty: 0 },
+            { id: "5007173", brand: "BIOXCIN", name: "كريم ترطيب للبشرة المعرضة لحب الشباب", capacity: "50", distributorPrice: 3.40, wholesalePrice: 4.50, qty: 0 },
+            { id: "5007255", brand: "BIOXCIN", name: "واقي الشمس بيوكسين ستيك يقدم حماية عالية جدًا", capacity: "15 GR", distributorPrice: 3.50, wholesalePrice: 4.75, qty: 0 },
+            { id: "5006977", brand: "nan", name: "ماء ميسيلار من بيوكسين هيدرا لتنظيف المكياج بسهولة وفعالية.", capacity: "500ML", distributorPrice: 3.40, wholesalePrice: 4.50, qty: 0 },
+            { id: "5007269", brand: "nan", name: "أقراص البشرة للنساء من بيوكسين", capacity: "30 TABLET", distributorPrice: 4.25, wholesalePrice: 5.30, qty: 0 },
+            { id: "5006911", brand: "nan", name: "أقراص شعر للنساء من بيوكسين", capacity: "30 TABLET", distributorPrice: 4.25, wholesalePrice: 5.30, qty: 0 },
+            { id: "5006912", brand: "nan", name: "أقراص شعر الرجال من بيوكسين", capacity: "30 TABLET", distributorPrice: 4.25, wholesalePrice: 5.30, qty: 0 },
+            { id: "5001988", brand: "nan", name: "أقراص مركب الكيراتين بيوكسين", capacity: "60 TABLET", distributorPrice: 5.50, wholesalePrice: 6.80, qty: 0 },
+            { id: "5007254", brand: "nan", name: "سيروم ريتينول", capacity: "30", distributorPrice: 6.00, wholesalePrice: 7.50, qty: 0 },
+            { id: "5007442", brand: "nan", name: "كريم جولد اون", capacity: "50", distributorPrice: 4.40, wholesalePrice: 6.00, qty: 0 },
+            { id: "5006651", brand: "nan", name: "بخاخ واقي من الشمس", capacity: "200", distributorPrice: 6.80, wholesalePrice: 8.50, qty: 0 },
+            { id: "5007257", brand: "nan", name: "شامبو بيوكسين بالكافيين والأرجينين", capacity: "500", distributorPrice: 3.75, wholesalePrice: 4.70, qty: 0 },
+            { id: "5004751", brand: "nan", name: "شامبو بيوكسين كوانتوم للشعر الجاف/العادي (300*3)", capacity: "300*3", distributorPrice: 5.20, wholesalePrice: 6.00, qty: 0 }
+        ];
+
+        function renderTable() {
+            const tbody = document.getElementById('agents-grid');
+            tbody.innerHTML = '';
+
+            agentsProducts.forEach((product, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color:#7f8c8d; font-family: monospace;">${product.id}</td>
+                    <td>
+                        <div class="product-name-col">
+                            <span class="brand-badge">${product.brand === 'nan' ? 'عام' : product.brand}</span>
+                            <span>${product.name}</span>
+                        </div>
+                    </td>
+                    <td>${product.capacity}</td>
+                    <td style="color: var(--primary-color); font-weight: bold;">$${product.wholesalePrice.toFixed(2)}</td>
+                    <td style="color: var(--accent-color); font-weight: bold;">$${product.distributorPrice.toFixed(2)}</td>
+                    <td>
+<input type="number" min="0" value="0" class="qty-input" data-index="${index}" oninput="updateRow(this)" onkeydown="handleEnter(event, ${index})">                    </td>
+                    <td id="cost-${index}">$0.00</td>
+                    <td id="profit-${index}" class="text-profit">$0.00</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateRow(input) {
+            const index = input.getAttribute('data-index');
+            const qty = parseInt(input.value) || 0;
+            agentsProducts[index].qty = qty;
+
+            const product = agentsProducts[index];
+            
+            const rowCost = product.distributorPrice * qty; 
+            const expectedRevenue = product.wholesalePrice * qty; 
+            const rowProfit = expectedRevenue - rowCost; 
+
+            document.getElementById(`cost-${index}`).innerText = `$${rowCost.toFixed(2)}`;
+            document.getElementById(`profit-${index}`).innerText = `$${rowProfit.toFixed(2)}`;
+
+            calculateTotals();
+        }
+        function handleEnter(event, currentIndex) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // نمنع أي سلوك افتراضي للزر
+        const nextIndex = currentIndex + 1;
+        const nextInput = document.querySelector(`.qty-input[data-index="${nextIndex}"]`);
+        
+        if (nextInput) {
+            nextInput.focus(); // نقل المؤشر إلى السطر التالي
+            nextInput.select(); // تحديد الرقم (0) ليتم الكتابة فوقه مباشرة دون الحاجة لمسحه
+        }
+    }
+}
+
+        function calculateTotals() {
+            let totalQty = 0;
+            let totalCost = 0;
+            let totalProfit = 0;
+
+            agentsProducts.forEach(p => {
+                if (p.qty > 0) {
+                    totalQty += p.qty;
+                    totalCost += (p.distributorPrice * p.qty);
+                    totalProfit += ((p.wholesalePrice * p.qty) - (p.distributorPrice * p.qty));
+                }
+            });
+
+            document.getElementById('bar-total-qty').innerText = totalQty;
+            document.getElementById('bar-total-cost').innerText = `$${totalCost.toFixed(2)}`;
+            document.getElementById('bar-total-profit').innerText = `$${totalProfit.toFixed(2)}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', renderTable);
+    </script>
+</body>
+</html>
