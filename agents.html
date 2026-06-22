@@ -332,7 +332,6 @@
             document.getElementById('bar-total-margin').innerText = `${totalMarginPct.toFixed(1)}%`;
         }
 
-        // دالة توليد الفاتورة كملف PDF وإرسالها
         function generatePDFAndSend() {
             const orderItems = agentsProducts.filter(p => p.qty > 0);
             
@@ -341,7 +340,6 @@
                 return;
             }
 
-            // 1. تعبئة بيانات الفاتورة المخفية
             const today = new Date();
             document.getElementById('inv-date').innerText = today.toLocaleDateString('ar-EG');
             document.getElementById('inv-ref').innerText = 'ORD-' + Math.floor(Math.random() * 90000 + 10000);
@@ -371,7 +369,6 @@
             document.getElementById('inv-qty').innerText = totalQty;
             document.getElementById('inv-total-cost').innerText = `$${totalCost.toFixed(2)}`;
 
-            // 2. إظهار رسالة انتظار أنيقة
             Swal.fire({
                 title: 'جاري تجهيز الفاتورة...',
                 text: 'الرجاء الانتظار قليلاً ليتم تحميل الـ PDF',
@@ -379,9 +376,8 @@
                 didOpen: () => { Swal.showLoading(); }
             });
 
-            // 3. تحويل الديف المخفي إلى PDF
             const element = document.getElementById('invoice-template');
-            element.style.display = 'block'; // إظهار مؤقت للطباعة
+            element.style.display = 'block'; 
 
             const opt = {
                 margin:       10,
@@ -392,9 +388,8 @@
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
-                element.style.display = 'none'; // إعادة الإخفاء
+                element.style.display = 'none'; 
                 
-                // 4. بعد التحميل، إرسال رسالة التوجيه للواتساب
                 Swal.fire({
                     icon: 'success',
                     title: 'تم حفظ الفاتورة بنجاح!',
@@ -403,8 +398,7 @@
                     confirmButtonColor: '#25D366'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // ⚠️ ضع رقمك هنا للواتساب
-                        const phoneNumber = "963999123456"; 
+                        const phoneNumber = "963956017232"; 
                         const msg = "مرحباً، لقد قمت بإنشاء طلبية جديدة. تجدون التفاصيل في ملف الـ PDF المرفق.";
                         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`;
                         window.open(whatsappUrl, '_blank');
