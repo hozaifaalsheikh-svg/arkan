@@ -397,11 +397,11 @@
                     confirmButtonText: 'فتح الواتساب الآن',
                     confirmButtonColor: '#25D366'
                 }).then((result) => {
-                    if (result.isConfirmed) {
+                    if (result.isConfirmedيي) {
                         const phoneNumber = "963956017232"; 
                         const msg = "مرحباً، لقد قمت بإنشاء طلبية جديدة. تجدون التفاصيل في ملف الـ PDF المرفق.";
                         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`;
-                        window.open(whatsappUrl, '_blank');
+                        window.location.href = whatsappUrl;
                     }
                 });
             });
